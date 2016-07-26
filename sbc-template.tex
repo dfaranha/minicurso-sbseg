@@ -1,0 +1,296 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{graphicx,url}
+
+\usepackage[brazil]{babel}   
+%\usepackage[latin1]{inputenc}  
+\usepackage[utf8]{inputenc}  
+% UTF-8 encoding is recommended by ShareLaTex
+
+     
+\sloppy
+
+\title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas\footnote{Esse trabalho é uma versão aprofundada e modernizada do minicurso ministrado no SBSeg 2009 por João Paulo Fernandes Ventura e Ricardo Dahab}}
+
+\author{Lucas Zanco Ladeira\inst{1} (apresentador), Erick Nascimento\inst{1}, Jo\~ao Ventura\inst{1}\and \\ Ricardo Dahab\inst{1}, Diego Aranha\inst{1}, Julio Lopez\inst{1}}
+
+
+\address{Instituto de Computação – Universidade Estadual de Campinas (Unicamp)\\
+Caixa Postal 6176 – 13.084-970 – Campinas – SP – Brasil
+    \email{lucas.ladeira@students.ic.unicamp.br}
+  \email{\{erick.nogueira.nascimento,joao.ventura\}@gmail.com}
+  \email{\{rdahab,dfaranha,jlopez\}@ic.unicamp.br}
+}
+
+\begin{document} 
+
+\maketitle
+     
+\begin{resumo} 
+Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, buscando a obtenção de informação sigilosa, acesso não-autorizado, entre outros. Tais ataques ocorrem tanto sobre os algoritmos quanto implementações de um sistema. Um tipo de ataque sobre implementações \'e o de canais laterais, que faz uso do vazamento de informa\c{c}\~oes durante a execu\c{c}\~ao de alguma primitiva criptogr\'afica. Ataques dessa categoria utilizam variações do tempo de execução, do consumo de pot\^encia, do campo magn\'etico, entre outros. As contramedidas podem ser baseadas em modificações no software ou no hardware. Neste minicurso, nossa atenção se restringe ao software, voltada para métodos criptográficos simétricos, e os assimétricos baseados em curvas elípticas.
+\end{resumo}
+
+\section{Dados Gerais}
+\subsection{Objetivos do minicurso}
+O estudo de criptografia de curvas el\'ipticas (ECC) \'e muito importante nos dias atuais, já que possibilita o uso de chaves bem menores do que algoritmos como o RSA, mantendo o mesmo n\'ivel de segurança. Bibliotecas como OpenSSL, por exemplo, disponibilizam implementações de ECC para  assinatura digital (ECDSA) e troca de chaves com o esquema de Diffie-Hellman (ECDH).
+
+Existem na literatura vários ataques de canal lateral a algoritmos de curvas el\'ipticas, o que obriga a implementa\c{c}\~ao de contramedidas de enrobustecimento, antes da entrada de tais métodos em produção. Tais ataques, em geral, visam a descoberta de chaves criptográficas, tendo como fonte de informação as diferenças de tratamento dado pelo código aos bits da chave: um desvio condicional ao valor de um bit pode levar a diferentes comportamentos que, por sua vez, produzem diferentes vazamentos de informação, seja no tempo de execução, consumo de potência, etc. 
+
+Uma alternativa eficaz para mitigar esses problemas \'e a utiliza\c{c}\~ao de ferramentas para automatizar a inser\c{c}\~ao de contramedidas no c\'odigo. Essas ferramentas fazem a an\'alise do c\'odigo, podendo modificá-lo, ou tão somente informar onde se encontra a vulnerabilidade.
+
+Considerando o  exposto acima, os objetivos deste minicurso s\~ao: discutir, brevemente, a necessidade e o impacto na segurança dos sistemas de IoT, do uso dos métodos criptográficos em uso atualmente em outros contextos; introduzir algoritmos de curvas el\'ipticas e suas variantes quanto às diferentes formas de implementação; introduzir e discutir protocolos de IoT baseados em ECC; discutir vários tipos de ataques de canal lateral, suas contramedidas, e limita\c{c}\~oes; descrever ferramentas para o fortalecimento de  algoritmos contra ataques de canal lateral.
+
+\subsection{Tratamento dado ao tema}
+Iremos abordar no minicurso aspectos te\'oricos de ataques de canal lateral aplicados a curvas el\'ipticas, e suas contramedidas. Faremos uma compara\c{c}\~ao entre ataques, destacando seu alcance e suas limita\c{c}\~oes. Do lado prático, vamos apresentar algumas  ferramentas que tornam o c\'odigo resistente a esse tipo de ataque. 
+
+\subsection{Perfil desejado de audi\^encia}
+O perfil desejado para a audiência do minicurso é o de estudantes e profissionais de computação e áreas correlatas interessados em segurança da informação e criptografia. Em especial, profissionais que se dediquem a implementar métodos criptográficos, sejam experientes ou não, deverão se beneficiar deste minicurso.  
+
+\section{Estrutura do Minicurso}
+\begin{enumerate}
+\item \textbf{Introdução (3 pgs).} Seguran\c{c}a da informa\c{c}\~ao; Criptografia; Seguran\c{c}a em IoT.
+\item \textbf {Encripta\c{c}\~ao sim\'etrica e hash (5 pgs).} AES~\cite{AES}; SHA-2~\cite{SHA2}; SHA-3~\cite{SHA3}.
+\item \textbf{Criptografia de curvas el\'ipticas (ECC) (8 pgs).} 
+    \begin{enumerate}
+        \item Curvas NIST e curvas modernas;
+        \item Algoritmos para multiplica\c{c}\~ao escalar (ECSM) b\'asicos~\cite{ECCBook_HankersonVanstone2004};
+        \item Uso de tabelas precomputadas para melhorar desempenho~\cite{ECCBook_HankersonVanstone2004}; algoritmo de janela fixa;
+        \item Algoritmos regulares~\cite{ECCBook_CohenFreyAvanzi2010}; atomicidade; Montgomery Ladder;
+        \item Protocolos em IoT que envolvem ECC.
+    \end{enumerate}
+\item \textbf{Ataques por canais laterais (6 pgs).}
+    \begin{enumerate}
+        \item Canal lateral (SCA) de tempo~\cite{Kocher96};
+            \begin{enumerate}
+                \item O que \'e? Por que \'e importante?
+                \item Impacto em IoT;
+                \item Limita\c{c}\~oes.
+            \end{enumerate}
+        \item Canal lateral de pot\^encia~\cite{SCABook_Mangard2007};
+        \begin{enumerate}
+            \item Caracter\'isticas gerais;
+            \begin{enumerate}
+                \item Compara\c{c}\~ao entre canais laterais de pot\^encia e de tempo;
+            \end{enumerate}
+            \item Ataque de pot\^encia simples (SPA);
+            \item Ataque de pot\^encia diferencial (DPA);
+            \item High-order DPA;
+            \item Template attacks.
+        \end{enumerate}
+    \end{enumerate}
+\item \textbf{Ataques e contramedidas para encripta\c{c}\~ao sim\'etrica e hash (8 pgs).}
+    \begin{enumerate}
+        \item Utiliza\c{c}\~ao de CPA em implementa\c{c}\~ao do AES~\cite{SCABook_Mangard2007};
+        \item Contramedida de mascaramento~\cite{SCABook_Mangard2007};
+        \item Ataques e contramedidas para MACs baseados em funções de hash~\cite{McEvoyTunstall07,BertoniDaemenAssche09}.
+    \end{enumerate}
+\item \textbf{Ataques e contramedidas para ECC (20 pgs).}
+    \begin{enumerate}
+        \item N\'iveis em que os ataques SCA podem ser aplicados;
+        \begin{enumerate}
+            \item Opera\c{c}\~oes na curva;
+            \item Opera\c{c}\~oes no protocolo criptogr\'afico;
+            \item Transfer\^encia da chave entre diferentes mem\'orias;
+            \item Protocolo em n\'ivel de aplica\c{c}\~ao;
+        \end{enumerate}
+        \item Ataques do tipo SPA e contramedidas~\cite{danger2013synthesis};
+        \begin{enumerate}
+            \item Ataque SPA clássico;
+            \item Ataques baseados em templates~\cite{medwed2008template};
+            \item Ataques horizontais baseados em cross-correlation~\cite{witteman2011defeating};
+            \item Ataques horizontais não-supervisionados baseados em clustering~\cite{heyszl2013clustering, perin2015semi};
+            \item Aplica\c{c}\~ao de contramedidas em algoritmo esquerda para direita inseguro;
+            \item Implementa\c{c}\~oes de tempo constante;
+            \item Implementa\c{c}\~oes resistentes ao SPA;
+            \item Impacto das contramedidas no desempenho~\cite{coron1999resistance,danger2013synthesis};
+        \end{enumerate}
+        \item Efic\'acia de implementa\c{c}\~ao de tempo constante;
+        \begin{enumerate}
+            \item Outros métodos para inviabilizar ataques por tempo;
+        \end{enumerate}
+        \item Recuperação de chaves com erros; ~\cite{VeyratCharvillon2013,LangeVrendendaalWakker2014}
+        \begin{enumerate}
+            \item Forma de pontua\c{c}\~ao de confiança de um SCA;
+            \item Pontua\c{c}\~ao em implementa\c{c}\~oes protegidas;
+            \item Solu\c{c}\~ao para pontua\c{c}\~oes baixas de confiabilidade.
+        \end{enumerate}
+    \end{enumerate}
+\item \textbf{Ferramentas (10 pgs).}
+    \begin{enumerate}
+        \item Ferramentas para verifica\c{c}\~ao de c\'odigo de alto n\'ivel em  relação \`a execu\c{c}\~ao em tempo constante~\cite{Langley2012};
+        \item Ferramentas para an\'alise de c\'odigo assembly em relação à  prote\c{c}\~ao contra ataques de pot\^encia;
+            \begin{enumerate}
+                \item Aplica\c{c}\~ao semi-autom\'atica de contramedidas~\cite{MossOswald2012};
+            \end{enumerate}
+        \item M\'etodos emp\'iricos para an\'alise de vazamentos;
+            \begin{enumerate}
+                \item Test Vector Leakage Assessment (TVLA) e suas limita\c{c}\~oes~\cite{GoodwillJun2011, WittemanJaffe2013, TunstallGoodwill2016};
+            \end{enumerate}
+        \item Ferramentas para recuperação de chaves com erros~\cite{VeyratCharvillon2013,LangeVrendendaalWakker2014}.
+    \end{enumerate}
+\end{enumerate}
+
+\section{Detalhamento da Estrutura}
+\begin{enumerate}
+\item \textbf{Introdução.} Introdu\c{c}\~ao à \'area de seguran\c{c}a, criptografia sim\'etrica e assim\'etrica, e a seguran\c{c}a na Internet das Coisas (IoT)
+
+\item \textbf{Encripta\c{c}\~ao sim\'etrica e hash.} Apresenta\c{c}\~ao da encripta\c{c}\~ao sim\'etrica e hash, mas com um breve tratamento sobre o assunto. Nesse contexto ser\~ao apresentados um algoritmo sim\'etrico (AES) e duas funções de hash (SHA-2, SHA-3).
+
+\item \textbf{Criptografia de curvas el\'ipticas (ECC).} Introdu\c{c}\~ao \`a matem\'atica utilizada em criptografia de curvas el\'ipticas. Ser\~ao apresentadas curvas padronizadas pelo NIST. Al\'em disso, diferentes formas de implementar curvas el\'ipticas, visando melhor desempenho, serão discutidas. E, por fim, protocolos de curvas el\'ipticas utilizados em IoT.
+
+\item \textbf{Ataques por canais laterais.} Ser\~ao apresentados alguns ataques de canais laterais, como de tempo e de pot\^encia. No caso do de tempo \'e necess\'ario avaliar o impacto na utiliza\c{c}\~ao em aplica\c{c}\~oes de IoT; al\'em disso, expor as limita\c{c}\~oes desses ataques. J\'a os ataques de pot\^encia podem diferir  dependendo de como analisam o perfil de energia, podendo ser simples (SPA), diferenciais (DPA), ou de ordem mais alta (High-order DPA).
+
+\item \textbf{Ataques e contramedidas para encripta\c{c}\~ao sim\'etrica e hash.} Nesse item iremos explorar a utiliza\c{c}\~ao de ataques de canal lateral em algoritmos que n\~ao s\~ao de ECC, como por exemplo AES. Isso mostra que um mesmo ataque pode ser utilizado em algoritmos diferentes, e at\'e mesmo baseados em problemas matem\'aticos diferentes. Al\'em disso, ser\'a apresentada uma contramedida ao ataque explorado.
+
+\item \textbf{Ataques e contramedidas para ECC.} Ser\~ao apresentados ataques e suas contramedidas em algoritmos ECC. Isso ser\'a feito considerando o problema matem\'atico utilizado em curvas el\'ipticas. Para que seja poss\'ivel ter uma vis\~ao mais abrangente das contramedidas \'e necess\'ario avaliar o custo de mem\'oria e desempenho da aplica\c{c}\~ao das mesmas. Dependendo do sistema que utiliza algoritmos criptogr\'aficos, como sensores, pode n\~ao ser poss\'ivel fazer o uso de determinada contramedida. E, por fim, ser\'a apresentada a forma de pontua\c{c}\~ao dos bits da chave obtidos pela an\'alise de tempo.
+
+\item \textbf{Ferramentas.} Para facilitar a implementa\c{c}\~ao de um c\'odigo seguro \'e poss\'ivel utilizar ferramentas que analisam o algoritmo e o tornam seguro, ou apenas apresentam as vulnerabilidades. Tamb\'em ser\~ao apresentados os m\'etodos para an\'alise do algoritmo que essas ferramentas podem utilizar.
+
+\end{enumerate}
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\pagebreak 
+
+\section{Curricula Vitae}
+\subsection{Lucas Zanco Ladeira}
+\subsubsection{Profissional}
+2013 - 2014: Boa Vista Servi\c{c}os (Estagi\'ario).\\
+Trabalhei com desenvolvimento web na linguagem Java (JEE). Foram utilizados frameworks como Spring, Struts 2, e Hibernate. Outras bibliotecas para facilitar o desenvolvimento foram utilizadas como JSTL. No projeto foi utilizado o motor de regras guvnor drools e servidores de aplica\c{c}\~ao JBoss e Tomcat.
+
+\subsubsection{Educa\c{c}\~ao}
+\begin{itemize}
+\item 2014 - 2015: Bolsa de inicia\c{c}\~ao cient\'ifica FAPESP\\
+A partir do meio do ano de 2014 fui contemplado com uma bolsa de inicia\c{c}\~ao cient\'ifica da FAPESP, para desenvolvimento de uma aplica\c{c}\~ao offline e segura de meio de pagamento com java card.\\
+Durante esse trabalho foram pesquisados algoritmos criptogr\'aficos diferentes (AES, RSA, Esquema de Coron de Criptografia Homom\'orfica, Hash Sha-2) e t\'ecnicas de cria\c{c}\~ao de sess\~ao segura. Al\'em disso, formas diferentes de autentica\c{c}\~ao como PIN, biometria digital, e \textit{challenge-response authentication}.
+
+\item 2016: Bolsa de mestrado da FAPESP\\
+O projeto de mestrado tem o intuito de estudar algoritmos criptogr\'aficos, e suas implementa\c{c}\~oes seguras contra ataques de canal lateral. Isso torna necess\'ario o estudo dos diferentes ataques, e as contramedidas eficientes sobre cada uma. Al\'em disso, cada contramedida apresenta um n\'ivel de dificuldade diferente para implementa\c{c}\~ao, custo de processamento e mem\'oria.
+
+\end{itemize}
+
+\subsubsection{Publica\c{c}\~oes}
+Durante o desenvolvimento da inicia\c{c}\~ao cient\'ifica as seguintes publica\c{c}\~oes foram conquistadas:\\
+\begin{itemize}
+\item Mecanismos de Autenticação em Smart Card utilizando Criptografia Totalmente Homomórfica. XXII Iberchip Workshop, 2016.
+\item Autenticação em Java Card com Criptografia Homomórfica, V Congresso de Pesquisa Científica: Inovação, Sustentabilidade, Ética e Cidadania, 2015.
+\item Meio de Pagamento Seguro e Off-line Utilizando Tecnologia Java Card. VII Congresso de Iniciação em Desenvolvimento Tecnológico e Inovação da UFSCar, 2014.
+\end{itemize}
+
+\subsection{Erick Nogueira do Nascimento}
+
+\subsubsection*{Formação}
+\begin{itemize}\setlength\itemsep{1pt}
+\item 2004 a 2008, Bacharelado em Engenharia de Computação, UNICAMP.
+\item 2009 a 2011, Mestrado em Ciência da Computação, UNICAMP.
+\item 2011 (cursando), Doutorado em Ciência da Computação, UNICAMP.
+\end{itemize}
+
+\subsubsection*{Histórico Profissional}
+
+É candidato ao doutorado em Ciência da Computação na UNICAMP. Atualmente realiza um estágio de pesquisa na empresa Riscure BV nos Países Baixos, com o tema de ataques por canais laterais de potência e radiação eletromagnética contra implementações em software de algoritmos criptográficos assimétricos. Foi bolsista do Ciência sem Fronteiras por um ano, de Abril de 2015 a Abril de 2016, modalidade de estágio de doutorado sanduíche no exterior, na Radboud University Nijmegen, Países Baixos, sob orientação do Prof. Peter Schwabe. Foi pesquisador no CPqD de 2012 a 2014, onde atuou principalmente em projetos envolvendo criptografia em software e hardware, bem como engenharia reversa de software, análise de vulnerabilidades e testes de intrusão em aplicações. 
+
+\subsubsection*{Publicações Recentes}
+
+\begin{enumerate}\setlength\itemsep{1pt}
+    \item Nascimento, E., López, J. and Dahab, R., "Efficient and secure elliptic curve cryptography for 8-bit avr microcontrollers." \textsl{International Conference on Security, Privacy, and Applied Cryptography Engineering (SPACE)}. Springer International Publishing, 2015. 
+    \item Kawakami, H., Gallo, R., Dahab, R., \& Nascimento, E., “Hardware Security Evaluation Using Assurance Case Models”. In \textsl{Availability, Reliability and Security (ARES), 2015 10th International Conference on} (pp. 193-198). IEEE, 2015.
+    \item Nascimento, E., Abarzua, R., Lopez, J., Dahab, R., “A comparison of simple side-channel analysis countermeasures for variable-base elliptic curve scalar multiplication”. \textsl{Proceedings of the Brazilian Symposium on Information and Systems Security}, 2014.
+\end{enumerate}
+
+\subsection{João Paulo Fernandes Ventura}
+
+\subsubsection{Formação}
+\begin{itemize}\setlength\itemsep{1pt}
+\item 2003 a 2007, Graduação em Engenharia de Computação, UNICAMP.
+\end{itemize}
+
+\subsubsection{Histórico Profissional}
+\begin{itemize}\setlength\itemsep{1pt}
+\item 2010 à 2012, \textit{Software Engineer} na IBM, atuando no desenvolvimento de virtual appliances para \textit{RHEV Blue}.
+\item 2013 à 2013, \textit{Software Engineer} na Intel Corporation, atuando no desenvolvimento do Tizen OS.
+\item 2013 à 2014, \textit{Software Developer} no Samsung Instituto de Desenvolvimento para a Informática, atuando no desenvolvimento do Samsung Knox.
+\end{itemize}
+
+\subsubsection{Publicações Recentes}
+\begin{itemize}\setlength\itemsep{1pt}
+\item Ventura, J.P.F., Dahab, R., "Introduction to Side-Channel Attacks". In \textit{IX Brazilian Symposium on Information and Computational Systems Security}, 2009.
+\end{itemize}
+
+\subsection{Ricardo Dahab}
+\subsubsection{Formação}
+\begin{itemize}
+\item 1978 - Bacharelado em Ciência da Computação, UNICAMP
+\item 1984 - Mestrado em Ciência da Computação, UNICAMP
+\item 1993 - Ph.D. em Combinatória e Otimização, University of Waterloo, Canadá
+\item 2002 - Livre-docência em Complexidade de Algoritmos, UNICAMP
+\end{itemize}
+\subsubsection{Histórico Profissional}
+Professor em tempo integral na UNICAMP desde 1982, com promoções em 1984 para professor assistente, depois em 1993 para assistente-doutor, e em 2002 para professor associado. 
+
+\subsubsection{Publicações Recentes}
+Link para CV Lattes: \texttt{http://lattes.cnpq.br/9093331241572944}
+\begin{enumerate}\setlength\itemsep{1pt}
+    \item Nascimento, E., López, J. and Dahab, R., "Efficient and secure elliptic curve cryptography for 8-bit avr microcontrollers." \textsl{International Conference on Security, Privacy, and Applied Cryptography Engineering (SPACE)}. Springer International Publishing, 2015. 
+    \item Kawakami, H., Gallo, R., Dahab, R., \& Nascimento, E., “Hardware Security Evaluation Using Assurance Case Models”. In \textsl{Availability, Reliability and Security (ARES), 2015 10th International Conference on} (pp. 193-198). IEEE, 2015.
+    \item Nascimento, E., Abarzua, R., Lopez, J., Dahab, R., “A comparison of simple side-channel analysis countermeasures for variable-base elliptic curve scalar multiplication”. \textsl{Proceedings of the Brazilian Symposium on Information and Systems Security}, 2014.
+\end{enumerate}
+
+\subsection{Diego F. Aranha}
+
+\subsubsection*{Formação}
+\begin{itemize}\setlength\itemsep{1pt}
+\item 2000 a 2005, Graduação em Ciência da Computação, Universidade de Brasília.
+\item 2005 a 2007, Mestrado Ciência da Computação, UNICAMP.
+\item 2007 a 2011, Doutorado em Ciência da Computação pela UNICAMP.
+\end{itemize}
+
+\subsubsection*{Histórico Profissional}
+
+É Professor Doutor na Universidade Estadual de Campinas (Unicamp) desde 2014. Tem experiência na área de Criptografia e Segurança Computacional, com ênfase em implementação eficiente de algoritmos criptográficos e análise de segurança de sistemas reais. Coordenou a primeira equipe de investigadores independentes capaz de detectar e explorar vulnerabilidades no software da urna eletrônica em testes controlados organizados pelo Tribunal Superior Eleitoral. É Bacharel em Ciência da Computação pela Universidade de Brasília (2005), Mestre (2007) e Doutor (2011) em Ciência da Computação pela Universidade Estadual de Campinas. Foi doutorando visitante por 1 ano na Universidade de Waterloo, Canadá, e Professor Adjunto por pouco mais de 2 anos no Departamento de Ciência da Computação da Universidade de Brasília. É membro do Comitê Consultivo da Conferência Internacional em Criptografia e Segurança da Informação na América Latina (LATINCRYPT) e da Comissão Especial de Segurança da Sociedade Brasileira de Computação (CESEG), responsável pelo Simpósio Brasileiro de Segurança da Informação e Sistemas Computacionais (SBSEG), tendo coordenado o Comitê de Programa na edição 2014 de ambos os eventos. Recebeu em 2015 os prêmios Google Latin America Research Award para pesquisa em privacidade e Inovadores com Menos de 35 Anos Brasil da MIT Technology Review por seu trabalho com o voto eletrônico.
+
+\subsubsection*{Publicações relevantes}
+
+\begin{enumerate}\setlength\itemsep{1pt}
+    \item T. Oliveira, J. López, {D. F. Aranha}, F. Rodr\'iguez-Henr\'iquez, ``Lambda coordinates for binary elliptic curves'',
+    In \textsl{15th International Workshop on Cryptographic Hardware and Embedded Systems (CHES 2013)}, Springer LNCS 8086, pp. 311--330, Santa Barbara, USA, 2013. \textbf{Best Paper Award!}
+
+    \item L. B. Oliveira, {D. F. Aranha}, C. P. L. Gouvêa, M. Scott, D. F. Câmara, J. López, R. Dahab.
+    ``TinyPBC: Pairings for Authenticated Identity-Based Non-Interactive Key Distribution in Sensor Networks'', 
+    \textsl{Computer Communications}, Vol. 34, Issue 3, pp. 485--493, 2011.
+
+    \item {D. F. Aranha}, K. Karabina, P. Longa, C. H. Gebotys, J. López.
+    ``Faster Explicit Formulas for Computing Pairings over Ordinary Curves'',
+    In \textsl{30th International Conference on the Theory and Applications of Cryptographic Techniques (EUROCRYPT 2011)}, Springer LNCS 6632, pp. 48--68, Tallinn, Estonia, 2011.
+\end{enumerate}
+
+\subsection{Julio L\'opez}
+
+\subsubsection*{Formação}
+\begin{itemize}\setlength\itemsep{1pt}
+\item 1979 a 1983, Graduação em Matemática, Universidad del Valle.
+\item 1983 a 1985, Mestrado  em Matemática Aplicada, Universidad del Valle.
+\item 1995 a 2000, Doutorado em Ciência da Computação no Instituto da Computação da UNICAMP com período sanduíche em University of Waterloo.
+\item 2009, Livre-docência pela UNICAMP.
+\end{itemize}
+
+\subsubsection*{Histórico profissional}
+
+Professor Associado no Instituto de Computação da Universidade Estadual de Campinas. Tem experiência na área de Ciência da Computação, com ênfase em Engenharia Criptográfica, atuando principalmente nos seguintes temas: algoritmos criptográficos, implementação hardware/software de criptossistemas de curvas elípticas, bibliotecas criptográficas, aritmética computacional e aplicações criptográficas.
+
+\subsubsection*{Publicações relevantes}
+\begin{enumerate}\setlength\itemsep{1pt}
+\item Danilo Câmara, Conrado PL Gouvêa, Julio López, and Ricardo Dahab. \emph{Fast software polynomial multiplication on arm processors using the neon engine}. In Security Engineering and Intelligence Informatics, pages 137-154. Springer, 2013.
+
+\item D. F. Aranha, J. López, and D. Hankerson. \emph{Efficient Software Implementation of Binary Field Arithmetic Using Vector Instruction Sets}. In M. Abdalla and P. S. L. M. Barreto, editors, The First International Conference on Cryptology and Information Security (LATINCRYPT 2010), volume 6212 of LNCS, pages 144-161, 2010.
+
+\item Conrado PL Gouvêa, Leonardo B Oliveira, and Julio López. \emph{Efficient software implementation of public-key cryptography on sensor networks using the msp430x microcontroller}. Journal of Cryptographic Engineering, 2(1):19-29, 2012.
+\item C. P. L. Gouv\^ea and J. L\'opez. Implementing GCM on armv8. In Topics in Cryptology - CT-RSA 2015, The Cryptographer's Track at the RSA Conference 2015, San Francisco, CA, USA, April 20-24, 2015. Proceedings, pages 167,180, 2015.
+\end{enumerate}
+
+
+
+\end{document}
