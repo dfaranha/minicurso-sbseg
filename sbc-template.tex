@@ -1,8 +1,11 @@
 \documentclass[12pt]{article}
 
 \usepackage{sbc-template}
-
+\usepackage{verbatim}
+\setcounter{secnumdepth}{4}
 \usepackage{graphicx,url}
+
+\usepackage{amsfonts}
 
 \usepackage[brazil]{babel}   
 %\usepackage[latin1]{inputenc}  
@@ -12,7 +15,9 @@
      
 \sloppy
 
-\title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas\footnote{Esse trabalho é uma versão aprofundada e modernizada do minicurso ministrado no SBSeg 2009 por João Paulo Fernandes Ventura e Ricardo Dahab}}
+%\title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas\footnote{Esse trabalho é uma versão aprofundada e modernizada do minicurso ministrado no SBSeg 2009 por João Paulo Fernandes Ventura e Ricardo Dahab}}
+
+\title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas}
 
 \author{Lucas Zanco Ladeira\inst{1} (apresentador), Erick Nascimento\inst{1}, Jo\~ao Ventura\inst{1}\and \\ Ricardo Dahab\inst{1}, Diego Aranha\inst{1}, Julio Lopez\inst{1}}
 
@@ -28,10 +33,137 @@ Caixa Postal 6176 – 13.084-970 – Campinas – SP – Brasil
 
 \maketitle
      
-\begin{resumo} 
+\begin{resumo}
 Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, buscando a obtenção de informação sigilosa, acesso não-autorizado, entre outros. Tais ataques ocorrem tanto sobre os algoritmos quanto implementações de um sistema. Um tipo de ataque sobre implementações \'e o de canais laterais, que faz uso do vazamento de informa\c{c}\~oes durante a execu\c{c}\~ao de alguma primitiva criptogr\'afica. Ataques dessa categoria utilizam variações do tempo de execução, do consumo de pot\^encia, do campo magn\'etico, entre outros. As contramedidas podem ser baseadas em modificações no software ou no hardware. Neste minicurso, nossa atenção se restringe ao software, voltada para métodos criptográficos simétricos, e os assimétricos baseados em curvas elípticas.
 \end{resumo}
 
+
+
+\section{Introdução}
+
+\section{Encriptação simétrica e hash}
+
+\section{Criptografia de curvas elípticas (ECC)}
+Criptografia de curvas elípticas é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um campo finito $\mathbb{F}$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: o primo utilizado, a curva, aritmética da curva, campo finito $\mathbb{F}_p$ ou $\mathbb{F}_{2^m}$, aritmética do campo finito, fórmula do cálculo da inversa, entre outros.
+
+Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre o campo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto. Sendo que, $\bigtriangleup$ é definido como:
+
+$$ \bigtriangleup = -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6 $$
+$$d_2 = a_1^2 + 4a_2$$
+$$d_4 = 2a_4 + a_1a_3 $$
+$$d_6 = a_3^2 + 4a_6 $$
+$$d_8 = a_1^2a_6 + 4a_2a_6 - a_1a_3a_4 + a_2a_3^2 - a_4^2$$
+
+A curva descrita anteriormente é chamada de equação de Weiertrass, onde a mesma possui uma forma simplificada: $y^2 = x^3 + ax + b$.
+
+\subsection{Curvas NIST e curvas modernas}
+Existe uma infinidade de curvas 
+
+
+\subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
+
+\subsection{Uso de tabelas precomputadas para melhorar desempenho; algoritmos de janela fixa}
+
+\subsection{Algoritmos regulares; atomicidade; montgomery ladder}
+
+\subsection{Protocolos de IoT que envolvem ECC}
+
+\section{Ataques por canais laterais}
+
+\subsection{Canal lateral (SCA) de tempo}
+
+\subsubsection{O que é? Por que é importante?}
+
+\subsubsection{Impacto em IoT}
+
+\subsubsection{Limitações}
+
+\subsection{Canal lateral de potência}
+
+\subsubsection{Características gerais}
+
+\paragraph{Comparação entre canais laterais de potência e de tempo}
+
+\subsubsection{Ataque de potência simples (SPA)}
+
+\subsubsection{Ataque de potência diferencial (DPA)}
+
+\subsubsection{High-order DPA}
+
+\subsubsection{Template attacks}
+
+\section{Ataques e contramedidas para encriptação simétrica e hash}
+
+\subsection{Utilização de CPA em implementação do AES}
+
+\subsection{Contramedida de mascaramento}
+
+\subsection{Ataques e contramedidas para MACs baseados em funções de
+hash}
+
+\section{Ataques e contramedidas para ECC}
+
+\subsection{Níveis em que os ataques SCA podem ser aplicados}
+
+\subsubsection{Operações na curva}
+
+\subsubsection{Operações no protocolo criptográfico}
+
+\subsubsection{Transferência da chave entre diferentes memórias}
+
+\subsubsection{Protocolo em nível de aplicação}
+
+\subsection{Ataques do tipo SPA e contramedidas}
+
+\subsubsection{Ataque SPA clássico}
+
+\subsubsection{Ataques baseados em templates}
+
+\subsubsection{Ataques horizontais baseados em cross-correlation}
+
+\subsubsection{Ataques horizontais não-supervisionados baseados em clustering}
+
+\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita
+inseguro}
+
+\subsubsection{Implementações de tempo constante}
+
+\subsubsection{Implementações resistentes ao SPA}
+
+\subsubsection{Impacto das contramedidas no desempenho}
+
+\subsection{Eficácia de implementação de tempo constante}
+
+\subsubsection{Outros métodos para inviabilizar ataques por tempo}
+
+\subsection{Recuperação de chaves com erros}
+
+\subsubsection{Forma de pontuação de confiança de um SCA}
+
+\subsubsection{Pontuação em implementações protegidas}
+
+\subsubsection{Solução para pontuações baixas de confiabilidade}
+
+\section{Ferramentas}
+
+\subsection{Ferramentas para verificação de código de alto nível em relação à execução em tempo constante}
+
+\subsection{Ferramentas para análise de código assembly em relação à proteção contra ataques de potência}
+
+\subsubsection{Aplicação semi-automática de contramedidas}
+
+\subsection{Métodos empíricos para análise de vazamentos}
+
+\subsubsection{Test Vector Leakage Assessment (TVLA) e suas limitações}
+
+\subsection{Ferramentas para recuperação de chaves com erros}
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+%%%%%%%%%%%%%%%%%%%%% VERSÃO ENVIADA PARA O SBSEG %%%%%%%%%%%
+
+\begin{comment} %%%%%%%%%%%%%%%%%%%%%% COMENTADA %%%%%%%%%%%%
 \section{Dados Gerais}
 \subsection{Objetivos do minicurso}
 O estudo de criptografia de curvas el\'ipticas (ECC) \'e muito importante nos dias atuais, já que possibilita o uso de chaves bem menores do que algoritmos como o RSA, mantendo o mesmo n\'ivel de segurança. Bibliotecas como OpenSSL, por exemplo, disponibilizam implementações de ECC para  assinatura digital (ECDSA) e troca de chaves com o esquema de Diffie-Hellman (ECDH).
@@ -291,6 +423,6 @@ Professor Associado no Instituto de Computação da Universidade Estadual de Cam
 \item C. P. L. Gouv\^ea and J. L\'opez. Implementing GCM on armv8. In Topics in Cryptology - CT-RSA 2015, The Cryptographer's Track at the RSA Conference 2015, San Francisco, CA, USA, April 20-24, 2015. Proceedings, pages 167,180, 2015.
 \end{enumerate}
 
-
+\end{comment}
 
 \end{document}
