@@ -34,6 +34,7 @@ Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, 
 
 \section{Dados Gerais}
 \subsection{Objetivos do minicurso}
+Curvas
 O estudo de criptografia de curvas el\'ipticas (ECC) \'e muito importante nos dias atuais, já que possibilita o uso de chaves bem menores do que algoritmos como o RSA, mantendo o mesmo n\'ivel de segurança. Bibliotecas como OpenSSL, por exemplo, disponibilizam implementações de ECC para  assinatura digital (ECDSA) e troca de chaves com o esquema de Diffie-Hellman (ECDH).
 
 Existem na literatura vários ataques de canal lateral a algoritmos de curvas el\'ipticas, o que obriga a implementa\c{c}\~ao de contramedidas de enrobustecimento, antes da entrada de tais métodos em produção. Tais ataques, em geral, visam a descoberta de chaves criptográficas, tendo como fonte de informação as diferenças de tratamento dado pelo código aos bits da chave: um desvio condicional ao valor de um bit pode levar a diferentes comportamentos que, por sua vez, produzem diferentes vazamentos de informação, seja no tempo de execução, consumo de potência, etc. 
