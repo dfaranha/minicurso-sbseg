@@ -103,47 +103,7 @@ Existe uma infinidade de curvas
 hash}
 
 \section{Ataques e contramedidas para ECC}
-
-\subsection{Níveis em que os ataques SCA podem ser aplicados}
-
-\subsubsection{Operações na curva}
-
-\subsubsection{Operações no protocolo criptográfico}
-
-\subsubsection{Transferência da chave entre diferentes memórias}
-
-\subsubsection{Protocolo em nível de aplicação}
-
-\subsection{Ataques do tipo SPA e contramedidas}
-
-\subsubsection{Ataque SPA clássico}
-
-\subsubsection{Ataques baseados em templates}
-
-\subsubsection{Ataques horizontais baseados em cross-correlation}
-
-\subsubsection{Ataques horizontais não-supervisionados baseados em clustering}
-
-\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita
-inseguro}
-
-\subsubsection{Implementações de tempo constante}
-
-\subsubsection{Implementações resistentes ao SPA}
-
-\subsubsection{Impacto das contramedidas no desempenho}
-
-\subsection{Eficácia de implementação de tempo constante}
-
-\subsubsection{Outros métodos para inviabilizar ataques por tempo}
-
-\subsection{Recuperação de chaves com erros}
-
-\subsubsection{Forma de pontuação de confiança de um SCA}
-
-\subsubsection{Pontuação em implementações protegidas}
-
-\subsubsection{Solução para pontuações baixas de confiabilidade}
+\include{sca-ecc}
 
 \section{Ferramentas}
 
@@ -154,10 +114,11 @@ inseguro}
 \subsubsection{Aplicação semi-automática de contramedidas}
 
 \subsection{Métodos empíricos para análise de vazamentos}
-
-\subsubsection{Test Vector Leakage Assessment (TVLA) e suas limitações}
+\include{leakage-assessment}
 
 \subsection{Ferramentas para recuperação de chaves com erros}
+\include{keyrecv-tools}
+
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
