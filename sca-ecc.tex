@@ -20,24 +20,68 @@
 
 \subsubsection{Ataque SPA clássico}
 
+%TODO
+\begin{comment}
+1.	Ataque SPA à alg. ECSM binário left-to-right (Dbl-and-Add not Always)
+	a.	Se impl não é de tempo constante, então é possível realizar ataque de tempo.
+		i.	P.ex., se usa if and else, então pode-se determinar a cada iteração qual bloco, if ou else, é tomado.
+b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1).
+\end{comment}
+
+%TODO 2. Argumentar que é fortemente desejável que as implementações sejam de tempo constante, de modo a ser uma base para a implementação das outra contramedidas para power analysis. 
+
+\begin{comment}
+	3.	Ataque SPA à alg. ECSM Dbl-and-Add Always
+	a.	Let’s say that R_0 is the dummy register.
+	b.	Then, if i==0, then a dummy addition is performed, with the output stored in R_i
+	i.	R_i  = R_i + P 
+	ii.	OR   R_i = R_{1-i} + P
+	c.	%%% TODO %%%: explicar como atacar com SPA.
+\end{comment}
+
+\subsubsection{Contramedidas}
+
+
+\begin{comment} % === CONTRAMEDIDAS ===
+4.	TODO: apresentar uma contramedida de cada vez entre subseções com ataques, mostrando como ela protege contra um determinado ataque.
+	a.	CM1 - Scalar Randomization (SR)
+	b.	CM2 - Proj. Coord. Randomization and Re-randomization (CRR)
+	c.	CM3 - Point Blinding (PB) 
+	d.	CM4 – Scalar Splitting (SS)
+\end{comment}
+
+
+\begin{comment} % === Ataques SCA contra ECC devem ser do tipo single-trace  ===
+5.	Explicar porque no contexto de PKC (RSA e ECC) não fazem sentido ataques que envolvem mais de um trace, como p.ex., DPA.
+\end{comment}
+
+
+\begin{comment}  % === ESTRUTURA ORIGINAL ===
 \subsubsection{Ataques baseados em templates}
-
 \subsubsection{Ataques horizontais baseados em cross-correlation}
-
 \subsubsection{Ataques horizontais não-supervisionados baseados em clustering}
 
-\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita
-inseguro}
-
+\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita inseguro}
 \subsubsection{Implementações de tempo constante}
-
 \subsubsection{Implementações resistentes ao SPA}
-
 \subsubsection{Impacto das contramedidas no desempenho}
 
 \subsection{Eficácia de implementação de tempo constante}
-
 \subsubsection{Outros métodos para inviabilizar ataques por tempo}
+\end{comment}
 
-\subsection{Recuperação de chaves com erros}
-\include{keyrecv}
+
+\subsection{Ataque SPA à alg. ECSM atômico}
+%	a.	TODO: quais formulas usar?
+
+\subsection{Ataque SPA a alg. Mont Ladder com SR}
+
+\subsection{Ataque template SPA à alg. Mont Ladder c/ SR+CRR}
+%TODO: Copy-and-paste do meu paper no SAC 2016.
+
+\subsection{Ataque HCA à alg. Mont Ladder c/ SR+CRR}
+%TODO: Copy-and-paste meu texto sobre HCA.
+
+\subsection{Ataque template versus Ataque horizontal}
+%TODO: Ataques template versus HCA: vantagens e desvantagens de cada um.
+% a.	Aplicabilidade: até então estes ataques só foram demonstrados em MCUs embarcados de 8, 16 e 32 bits, devido ao alto nível de SNR nos traces de potência e EM capturados nestas CPUs. 

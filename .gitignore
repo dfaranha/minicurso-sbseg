@@ -2,3 +2,5 @@
 *.synctex.gz
 *.pdf
 *.log
+/sbc-template.bbl
+/sbc-template.blg
