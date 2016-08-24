@@ -12,6 +12,45 @@
 \usepackage[utf8]{inputenc}  
 % UTF-8 encoding is recommended by ShareLaTex
 
+%==========================================================
+% ToDo notes
+%==========================================================
+\usepackage{todonotes}
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+%\usepackage[disable]{todonotes}   % uncomment for final version
+% \presetkeys{todonotes}{inline}{}  %% Make todo notes inline by default.
+\newcommandx{\todobase}[3][2=noinline]{\todo[fancyline,linecolor=#1,backgroundcolor=#1!25,bordercolor=#1,#2]{#3}}
+%\newcommand{\myreminder}[1]{\todo[inline,linecolor=cyan,backgroundcolor=cyan!25,bordercolor=cyan]{#1}}
+%\newcommand{\NSLDS}[1]{\todo[inline,linecolor=cyan,backgroundcolor=cyan!25,bordercolor=cyan]{#1}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[fancyline,disable,#1]{#2}}
+\newcommandx{\erick}[2][1=]{\todobase{yellow}[#1]{#2}}
+\newcommandx{\lucas}[2][1=]{\todobase{green}[#1]{#2}}
+\newcommandx{\ricardo}[2][1=]{\todobase{blue}[#1]{#2}}
+
+%==========================================================
+% Finite Field
+%==========================================================
+\newcommand{\Fp}{$\mathbb{F}_p$}
+\newcommand{\Fpfull}{$\mathbb{F}_{2^{255}-19}$}
+%\ceil and \floor
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+% alias for assignment arrow
+\newcommand{\rcv}{\leftarrow}
+
+%==========================================================
+% Algorithms
+%==========================================================
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire} {\textbf{\textsc{Inputs:}}}
+\renewcommand{\algorithmicensure}  {\textbf{\textsc{Outputs:}}}
+\usepackage{enumitem}
+
+%==========================================================
+
      
 \sloppy
 

@@ -16,28 +16,65 @@
 
 %TODO: Protocolo em nivel de aplicacao
 
-\subsection{Ataques do tipo SPA e contramedidas}
+\subsection{Ataques de tempo e SPA ao algoritmo double-and-add-not-always}
 
-\subsubsection{Ataque SPA clássico}
+\subsubsection{Ataque de tempo ao algoritmo double-and-add-not-always}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
 
-%TODO
 \begin{comment}
 1.	Ataque SPA à alg. ECSM binário left-to-right (Dbl-and-Add not Always)
 	a.	Se impl não é de tempo constante, então é possível realizar ataque de tempo.
 		i.	P.ex., se usa if and else, então pode-se determinar a cada iteração qual bloco, if ou else, é tomado.
-b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1).
+	b. O ataque de tempo em~\cite{Kocher96} ao RSA pode ser aplicado no contexto de ECC. Segue abaixo a ideia do ataque (baseada no survey de ~\cite{Danger2013}, Sec. 3.2.1).
+	
+	O atacante coleta o tempo de execução de diferentes ECSMs com o mesmo escalar e diferentes pontos base. Para cada ECSM, ele simula a computação usando um simulador de software com exatamente a mesma implementação do chip alvo, "chutando" o valor do bit $i$ do escalar. Suponha, sem perda de generalidade, que a hipótese é de que o valor do bit é 0.  Ele separa os diferentes tempos de execução em dois conjuntos, S_1 e S_2. Se, a iteração
+	
+	%TODO: CONT HERE
+	
+
+[Kocher96] Kocher, P.C.: Timing attacks on implementations of Difﬁe–
+Hellman, RSA, DSS, and other systems. In: Proceedings of CRYPTO’96, LNCS, vol. 1109. Springer, Berlin, pp. 104–113
+(1996)
+\end{comment}
+
+\subsubsection{Ataque SPA ao algoritmo double-and-add-not-always}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+
+\begin{comment}
+b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1). Um ataque deste tipo segmenta/divide o trace de potencia de uma execucao do ECSM em subtraces, cada um contendo uma operacao de ponto (ADD ou DBL). Se as tempo(ADD) != tempo(DBL), então o comprimento dos subtraces revela onde estão os ADDs e consequentemente os bits do escalar. Se tempo(ADD) == tempo(DBL) e uma formula unificada para ADD and DBL é utilizada, então, se for aplicada correlação (coeficiente de correlacao de Pearson) entre todos os pares de subtraces, o resultado será que a correlação será mais alta para os pares de subtraces cuja operação correspondente é a mesma (i.e., (ADD,ADD) ou (DBL,DBL)), identificando portanto as operações de ponto e consequentemente os bits do escalar.
 \end{comment}
 
 %TODO 2. Argumentar que é fortemente desejável que as implementações sejam de tempo constante, de modo a ser uma base para a implementação das outra contramedidas para power analysis. 
 
-\begin{comment}
-	3.	Ataque SPA à alg. ECSM Dbl-and-Add Always
-	a.	Let’s say that R_0 is the dummy register.
-	b.	Then, if i==0, then a dummy addition is performed, with the output stored in R_i
-	i.	R_i  = R_i + P 
-	ii.	OR   R_i = R_{1-i} + P
-	c.	%%% TODO %%%: explicar como atacar com SPA.
-\end{comment}
+\subsection{Double-and-add-always algorithm of Coron~\cite{Coron1999}}
+
+\erick[inline]{Lucas: traduzir esta secao}The {\it double-and-add-always} algorithm of Coron~\cite{Coron1999} (Algorithm~\ref{Double-and-add-Coron}) uses a dummy point addition when the scalar bit $k_i$ is $0$, such that the sequence of operations to compute the scalar multiplication is independent of the value of the secret scalar.
+
+\begin{algorithm}[h] %\scriptsize %\footnotesize
+	\caption{\small{\textit{Double-and-add always} algorithm resistant against SPA}}
+	\label{Double-and-add-Coron}
+	\begin{algorithmic}[1]
+		\REQUIRE  Point $\textbf{P} \in E(\mathbb{F}_q),$ $k=(k_{n-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+		\ENSURE  $Q=[k] \cdot P$\\
+		\STATE $R_0\leftarrow P_{\infty}$   \\
+		\FOR{$i$ \textbf{from} $n-1$ \textbf{to} $0$} 
+		\STATE $R_0\leftarrow 2R_0$  \\
+		\STATE $R_1\leftarrow R_0+P$\\ \label{Paso_R_1_Double-and-add-Coron}
+		\STATE $R_0\leftarrow R_{k_i}$\label{Step5Double-and-add-Coron} \\
+		\ENDFOR
+		\STATE return $R_0$\\
+	\end{algorithmic}
+\end{algorithm}
+
+Therefore an adversary cannot, in principle, guess the value of bit $k_i$ by SPA. A drawback of this method is its low efficiency. It requires $nA+nD$ field operations, a $33\%$ increase in the amount of field operations in comparison to the (unprotected) binary left-to-right algorithm.
+
+\subsubsection{Fouque and Valette's Doubling Attack \cite{CHES:FouVal03}}\label{Fouque-Valette-DoublingAttack}
+The doubling attack of Fouque-Valette~\cite{CHES:FouVal03} is based on the fact that it is possible to detect if two intermediate values are equal when the algorithm computes the scalar multiplication for points chosen points $P$ and $2P.$ Several algorithms protected against SPA are vulnerable to Fouque and Valette's attack, such as the classic binary left-to-right algorithm, including those derived from it, such as Coron's double-and-add-always algorithm.
+
+%In ~\textit{double-and-add-always} algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_k(P) = \sum_{i=0}^{k}d_{n-i}2^{k-i} P=\sum_{i=0}^{k-1}d_{n-i}2^{k-1-i}(2P)+d_{n-k}P= S_{k-1}(2P)+d_{n-k}P$. So, the intermediate result of the algorithm at step $k$ when given input $P$ will be equal to the intermediate result at step $k-1$ when given input $2P$, if and only if, $d_{n-k}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $k+1$ for $P$ and at step $k$ for $2P$ to recover the bit $d_{n-k}.$ If both computations are identical, $d_{n-k}=0$, otherwise $d_{n-k}=1$.
+In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. So, the intermediate result of the algorithm at step $m$ when given input $P$ will be equal to the intermediate result at step $m-1$ when given input $2P$, if and only if, $k_{n-m}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $m+1$ for $P$ and at step $m$ for $2P$ to recover the bit $k_{n-m}.$ If both computations are identical, $k_{n-m}=0$, otherwise $k_{n-m}=1$. It has been shown that with only two scalar multiplication requests chosen by the attacker, it is possible to recover all the bits of the scalar~\footnote{The attacker collects one power trace for the computation of $kP$ and one for the computation of $k(2P)$. For each iteration $m=1,...,n$, he runs the attack as described and finds $k_{n-m}$.}.
+%%\vspace{-0.5cm}
+
 
 \subsubsection{Contramedidas}
 
