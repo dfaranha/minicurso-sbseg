@@ -142,24 +142,19 @@ Existe uma infinidade de curvas
 hash}
 
 \section{Ataques e contramedidas para ECC}
-\include{sca-ecc}
+\input{sca-ecc}
 
-\section{Recuperação de chaves com erros}
-\include{keyrecv}
+\input{keyrecv}
 
 \section{Ferramentas}
 
 \subsection{Ferramentas para verificação de código de alto nível em relação à execução em tempo constante}
 
-\subsection{Ferramentas para análise de código assembly em relação à proteção contra ataques de potência}
+\input{power-analysis-verification-tools}
 
-\subsubsection{Aplicação semi-automática de contramedidas}
+\input{leakage-assessment}
 
-\subsection{Métodos empíricos para análise de vazamentos}
-\include{leakage-assessment}
-
-\subsection{Ferramentas para recuperação de chaves com erros}
-\include{keyrecv-tools}
+\input{keyrecv-tools}
 
 
 \bibliographystyle{sbc}

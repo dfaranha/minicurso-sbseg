@@ -72,20 +72,32 @@ Therefore an adversary cannot, in principle, guess the value of bit $k_i$ by SPA
 The doubling attack of Fouque-Valette~\cite{CHES:FouVal03} is based on the fact that it is possible to detect if two intermediate values are equal when the algorithm computes the scalar multiplication for points chosen points $P$ and $2P.$ Several algorithms protected against SPA are vulnerable to Fouque and Valette's attack, such as the classic binary left-to-right algorithm, including those derived from it, such as Coron's double-and-add-always algorithm.
 
 %In ~\textit{double-and-add-always} algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_k(P) = \sum_{i=0}^{k}d_{n-i}2^{k-i} P=\sum_{i=0}^{k-1}d_{n-i}2^{k-1-i}(2P)+d_{n-k}P= S_{k-1}(2P)+d_{n-k}P$. So, the intermediate result of the algorithm at step $k$ when given input $P$ will be equal to the intermediate result at step $k-1$ when given input $2P$, if and only if, $d_{n-k}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $k+1$ for $P$ and at step $k$ for $2P$ to recover the bit $d_{n-k}.$ If both computations are identical, $d_{n-k}=0$, otherwise $d_{n-k}=1$.
-In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. So, the intermediate result of the algorithm at step $m$ when given input $P$ will be equal to the intermediate result at step $m-1$ when given input $2P$, if and only if, $k_{n-m}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $m+1$ for $P$ and at step $m$ for $2P$ to recover the bit $k_{n-m}.$ If both computations are identical, $k_{n-m}=0$, otherwise $k_{n-m}=1$. It has been shown that with only two scalar multiplication requests chosen by the attacker, it is possible to recover all the bits of the scalar~\footnote{The attacker collects one power trace for the computation of $kP$ and one for the computation of $k(2P)$. For each iteration $m=1,...,n$, he runs the attack as described and finds $k_{n-m}$.}.
+In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. So, the intermediate result of the algorithm at step $m$ when given input $P$ will be equal to the intermediate result at step $m-1$ when given input $2P$, if and only if, $k_{n-m}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $m+1$ for $P$ and at step $m$ for $2P$ to recover the bit $k_{n-m}.$ If both computations are identical, $k_{n-m}=0$, otherwise $k_{n-m}=1$. It has been shown that with only two scalar multiplication requests chosen by the attacker, it is possible to recover all the bits of the scalar.~\footnote{The attacker collects one power trace for the computation of $kP$ and one for the computation of $k(2P)$. For each iteration $m=1,...,n$, he runs the attack as described and finds $k_{n-m}$.}
 %%\vspace{-0.5cm}
 
 
-\subsubsection{Contramedidas}
+\subsection{Contramedidas}
 
+% TODO: apresentar uma contramedida de cada vez entre subseções com ataques, mostrando como ela protege contra um determinado ataque.
 
 \begin{comment} % === CONTRAMEDIDAS ===
-4.	TODO: apresentar uma contramedida de cada vez entre subseções com ataques, mostrando como ela protege contra um determinado ataque.
 	a.	CM1 - Scalar Randomization (SR)
 	b.	CM2 - Proj. Coord. Randomization and Re-randomization (CRR)
 	c.	CM3 - Point Blinding (PB) 
 	d.	CM4 – Scalar Splitting (SS)
 \end{comment}
+
+\subsubsection{Scalar Randomization (SR)}
+\erick[inline]{Copiar conteudo slide SAC or UB}
+
+\subsubsection{Projective Coordinates (Re-)Randomization (CR)}
+\erick[inline]{Copiar conteudo slide SAC or UB}
+
+\subsubsection{Point Blinding (PB)}
+\erick[inline]{Copiar conteudo slide UB}
+
+\subsubsection{Scalar Splitting (SS)}
+\erick[inline]{TODO}
 
 
 \begin{comment} % === Ataques SCA contra ECC devem ser do tipo single-trace  ===
@@ -107,18 +119,25 @@ In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}
 \subsubsection{Outros métodos para inviabilizar ataques por tempo}
 \end{comment}
 
+\subsection{Ataque SPA à alg. Montgomery Ladder com SR}
 
-\subsection{Ataque SPA à alg. ECSM atômico}
-%	a.	TODO: quais formulas usar?
+\erick[inline]{Descrever idéia de online template attack (OTA)~\cite{BatinaChmielewski2014}}
 
-\subsection{Ataque SPA a alg. Mont Ladder com SR}
+\subsection{Ataque SPA à alg. ECSM atômico com SR}
+\erick[inline]{Explicar como online template attack (OTA)~\cite{BatinaChmielewski2014} pode ser aplicado neste caso}
 
-\subsection{Ataque template SPA à alg. Mont Ladder c/ SR+CRR}
-%TODO: Copy-and-paste do meu paper no SAC 2016.
+\subsection{Ataque template SPA à alg. Montgomery Ladder com SR + CRR}
 
-\subsection{Ataque HCA à alg. Mont Ladder c/ SR+CRR}
-%TODO: Copy-and-paste meu texto sobre HCA.
+\erick[inline]{Copy-and-paste de partes do meu paper no SAC 2016.}
 
-\subsection{Ataque template versus Ataque horizontal}
-%TODO: Ataques template versus HCA: vantagens e desvantagens de cada um.
-% a.	Aplicabilidade: até então estes ataques só foram demonstrados em MCUs embarcados de 8, 16 e 32 bits, devido ao alto nível de SNR nos traces de potência e EM capturados nestas CPUs. 
+\subsection{Ataque HCA à alg. Montgomery Ladder c/ SR + CRR}
+\erick[inline]{Copy-and-paste meu texto sobre HCA.}
+
+\subsection{Ataques template versus Ataques horizontais}
+\erick[inline]{Ataques template versus HCA: vantagens e desvantagens de cada um.}
+
+\noindent \textbf{Precondições e limitações dos ataques baseados em template}: Ataques baseados em template são os mais poderosos ataques do tipo SCA, segundo a teoria da informação~\cite{ChariRaoRohatgi2003}. No entanto, ataques baseados em template só podem ser realizados quando a contramedida SR não é aplicada ou quando esta pode ser desabilitada durante a fase de criação de templates (profiling), caso contrário os templates não podem ser criados. Uma outra limitação deste tipo de ataque é de que dispositivos diferentes, mesmo que sejam do mesmo modelo, mesmo lote, etc., têm imperfeições únicas resultantes do processo de fabricação as quais resultam em diferenças no consumo de potência e radiação eletromagnética. Tais diferenças podem ser grandes o suficiente de modo que os templates gerados a partir dos traces provenientes do dispositivo de profiling não sejam bons modelos do vazamento observado no dispositivo alvo do ataque, assim reduzindo a taxa de sucesso do ataque~\cite{ElaabidGuilley2012}.
+
+
+\noindent \textbf{Aplicabilidade}. Até então estes ataques só foram demonstrados em CPUs embarcadas de 8, 16 e 32 bits, devido ao alto nível de SNR (Signal-to-Noise Ratio) que pode ser obtido na medição no consumo de potência e EM nestes dispositivos. Quando o SNR é baixo, além de haver pouco vazamento de dados (data-leakage) explorável do valor da chave ou valores intermediários derivados deste, o alinhamento dos subtraces torna-se também inviável, devido a inexistência de intervalos próximos da ocorrência da operação alvo em que as amostras tem valores idênticos ou semelhantes em todos os subtraces.
+
