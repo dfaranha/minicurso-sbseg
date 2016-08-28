@@ -44,7 +44,7 @@ Hellman, RSA, DSS, and other systems. In: Proceedings of CRYPTO’96, LNCS, vol.
 b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1). Um ataque deste tipo segmenta/divide o trace de potencia de uma execucao do ECSM em subtraces, cada um contendo uma operacao de ponto (ADD ou DBL). Se as tempo(ADD) != tempo(DBL), então o comprimento dos subtraces revela onde estão os ADDs e consequentemente os bits do escalar. Se tempo(ADD) == tempo(DBL) e uma formula unificada para ADD and DBL é utilizada, então, se for aplicada correlação (coeficiente de correlacao de Pearson) entre todos os pares de subtraces, o resultado será que a correlação será mais alta para os pares de subtraces cuja operação correspondente é a mesma (i.e., (ADD,ADD) ou (DBL,DBL)), identificando portanto as operações de ponto e consequentemente os bits do escalar.
 \end{comment}
 
-%TODO 2. Argumentar que é fortemente desejável que as implementações sejam de tempo constante, de modo a ser uma base para a implementação das outra contramedidas para power analysis. 
+%TODO 2. Argumentar que é fortemente desejável que as implementações sejam de tempo constante, de modo a ser uma base para a implementação das outra contramedidas para power analysis.
 
 \subsection{Double-and-add-always algorithm of Coron~\cite{Coron1999}}
 
@@ -88,17 +88,70 @@ In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}
 \end{comment}
 
 \subsubsection{Scalar Randomization (SR)}
-\erick[inline]{Copiar conteudo slide SAC or UB}
+	%	\begin{itemize}
+	%\item 
+	At the beginning of the scalar multiplication:
+	\begin{enumerate}
+		\item Randomly select $r\in_R \{0,1\}^n$, for a small $n$. $n=32$ seems to be a reasonable security/efficiency trade-off.
+		\item Compute $k' \rcv k + r |E|$.
+		\item Use $k'$ in place of $k$.
+	\end{enumerate}
+	
+	%\item 
+	\underline{Cost}: generate $n$ (pseudo-)random bits, $n$ iterations to the ECSM, MULs and ADDs to compute $k'$, $n$ bits of SRAM.\\
+	%\item 
+	
+	\underline{Effectiveness}: vulnerable to Online Template Attacks (OTA) {[Batina,2014]}, among others.
+	%	\end{itemize}
 
-\subsubsection{Projective Coordinates (Re-)Randomization (CR)}
-\erick[inline]{Copiar conteudo slide SAC or UB}
+\subsubsection{Projective Coordinates (Re-)Randomization (CR)~\cite{Coron1999}}
+\erick[inline]{Lucas: traduzir e escrever em texto corrido. Descrito para o caso de Montgomery Ladder somente com a coordenada $x$}
+Original projective coordinates used in Mont Ladder: $(X:Z)$.\\
+In the beginning of the ECSM, do:
+\begin{enumerate}
+	\item Generate random $\lambda \mathbb{F}_p \backslash \{0\}$.
+	\item Do $Z_2 \rcv \lambda$ and $X_2 \rcv u \cdot \lambda$, where $u$ is the $x$-coordinate of input point $P$.
+	\item Use $P'=(X_2:Z_2)$ in place of $P$.
+\end{enumerate}	
+\underline{Cost}: generation of $\ceil{log_2(p)}$ random bits, 1 M.\\
+\underline{Effectiveness}: 
+\begin{itemize}
+	\item Resistant to Online Template Attacks~\cite{BatinaChmielewski2014}.
+	\item Can also be applied to Edwards, twisted Edwards and Montgomery curves.
+	\item Can also be used at every ECSM iteration (re-randomization).
+\end{itemize}
 
-\subsubsection{Point Blinding (PB)}
-\erick[inline]{Copiar conteudo slide UB}
+\subsubsection{Point Blinding (PB)~\cite{Coron1999}}
+\erick[inline]{Lucas: traduzir e escrever em texto corrido.}
+Before the first scalar multiplication with scalar $k$:
+\begin{itemize}
+	\item Generate random point $R$ in the subgroup.
+	\item Precompute and store $S = [k]R$.
+\end{itemize}
 
-\subsubsection{Scalar Splitting (SS)}
-\erick[inline]{TODO}
+At the beginning of each scalar multiplication:
+\begin{itemize}
+	\item Compute $T \rcv P + R$.
+	\item Compute $Q \rcv [k] T$.
+	\item Update $R$ and $S$: $R \rcv (-1)^t 2R$ and $S \rcv (-1)^t 2S$, $t \in \{0,1\}$ is randomly chosen.
+	\item Return $W = Q - S$.
+\end{itemize}
 
+\noindent  \underline{Cost}: 2 ECADD, 2 ECDBL, SRAM memory for temps. Probably also writable non-volatile memory to store $R$ and $S$.\\
+\noindent \underline{Effectiveness}: protects against horizontal SVA~\cite{MurdicaGuilley2012}, RPA~\cite{Goubin2003} and ZPA\cite{AkishitaTakagi2003}. Vulnerable to OTA~\cite{BatinaChmielewski2014}.
+
+% Definitions ==========================================================
+% RPA = Refined Power Analysis. Intermed. point with one of the coords zero.
+% ZPA = Zero Value Point Attacks. Itermed. value (e.g., field elem), is zero
+% SVA = Same Value Analysis. Generalization of ZPA when the intermediate value has a special value (not necessarily 0), that can be easily distinguished.
+%==========================================================
+\subsubsection{Scalar Splitting (SS)~\cite{ClavierJoye2001}}
+
+Seja $k$ o escalar original de $n$ bits. Gere um inteiro $k_1 < k$ aleatoriamente e faça $k_2\rcv k - k_1$. Calcule $Q\rcv [k_1]P$, $T\rcv[k_2]P$ e $R\rcv Q + T$. 
+
+\noindent \underline{Custo}: 1 ECSM de $n$ bits e 1 ECADD. Pode ser reduzido se for empregado truque de Shamir para multiplicação escalar dupla (versão regular)~\cite{CietJoye2003}.\\
+\noindent \underline{Eficácia}: Resistente à TA, SPA clássico e CPA clássico.\\
+\noindent \underline{Variantes}: Euclidean splitting~\cite{CietJoye2003} e multiplicative splitting~\cite{TrichinaBelleza2003}, ambas com a mesma eficácia da versão original, também conhecida como additive splitting.
 
 \begin{comment} % === Ataques SCA contra ECC devem ser do tipo single-trace  ===
 5.	Explicar porque no contexto de PKC (RSA e ECC) não fazem sentido ataques que envolvem mais de um trace, como p.ex., DPA.
