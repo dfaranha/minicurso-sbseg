@@ -78,68 +78,18 @@ Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, 
 
 
 
-\section{Introdução}
+\input{introducao}
 
-\section{Encriptação simétrica e hash}
+\input{encsimehash}
 
 \section{Criptografia de curvas elípticas (ECC)}
-Curvas teste
-Criptografia de curvas elípticas é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um campo finito $\mathbb{F}$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: o primo utilizado, a curva, aritmética da curva, campo finito $\mathbb{F}_p$ ou $\mathbb{F}_{2^m}$, aritmética do campo finito, fórmula do cálculo da inversa, entre outros.
-
-Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre o campo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto. Sendo que, $\bigtriangleup$ é definido como:
-
-$$ \bigtriangleup = -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6 $$
-$$d_2 = a_1^2 + 4a_2$$
-$$d_4 = 2a_4 + a_1a_3 $$
-$$d_6 = a_3^2 + 4a_6 $$
-$$d_8 = a_1^2a_6 + 4a_2a_6 - a_1a_3a_4 + a_2a_3^2 - a_4^2$$
-
-A curva descrita anteriormente é chamada de equação de Weiertrass, onde a mesma possui uma forma simplificada: $y^2 = x^3 + ax + b$.
-
-\subsection{Curvas NIST e curvas modernas}
-Existe uma infinidade de curvas 
-
-
-\subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
-
-\subsection{Uso de tabelas precomputadas para melhorar desempenho; algoritmos de janela fixa}
-
-\subsection{Algoritmos regulares; atomicidade; montgomery ladder}
-
-\subsection{Protocolos de IoT que envolvem ECC}
+\input{ecc}
 
 \section{Ataques por canais laterais}
-
-\subsection{Canal lateral (SCA) de tempo}
-
-\subsubsection{O que é? Por que é importante?}
-
-\subsubsection{Impacto em IoT}
-
-\subsubsection{Limitações}
-
-\subsection{Canal lateral de potência}
-
-\subsubsection{Características gerais}
-
-\paragraph{Comparação entre canais laterais de potência e de tempo}
-
-\subsubsection{Ataque de potência simples (SPA)}
-
-\subsubsection{Ataque de potência diferencial (DPA)}
-
-\subsubsection{High-order DPA}
-
-\subsubsection{Template attacks}
+\input{sca}
 
 \section{Ataques e contramedidas para encriptação simétrica e hash}
-
-\subsection{Utilização de CPA em implementação do AES}
-
-\subsection{Contramedida de mascaramento}
-
-\subsection{Ataques e contramedidas para MACs baseados em funções de
-hash}
+\input{attacksimehash}
 
 \section{Ataques e contramedidas para ECC}
 \input{sca-ecc}
