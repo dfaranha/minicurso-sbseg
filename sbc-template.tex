@@ -5,30 +5,55 @@
 \setcounter{secnumdepth}{4}
 \usepackage{graphicx,url}
 
-\usepackage{amsmath}
 \usepackage{amsfonts}
-\usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage{amsmath}
 \usepackage{multicol}
-
-
-% Algorithmic modifications
-\makeatletter
-\newcommand{\ALOOP}[1]{\ALC@it\algorithmicloop\ #1%
-  \begin{ALC@loop}}
-\newcommand{\ENDALOOP}{\end{ALC@loop}\ALC@it\algorithmicendloop}
-\renewcommand{\algorithmicrequire}{\textbf{Entrada:}}
-\renewcommand{\algorithmicensure}{\textbf{Sa\'ida:}}
-\newcommand{\algorithmicbreak}{\textbf{break}}
-\newcommand{\BREAK}{\STATE \algorithmicbreak}
-\makeatother
 
 \usepackage[brazil]{babel}   
 %\usepackage[latin1]{inputenc}  
 \usepackage[utf8]{inputenc}  
 % UTF-8 encoding is recommended by ShareLaTex
 
+%==========================================================
+% ToDo notes
+%==========================================================
+\usepackage{todonotes}
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+%\usepackage[disable]{todonotes}   % uncomment for final version
+% \presetkeys{todonotes}{inline}{}  %% Make todo notes inline by default.
+\newcommandx{\todobase}[3][2=noinline]{\todo[fancyline,linecolor=#1,backgroundcolor=#1!25,bordercolor=#1,#2]{#3}}
+%\newcommand{\myreminder}[1]{\todo[inline,linecolor=cyan,backgroundcolor=cyan!25,bordercolor=cyan]{#1}}
+%\newcommand{\NSLDS}[1]{\todo[inline,linecolor=cyan,backgroundcolor=cyan!25,bordercolor=cyan]{#1}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[fancyline,disable,#1]{#2}}
+\newcommandx{\erick}[2][1=]{\todobase{yellow}[#1]{#2}}
+\newcommandx{\lucas}[2][1=]{\todobase{green}[#1]{#2}}
+\newcommandx{\ricardo}[2][1=]{\todobase{blue}[#1]{#2}}
 
+%==========================================================
+% Finite Field
+%==========================================================
+\newcommand{\Fp}{$\mathbb{F}_p$}
+\newcommand{\Fpfull}{$\mathbb{F}_{2^{255}-19}$}
+%\ceil and \floor
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+% alias for assignment arrow
+\newcommand{\rcv}{\leftarrow}
+
+%==========================================================
+% Algorithms
+%==========================================================
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire} {\textbf{\textsc{Inputs:}}}
+\renewcommand{\algorithmicensure}  {\textbf{\textsc{Outputs:}}}
+\usepackage{enumitem}
+
+%==========================================================
+
+     
 \sloppy
 
 %\title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas\footnote{Esse trabalho é uma versão aprofundada e modernizada do minicurso ministrado no SBSeg 2009 por João Paulo Fernandes Ventura e Ricardo Dahab}}
@@ -52,249 +77,44 @@ Caixa Postal 6176 – 13.084-970 – Campinas – SP – Brasil
 \begin{resumo}
 Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, buscando a obtenção de informação sigilosa, acesso não-autorizado, entre outros. Tais ataques ocorrem tanto sobre os algoritmos quanto implementações de um sistema. Um tipo de ataque sobre implementações \'e o de canais laterais, que faz uso do vazamento de informa\c{c}\~oes durante a execu\c{c}\~ao de alguma primitiva criptogr\'afica. Ataques dessa categoria utilizam variações do tempo de execução, do consumo de pot\^encia, do campo magn\'etico, entre outros. As contramedidas podem ser baseadas em modificações no software ou no hardware. Neste minicurso, nossa atenção se restringe ao software, voltada para métodos criptográficos simétricos, e os assimétricos baseados em curvas elípticas.
 \end{resumo}
-
 \pagebreak
-\section{Introdução}
 
-\pagebreak
-\section{Encriptação simétrica e hash}
 
+\input{introducao}
 \pagebreak
+
+\input{encsimehash}
+\pagebreak
+
 \section{Criptografia de curvas elípticas (ECC)}
-Criptografia de curvas elípticas é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um corpo finito $\mathbb{F}$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: o primo utilizado, a curva, corpo finito $\mathbb{F}_p$ ou $\mathbb{F}_{2^m}$, o mapeamento dos pontos na curva, entre outros. 
-
-As operações mais simples executadas em uma curva é a adição de pontos e a duplicação de um ponto, sendo $R = P + Q$ e $R = P + P$ respectivamente. Dependendo da curva utilizada é possível executar essas operações de maneira mais eficiente podendo diferenciar o mapeamento desses pontos na curva.
-
-Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre um corpo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto. Sendo que, $\bigtriangleup$ é definido como:
-
-\begin{align*}
-\bigtriangleup &= -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6 \\
-d_2 &= a_1^2 + 4a_2 \\
-d_4 &= 2a_4 + a_1a_3 \\ 
-d_6 &= a_3^2 + 4a_6 \\
-d_8 &= a_1^2a_6 + 4a_2a_6 - a_1a_3a_4 + a_2a_3^2 - a_4^2
-\end{align*}
-
-A curva descrita anteriormente é chamada de equação de Weiertrass, onde a mesma possui uma forma simplificada: $y^2 = x^3 + ax + b$. Essa equação é utilizada como ponto inicial para descrição de várias curvas, sendo que pode-se variar os valores de $a$ e $b$ para obter diferentes curvas. Durante a escolha de qual utilizar é possível verificar a facilidade de implementação, possibilidade de paralelização, e também o desempenho da mesma. 
-
-O desempenho está ligado as operações executadas, como por exemplo o método Montgomery-Ladder utilizado durante a multiplicação escalar, e pelas instruções do processador que facilitam a aritmética. Na seção a seguir iremos exibir as curvas com mais ocorrência na literatura, e algumas propriedades de cada uma.
-
-\subsection{Curvas NIST e curvas modernas}
-Primeiramente iremos apresentar as curvas NIST, essas curvas são recomendações de utilização feitas pelo NIST (National Institute of Standards and Technlogy), situado nos Estados Unidos da América. As mesmas foram geradas de forma pseudo-aleatória pela NSA, e possuem ao todo são 10 corpos finitos sendo 5 corpos primos ($\mathbb{F}_p$) e 5 corpos binários ($\mathbb{F}_{2^m}$) \cite{Brown2001}.
-
-Os corpos foram recomendados com o foco no desempenho das curvas, facilitando a aritmética utilizada. Todavia existe uma resistência da comunidade em adotar o que foi proposto, pela incerteza na existência de vulnerabilidades, inseridas para obter informações secretas pelo governo norte americano. Os corpos finitos recomendados podem ser observados a seguir, sendo P os corpos primos e B as corpos binários:
-
-\begin{multicols}{2}
-\begin{itemize}
-\item P-192 \\ $\mathbb{F}_{192}$ $p = 2^{192} - 2^{64} - 1$; 
-\item P-224 \\ $\mathbb{F}_{224}$ $p = 2^{224} - 2^{96} + 1$;
-\item P-256 \\ $\mathbb{F}_{256}$ $p = 2^{256} - 2^{224} + 2^{192} + 2^{96} - 1$;
-\item P-384 \\ $\mathbb{F}_{384}$ $p = 2^{384} - 2^{128} - 2^{96} + 2^{32} - 1$;
-\item P-521 \\ $\mathbb{F}_{521}$ $p = 2^{521} - 1$;
-\item B-163 \\ $\mathbb{F}_{2^{163}}$ $f(x) = x^{163} + x^7 + x^6 + x^3 + 1$;
-\item B-233 \\ $\mathbb{F}_{2^{233}}$ $f(x) = x^{233} + x^{74} + 1$;
-\item B-283 \\ $\mathbb{F}_{2^{283}}$ $f(x) = x^{283} + x^{12} + x^7 + x^5 + 1$;
-\item B-409 \\ $\mathbb{F}_{2^{409}}$ $f(x) = x^{409} + x ^{87} + 1$;
-\item B-571 \\ $\mathbb{F}_{2^{571}}$ $f(x) = x^{571} + x^{10} + x^5 + x^2 + 1$.
-\end{itemize}
-\end{multicols}
-
-Nesses corpos finitos primos é recomendado utilizar as curvas pseudo-aleatórias, já no caso dos corpos binários recomenda-se, além da utilização das curvas pseudo-aleatórias, o uso da curva de Koblitz. A geração de curvas pseudo-aleatórias segue três passos: primeiramente é gerada uma semente, após a partir da semente é gerada uma curva. Por fim, é verificado se a curva gerada é resistente aos ataques conhecidos, caso não seja o processo é repetido.
-
-Existem duas curvas elípticas que estão se destacando considerando o desempenho obtido junto à técnicas de multiplicação escalar eficiente, redução modular, entre outras. Elas são a curva de Montgomery e a curva de Edwards, onde é possível encontrar implementações resistentes a ataques de canal lateral como ataque por tempo e ataque por cache.
-
-A curva de Montgomery tem a seguinte equação: $E: y^2 = x^3 + Ax^2 + x$. O valor do parâmetro $A$ pode ser alterado para melhorar o desempenho das multiplicações escalares. Iremos tratar a utilização dessa curva com o primo $25519$ $(2^{255}-19)$ e o valor de $A = 486662$, dessa maneira a curva é definida sobre o corpo $\mathbb{F}_{2^{255}-19}$ \cite{Dull:2015:HCM:2834659.2834708}. Considerando o corpo finito utilizado essa curva é chamada de 25519, onde os pontos na curva são mapeados como $P = (X : Z)$. 
-
-A curva de Edwards tem a fórmula: $E: -x^2 + y^2 = 1 + dx^2y^2$ \cite{Bernstein2012}. Nessa curva a soma de dois pontos segue a \textit{Edwards addition law}:
-$$ (x_1,y_1) + (x_2,y_2) = (\frac{x_1y_2 + x_2y_1}{1 + xd_1x_2y_1y_2},\frac{y_1y_2 + x_1x_2}{1 - dx_1x_2y_1y_2}) $$%//TODO
-
-Uma contramedida encontrada de fácil implementação para se tornar resistente a alguns ataques de canal lateral, como ataque de cache e hyperthreading, é possível apenas não escrever índices de dados secretos na memória RAM. Considerando que os ataques mencionados dependem das informações obtidas pela utilização dessas memórias eles não seriam efetivos. 
-
-Um outro ataque conhecido é o ataque por tempo, o mesmo analisa o tempo de execução da primitiva criptográfico que utiliza a chave secreta, para tentar obter os bits da chave. A resistência do algoritmo está baseada na execução em tempo constante, o que pode ser obtido sem a utilização de branchs condicionais. Na seção 6 do minicurso iremos apresentar melhor essa contramedida e a eficácia da mesma.
-
-\subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
-
-% Left-to-right binário (a.k.a. Point and Add Not-Always).
-% Left-to-right binário com contramedida “Dummy Adds” de Coron  (a.k.a. Point and Add Always).
-% Atomic Point and Add. Apresentar a idéia geral, e talvez um conjunto de fórmulas para uma dada curva como exemplo.
-% Montgomery Ladder. Apenas a versão para curvas na forma de Montgomery.
-
-Existem vários métodos para executar a multiplicação escalar, sendo que os mais simples de implementar serão apresentados nessa seção. O primeiro é o método \textit{Double-and-add}, o mesmo é utilizado para calcular $dP$. Ele possui quatro entradas, sendo $N$ uma variável para armazenar o resultado da operação de duplicação do ponto, Q armazena o resultado das operações, P é o ponto escolhido na curva para a multiplicação escalar, e por fim $d$ é a chave utilizada na multiplicação. É importante citar que $m$ é o tamanho da chave em bits, sendo que cada bit da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 bytes.
-
-\floatname{algorithm}{Algoritmo}
-\begin{algorithm}[H]
-\caption{Double-and-add}
-\begin{algorithmic} 
-    \REQUIRE $N, Q, P, d$
-    \ENSURE $Q$
-    \STATE $N \leftarrow P$
-    \STATE $Q \leftarrow 0$
-    \FOR{$i$ from $0$ \TO $m$} 
-        \IF{$d_i = 1$}
-            \STATE $Q \leftarrow addpoint(Q, N)$
-        \ENDIF
-        \STATE $N \leftarrow doublepoint(N)$
-    \ENDFOR
-    \RETURN Q
-    \end{algorithmic}
-\end{algorithm}
-
-
-\subsection{Uso de tabelas precomputadas para melhorar desempenho; algoritmos de janela fixa}
-
-\subsection{Algoritmos regulares; atomicidade; montgomery ladder}
-
-Utilizando a curva de Montgomery é possível executar a multiplicação escalar pelo método chamado Montgomery Ladder. Esse método é dividido em degraus, sendo necessário executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}.
-
-\begin{algorithm}[H]
-\caption{Montgomery ladder}
-\begin{algorithmic} 
-    \REQUIRE $s, x_p$
-    \ENSURE $X_1, Z_1$
-    \STATE $X_1 \leftarrow 1$
-    \STATE $Z_1 \leftarrow 0$
-    \STATE $X_2 \leftarrow x_p$
-    \STATE $Z_2 \leftarrow 1$
-    \STATE $p \leftarrow 0$
-    \FOR{$i \leftarrow 254$ \TO $0$}
-        \STATE $b \leftarrow s_i$
-        \STATE $c \leftarrow b \oplus p$
-        \STATE $p \leftarrow b$
-        \STATE $(X_1, X_2) \leftarrow cswap(X_1,X_2,c)$
-        \STATE $(Z_1,Z_2) \leftarrow cswap(Z_1,Z_2,c)$
-        \STATE $(X_1, Z_1, X_2, Z_2) \leftarrow ladder(x_p, X_1, Z_1, X_2, Z_2)$
-    \ENDFOR
-    \RETURN $(X_1,Z_1)$
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{Ladder}
-\begin{multicols}{2}
-\begin{algorithmic} 
-    \REQUIRE $x_D, X_1, Z_1, X_2, Z_2$
-    \ENSURE $X_1, Z_1, X_2, Z_2$
-    \STATE $T_1 \leftarrow X_2 + Z_2$
-    \STATE $X_2 \leftarrow X_2 - Z_2$
-    \STATE $Z_2 \leftarrow X_1 + Z_1$
-    \STATE $X_1 \leftarrow X_1 - Z_1$
-    \STATE $T_1 \leftarrow T_1 \cdot X_1$
-    \STATE $X_2 \leftarrow X_2 \cdot Z_2$
-    \STATE $Z_2 \leftarrow Z_2 \cdot Z_2$
-    \STATE $X_1 \leftarrow X_1 \cdot X_1$
-    \STATE $T_2 \leftarrow Z_2 - X_1$
-    \STATE $Z_1 \leftarrow T_2 \cdot a_24$
-    
-    
-    \STATE $Z_1 \leftarrow Z_1 + X_1$
-    \STATE $Z_1 \leftarrow T_2 \cdot Z_1$
-    \STATE $X_1 \leftarrow Z_2 \cdot X_1$
-    \STATE $Z_2 \leftarrow Z_2 - X_2$
-    \STATE $Z_2 \leftarrow Z_2 \cdot Z_2$
-    \STATE $Z_2 \leftarrow Z_2 \cdot x_D$
-    \STATE $X_2 \leftarrow T_1 + X_2$
-    \STATE $X_2 \leftarrow X_2 \cdot X_2$
-    
-    \RETURN $(X_1,Z_1)$
-\end{algorithmic}
-\end{multicols}
-\end{algorithm}
-
-\subsection{Protocolos de IoT que envolvem ECC}
-
+\input{ecc}
 \pagebreak
+
 \section{Ataques por canais laterais}
-
-\subsection{Canal lateral (SCA) de tempo}
-
-\subsubsection{O que é? Por que é importante?}
-
-\subsubsection{Impacto em IoT}
-
-\subsubsection{Limitações}
-
-\subsection{Canal lateral de potência}
-
-\subsubsection{Características gerais}
-
-\paragraph{Comparação entre canais laterais de potência e de tempo}
-
-\subsubsection{Ataque de potência simples (SPA)}
-
-\subsubsection{Ataque de potência diferencial (DPA)}
-
-\subsubsection{High-order DPA}
-
-\subsubsection{Template attacks}
-
+\input{sca}
 \pagebreak
+
 \section{Ataques e contramedidas para encriptação simétrica e hash}
-
-\subsection{Utilização de CPA em implementação do AES}
-
-\subsection{Contramedida de mascaramento}
-
-\subsection{Ataques e contramedidas para MACs baseados em funções de
-hash}
-
+\input{attacksimehash}
 \pagebreak
+
 \section{Ataques e contramedidas para ECC}
-
-\subsection{Níveis em que os ataques SCA podem ser aplicados}
-
-\subsubsection{Operações na curva}
-
-\subsubsection{Operações no protocolo criptográfico}
-
-\subsubsection{Transferência da chave entre diferentes memórias}
-
-\subsubsection{Protocolo em nível de aplicação}
-
-\subsection{Ataques do tipo SPA e contramedidas}
-
-\subsubsection{Ataque SPA clássico}
-
-\subsubsection{Ataques baseados em templates}
-
-\subsubsection{Ataques horizontais baseados em cross-correlation}
-
-\subsubsection{Ataques horizontais não-supervisionados baseados em clustering}
-
-\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita
-inseguro}
-
-\subsubsection{Implementações de tempo constante}
-
-\subsubsection{Implementações resistentes ao SPA}
-
-\subsubsection{Impacto das contramedidas no desempenho}
-
-\subsection{Eficácia de implementação de tempo constante}
-
-\subsubsection{Outros métodos para inviabilizar ataques por tempo}
-
-\subsection{Recuperação de chaves com erros}
-
-\subsubsection{Forma de pontuação de confiança de um SCA}
-
-\subsubsection{Pontuação em implementações protegidas}
-
-\subsubsection{Solução para pontuações baixas de confiabilidade}
-
+\input{sca-ecc}
 \pagebreak
+
+\input{keyrecv}
+\pagebreak
+
 \section{Ferramentas}
 
 \subsection{Ferramentas para verificação de código de alto nível em relação à execução em tempo constante}
 
-\subsection{Ferramentas para análise de código assembly em relação à proteção contra ataques de potência}
+\input{power-analysis-verification-tools}
 
-\subsubsection{Aplicação semi-automática de contramedidas}
+\input{leakage-assessment}
 
-\subsection{Métodos empíricos para análise de vazamentos}
+\input{keyrecv-tools}
 
-\subsubsection{Test Vector Leakage Assessment (TVLA) e suas limitações}
-
-\subsection{Ferramentas para recuperação de chaves com erros}
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}

@@ -1,0 +1,196 @@
+\subsection{Níveis em que os ataques SCA podem ser aplicados}
+
+\begin{comment}
+\subsubsection{Operações na curva}
+\subsubsection{Operações no protocolo criptográfico}
+\subsubsection{Transferência da chave entre diferentes memórias}
+\subsubsection{Protocolo em nível de aplicação}
+\end{comment}
+
+%TODO 1 parag. p/ explicar a figura
+
+%TODO: Figura com piramide de ataques SCA.
+
+%TODO: "Transferência da chave entre diferentes memórias"
+%TODO: Encontrar uma ref. sobre um SCA bem sucedido deste tipo
+
+%TODO: Protocolo em nivel de aplicacao
+
+\subsection{Ataques de tempo e SPA ao algoritmo double-and-add-not-always}
+
+\subsubsection{Ataque de tempo ao algoritmo double-and-add-not-always}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+
+\begin{comment}
+1.	Ataque SPA à alg. ECSM binário left-to-right (Dbl-and-Add not Always)
+	a.	Se impl não é de tempo constante, então é possível realizar ataque de tempo.
+		i.	P.ex., se usa if and else, então pode-se determinar a cada iteração qual bloco, if ou else, é tomado.
+	b. O ataque de tempo em~\cite{Kocher96} ao RSA pode ser aplicado no contexto de ECC. Segue abaixo a ideia do ataque (baseada no survey de ~\cite{Danger2013}, Sec. 3.2.1).
+	
+	O atacante coleta o tempo de execução de diferentes ECSMs com o mesmo escalar e diferentes pontos base. Para cada ECSM, ele simula a computação usando um simulador de software com exatamente a mesma implementação do chip alvo, "chutando" o valor do bit $i$ do escalar. Suponha, sem perda de generalidade, que a hipótese é de que o valor do bit é 0.  Ele separa os diferentes tempos de execução em dois conjuntos, S_1 e S_2. Se, a iteração
+	
+	%TODO: CONT HERE
+	
+
+[Kocher96] Kocher, P.C.: Timing attacks on implementations of Difﬁe–
+Hellman, RSA, DSS, and other systems. In: Proceedings of CRYPTO’96, LNCS, vol. 1109. Springer, Berlin, pp. 104–113
+(1996)
+\end{comment}
+
+\subsubsection{Ataque SPA ao algoritmo double-and-add-not-always}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+
+\begin{comment}
+b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1). Um ataque deste tipo segmenta/divide o trace de potencia de uma execucao do ECSM em subtraces, cada um contendo uma operacao de ponto (ADD ou DBL). Se as tempo(ADD) != tempo(DBL), então o comprimento dos subtraces revela onde estão os ADDs e consequentemente os bits do escalar. Se tempo(ADD) == tempo(DBL) e uma formula unificada para ADD and DBL é utilizada, então, se for aplicada correlação (coeficiente de correlacao de Pearson) entre todos os pares de subtraces, o resultado será que a correlação será mais alta para os pares de subtraces cuja operação correspondente é a mesma (i.e., (ADD,ADD) ou (DBL,DBL)), identificando portanto as operações de ponto e consequentemente os bits do escalar.
+\end{comment}
+
+%TODO 2. Argumentar que é fortemente desejável que as implementações sejam de tempo constante, de modo a ser uma base para a implementação das outra contramedidas para power analysis.
+
+\subsection{Double-and-add-always algorithm of Coron~\cite{Coron1999}}
+
+\erick[inline]{Lucas: traduzir esta secao}The {\it double-and-add-always} algorithm of Coron~\cite{Coron1999} (Algorithm~\ref{Double-and-add-Coron}) uses a dummy point addition when the scalar bit $k_i$ is $0$, such that the sequence of operations to compute the scalar multiplication is independent of the value of the secret scalar.
+
+\begin{algorithm}[h] %\scriptsize %\footnotesize
+	\caption{\small{\textit{Double-and-add always} algorithm resistant against SPA}}
+	\label{Double-and-add-Coron}
+	\begin{algorithmic}[1]
+		\REQUIRE  Point $\textbf{P} \in E(\mathbb{F}_q),$ $k=(k_{n-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+		\ENSURE  $Q=[k] \cdot P$\\
+		\STATE $R_0\leftarrow P_{\infty}$   \\
+		\FOR{$i$ \textbf{from} $n-1$ \textbf{to} $0$} 
+		\STATE $R_0\leftarrow 2R_0$  \\
+		\STATE $R_1\leftarrow R_0+P$\\ \label{Paso_R_1_Double-and-add-Coron}
+		\STATE $R_0\leftarrow R_{k_i}$\label{Step5Double-and-add-Coron} \\
+		\ENDFOR
+		\STATE return $R_0$\\
+	\end{algorithmic}
+\end{algorithm}
+
+Therefore an adversary cannot, in principle, guess the value of bit $k_i$ by SPA. A drawback of this method is its low efficiency. It requires $nA+nD$ field operations, a $33\%$ increase in the amount of field operations in comparison to the (unprotected) binary left-to-right algorithm.
+
+\subsubsection{Fouque and Valette's Doubling Attack \cite{CHES:FouVal03}}\label{Fouque-Valette-DoublingAttack}
+The doubling attack of Fouque-Valette~\cite{CHES:FouVal03} is based on the fact that it is possible to detect if two intermediate values are equal when the algorithm computes the scalar multiplication for points chosen points $P$ and $2P.$ Several algorithms protected against SPA are vulnerable to Fouque and Valette's attack, such as the classic binary left-to-right algorithm, including those derived from it, such as Coron's double-and-add-always algorithm.
+
+%In ~\textit{double-and-add-always} algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_k(P) = \sum_{i=0}^{k}d_{n-i}2^{k-i} P=\sum_{i=0}^{k-1}d_{n-i}2^{k-1-i}(2P)+d_{n-k}P= S_{k-1}(2P)+d_{n-k}P$. So, the intermediate result of the algorithm at step $k$ when given input $P$ will be equal to the intermediate result at step $k-1$ when given input $2P$, if and only if, $d_{n-k}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $k+1$ for $P$ and at step $k$ for $2P$ to recover the bit $d_{n-k}.$ If both computations are identical, $d_{n-k}=0$, otherwise $d_{n-k}=1$.
+In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. So, the intermediate result of the algorithm at step $m$ when given input $P$ will be equal to the intermediate result at step $m-1$ when given input $2P$, if and only if, $k_{n-m}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $m+1$ for $P$ and at step $m$ for $2P$ to recover the bit $k_{n-m}.$ If both computations are identical, $k_{n-m}=0$, otherwise $k_{n-m}=1$. It has been shown that with only two scalar multiplication requests chosen by the attacker, it is possible to recover all the bits of the scalar.~\footnote{The attacker collects one power trace for the computation of $kP$ and one for the computation of $k(2P)$. For each iteration $m=1,...,n$, he runs the attack as described and finds $k_{n-m}$.}
+%%\vspace{-0.5cm}
+
+
+\subsection{Contramedidas}
+
+% TODO: apresentar uma contramedida de cada vez entre subseções com ataques, mostrando como ela protege contra um determinado ataque.
+
+\begin{comment} % === CONTRAMEDIDAS ===
+	a.	CM1 - Scalar Randomization (SR)
+	b.	CM2 - Proj. Coord. Randomization and Re-randomization (CRR)
+	c.	CM3 - Point Blinding (PB) 
+	d.	CM4 – Scalar Splitting (SS)
+\end{comment}
+
+\subsubsection{Scalar Randomization (SR)}
+	%	\begin{itemize}
+	%\item 
+	At the beginning of the scalar multiplication:
+	\begin{enumerate}
+		\item Randomly select $r\in_R \{0,1\}^n$, for a small $n$. $n=32$ seems to be a reasonable security/efficiency trade-off.
+		\item Compute $k' \rcv k + r |E|$.
+		\item Use $k'$ in place of $k$.
+	\end{enumerate}
+	
+	%\item 
+	\underline{Cost}: generate $n$ (pseudo-)random bits, $n$ iterations to the ECSM, MULs and ADDs to compute $k'$, $n$ bits of SRAM.\\
+	%\item 
+	
+	\underline{Effectiveness}: vulnerable to Online Template Attacks (OTA) {[Batina,2014]}, among others.
+	%	\end{itemize}
+
+\subsubsection{Projective Coordinates (Re-)Randomization (CR)~\cite{Coron1999}}
+\erick[inline]{Lucas: traduzir e escrever em texto corrido. Descrito para o caso de Montgomery Ladder somente com a coordenada $x$}
+Original projective coordinates used in Mont Ladder: $(X:Z)$.\\
+In the beginning of the ECSM, do:
+\begin{enumerate}
+	\item Generate random $\lambda \mathbb{F}_p \backslash \{0\}$.
+	\item Do $Z_2 \rcv \lambda$ and $X_2 \rcv u \cdot \lambda$, where $u$ is the $x$-coordinate of input point $P$.
+	\item Use $P'=(X_2:Z_2)$ in place of $P$.
+\end{enumerate}	
+\underline{Cost}: generation of $\ceil{log_2(p)}$ random bits, 1 M.\\
+\underline{Effectiveness}: 
+\begin{itemize}
+	\item Resistant to Online Template Attacks~\cite{BatinaChmielewski2014}.
+	\item Can also be applied to Edwards, twisted Edwards and Montgomery curves.
+	\item Can also be used at every ECSM iteration (re-randomization).
+\end{itemize}
+
+\subsubsection{Point Blinding (PB)~\cite{Coron1999}}
+\erick[inline]{Lucas: traduzir e escrever em texto corrido.}
+Before the first scalar multiplication with scalar $k$:
+\begin{itemize}
+	\item Generate random point $R$ in the subgroup.
+	\item Precompute and store $S = [k]R$.
+\end{itemize}
+
+At the beginning of each scalar multiplication:
+\begin{itemize}
+	\item Compute $T \rcv P + R$.
+	\item Compute $Q \rcv [k] T$.
+	\item Update $R$ and $S$: $R \rcv (-1)^t 2R$ and $S \rcv (-1)^t 2S$, $t \in \{0,1\}$ is randomly chosen.
+	\item Return $W = Q - S$.
+\end{itemize}
+
+\noindent  \underline{Cost}: 2 ECADD, 2 ECDBL, SRAM memory for temps. Probably also writable non-volatile memory to store $R$ and $S$.\\
+\noindent \underline{Effectiveness}: protects against horizontal SVA~\cite{MurdicaGuilley2012}, RPA~\cite{Goubin2003} and ZPA\cite{AkishitaTakagi2003}. Vulnerable to OTA~\cite{BatinaChmielewski2014}.
+
+% Definitions ==========================================================
+% RPA = Refined Power Analysis. Intermed. point with one of the coords zero.
+% ZPA = Zero Value Point Attacks. Itermed. value (e.g., field elem), is zero
+% SVA = Same Value Analysis. Generalization of ZPA when the intermediate value has a special value (not necessarily 0), that can be easily distinguished.
+%==========================================================
+\subsubsection{Scalar Splitting (SS)~\cite{ClavierJoye2001}}
+
+Seja $k$ o escalar original de $n$ bits. Gere um inteiro $k_1 < k$ aleatoriamente e faça $k_2\rcv k - k_1$. Calcule $Q\rcv [k_1]P$, $T\rcv[k_2]P$ e $R\rcv Q + T$. 
+
+\noindent \underline{Custo}: 1 ECSM de $n$ bits e 1 ECADD. Pode ser reduzido se for empregado truque de Shamir para multiplicação escalar dupla (versão regular)~\cite{CietJoye2003}.\\
+\noindent \underline{Eficácia}: Resistente à TA, SPA clássico e CPA clássico.\\
+\noindent \underline{Variantes}: Euclidean splitting~\cite{CietJoye2003} e multiplicative splitting~\cite{TrichinaBelleza2003}, ambas com a mesma eficácia da versão original, também conhecida como additive splitting.
+
+\begin{comment} % === Ataques SCA contra ECC devem ser do tipo single-trace  ===
+5.	Explicar porque no contexto de PKC (RSA e ECC) não fazem sentido ataques que envolvem mais de um trace, como p.ex., DPA.
+\end{comment}
+
+
+\begin{comment}  % === ESTRUTURA ORIGINAL ===
+\subsubsection{Ataques baseados em templates}
+\subsubsection{Ataques horizontais baseados em cross-correlation}
+\subsubsection{Ataques horizontais não-supervisionados baseados em clustering}
+
+\subsubsection{Aplicação de contramedidas em algoritmo esquerda para direita inseguro}
+\subsubsection{Implementações de tempo constante}
+\subsubsection{Implementações resistentes ao SPA}
+\subsubsection{Impacto das contramedidas no desempenho}
+
+\subsection{Eficácia de implementação de tempo constante}
+\subsubsection{Outros métodos para inviabilizar ataques por tempo}
+\end{comment}
+
+\subsection{Ataque SPA à alg. Montgomery Ladder com SR}
+
+\erick[inline]{Descrever idéia de online template attack (OTA)~\cite{BatinaChmielewski2014}}
+
+\subsection{Ataque SPA à alg. ECSM atômico com SR}
+\erick[inline]{Explicar como online template attack (OTA)~\cite{BatinaChmielewski2014} pode ser aplicado neste caso}
+
+\subsection{Ataque template SPA à alg. Montgomery Ladder com SR + CRR}
+
+\erick[inline]{Copy-and-paste de partes do meu paper no SAC 2016.}
+
+\subsection{Ataque HCA à alg. Montgomery Ladder c/ SR + CRR}
+\erick[inline]{Copy-and-paste meu texto sobre HCA.}
+
+\subsection{Ataques template versus Ataques horizontais}
+\erick[inline]{Ataques template versus HCA: vantagens e desvantagens de cada um.}
+
+\noindent \textbf{Precondições e limitações dos ataques baseados em template}: Ataques baseados em template são os mais poderosos ataques do tipo SCA, segundo a teoria da informação~\cite{ChariRaoRohatgi2003}. No entanto, ataques baseados em template só podem ser realizados quando a contramedida SR não é aplicada ou quando esta pode ser desabilitada durante a fase de criação de templates (profiling), caso contrário os templates não podem ser criados. Uma outra limitação deste tipo de ataque é de que dispositivos diferentes, mesmo que sejam do mesmo modelo, mesmo lote, etc., têm imperfeições únicas resultantes do processo de fabricação as quais resultam em diferenças no consumo de potência e radiação eletromagnética. Tais diferenças podem ser grandes o suficiente de modo que os templates gerados a partir dos traces provenientes do dispositivo de profiling não sejam bons modelos do vazamento observado no dispositivo alvo do ataque, assim reduzindo a taxa de sucesso do ataque~\cite{ElaabidGuilley2012}.
+
+
+\noindent \textbf{Aplicabilidade}. Até então estes ataques só foram demonstrados em CPUs embarcadas de 8, 16 e 32 bits, devido ao alto nível de SNR (Signal-to-Noise Ratio) que pode ser obtido na medição no consumo de potência e EM nestes dispositivos. Quando o SNR é baixo, além de haver pouco vazamento de dados (data-leakage) explorável do valor da chave ou valores intermediários derivados deste, o alinhamento dos subtraces torna-se também inviável, devido a inexistência de intervalos próximos da ocorrência da operação alvo em que as amostras tem valores idênticos ou semelhantes em todos os subtraces.
+
