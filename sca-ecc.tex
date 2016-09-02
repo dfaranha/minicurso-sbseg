@@ -4,17 +4,22 @@
 \subsubsection{Operações na curva}
 \subsubsection{Operações no protocolo criptográfico}
 \subsubsection{Transferência da chave entre diferentes memórias}
+
 \subsubsection{Protocolo em nível de aplicação}
 \end{comment}
 
-%TODO 1 parag. p/ explicar a figura
-
 %TODO: Figura com piramide de ataques SCA.
 
+%TODO 1 parag. p/ explicar a figura e discutir exemplos de ataques em cada nível.
+
 %TODO: "Transferência da chave entre diferentes memórias"
-%TODO: Encontrar uma ref. sobre um SCA bem sucedido deste tipo
+
+%TODO: processamento da chave fora do algoritmo criptográfico.
+% Ref. sobre um SCA bem sucedido deste tipo: Witteman, M. (2013). Secure Application Programming in the Presence of Side Channel Attacks.\cite{Witteman2013_PatternsAppsecSCA}
+% Demonstra um ataque à verificação de paridade da chave na biblioteca GnuPG.
 
 %TODO: Protocolo em nivel de aplicacao
+
 
 \subsection{Ataques de tempo e SPA ao algoritmo double-and-add-not-always}
 
@@ -183,20 +188,29 @@ Seja $k$ o escalar original de $n$ bits. Gere um inteiro $k_1 < k$ aleatoriament
 
 \erick[inline]{Copy-and-paste de partes do meu paper no SAC 2016.}
 
-\subsection{Ataque HCA à alg. Montgomery Ladder c/ SR + CRR}
-\erick[inline]{Copy-and-paste meus textos sobre HCA.}
-
-\subsubsection{Horizontal Attacks (HA)}
+\subsection{Ataques Horizontais (HA)}
 % source: RSC-intern-plan
 
 Ataques horizontais (HA) são uma metodologia para ataques por canal lateral cujos alvos são as principais operações criptográficas em protocolos baseados em RSA e ECC, a exponenciação modular e a multiplicação escalar, respectivamente. Em teoria, tais ataques permitem recuperar os bits do expoente/escalar secreto através da análise de traces individuais, isto é, apenas um único trace obtido do alvo é suficiente, portanto são eficazes contra implementações protegidas por contramedidas como SR, CR, PB e SS.
 
-Um requisito básico dos ataques horizontais é o conhecimento do algoritmo de multiplicação escalar.
-De posse de tal informação, o atacante pode escolher, dentre outros, os seguintes distinguishers\erick{verificar se distinguishers foi definido previamente ou um termo em portugues foi usado previamente}: SPA, distancia euclidiana, horizontal correlation analysis, horizontal collision-correlation, horizontal cross-correlation ou clustering.
+Um requisito básico dos ataques horizontais é o conhecimento do algoritmo de multiplicação escalar. De posse de tal informação, o atacante pode escolher, dentre outros, os seguintes distinguishers ou métodos \erick{verificar se distinguishers foi definido previamente ou um termo em portugues foi usado previamente}: correlation analysis, collision-correlation analysis e cluster analysis.     %SPA, distancia euclidiana, horizontal correlation analysis, horizontal collision-correlation, horizontal cross-correlation ou clustering.
 
-A maioria das formas de ataques horizontais requer pré-processamento avançado dos traces, caracterização e avaliação de vazamento antes da aplicação de distinguishers. Os principais problemas da abordagem horizontal são de que extrair o vazamento a partir de um único trace tipicamente apresenta fortes limitações e desafios, devido ao ruído nos traces e a indisponibilidade de informação rotulada. Em particular, métodos de avaliação de vazamento, como o TVLA~\cite{Goodwill2011}, requerem amostras rotuladas e isso não é possível quando a contramedida SR é aplicada.
+% Correlation analysis
+O método de correlation analysis~\cite{Clavier2010} segue o mesmo princípio da análise de potência por correlação (CPA)~\erick{usar a tradução introduzida na seção onde este assunto é tratado} aplicada a um conjunto de traces, na configuração vertical. A diferença para o contexto horizontal é de que um único trace é dividido em vários segmentos e para cada um destes segmentos um valor intermediário hipotético é atribuído, com respeito a um chute sobre o valor da chave. A correlação entre amostra e valor hipotético é calculada do mesmo modo que CPA, e os modelos de vazamentos usualmente utilizados são o peso de Hamming e a distância de Hamming. Este método funciona contra implementações protegidas somente com SR, ou quando CR é também aplicada mas o parâmetro aleatório utilizado é curto, e ataques por força bruta ao valor de tal parâmetro são viáveis.
 
-Métodos baseados em aprendizado não supervisionada, recentemente aplicados para resolver tais limitações, têm se mostrado capazes de produzir resultados práticos. Heyszl et al~\cite{Heyszl2013} propôem aplicar classificação por clustering à um único trace para possibilitar a identificação de classes específicas de operações; este método funciona bem para medições com baixo ruído e requer uma estação de EM composta de múltiplas sondas. Em Perin et al's~\cite{Perin2014}, os autores consideram uma abordagem heurística baseada na diferença de médias para a seleção de pontos de interesse. Além disso, ambas soluções usam um único trace como entrada para a etapa de avaliação de vazamento, o qual pode ter sido muito afetado por uma grande quantidade de ruído. Perin e Chmielewski~\cite{PerinChmielewski2015} fornecem uma metodologia para ataques horizontais baseados em clustering que foca em corrigir as deficiências dos trabalhos mencionados anteriormente.
+% Collision-correlation analysis
+O método de collision-correlation analysis~\cite{Bauer2013_CTRSA, Bauer2013, Clavier2012_Indocrypt, WittemanWoundenbergMenari2011, Walter2001_Ches} computa a correlação ou distância euclideana entre diferentes segmentos de um trace. O objetivo principal é identificar a ocorrência de um mesmo dado intermediário em diferentes partes de um trace, e com isso derivar os bits do escalar secreto. Para tanto, o atacante deve ter conhecimento sobre o algoritmo de ECSM empregado. Em teoria, este método é viável contra implementações envolvendo combinações de contramedidas clássicas.
+
+% Desafios / limitações
+A maioria das formas de ataques horizontais requer pré-processamento avançado dos traces, caracterização e avaliação de vazamento antes da aplicação de distinguishers. Os principais problemas da abordagem horizontal são de que extrair o vazamento a partir de um único trace tipicamente apresenta fortes limitações e desafios, como o alto nível de ruído e a indisponibilidade de amostras rotuladas. Em particular, métodos de avaliação de vazamento, como o TVLA~\cite{Goodwill2011}, requerem amostras rotuladas e isso não é possível quando a contramedida SR é aplicada.
+
+% Cluster analysis
+Métodos baseados em aprendizado não supervisionado, mais especificamente aqueles baseados em clustering, foram recentemente aplicados para resolver tais limitações e têm se mostrado capazes de produzir resultados práticos. Heyszl et al~\cite{Heyszl2013} propõem aplicar classificação por clustering à um único trace para possibilitar a identificação de classes específicas de operações; este método funciona bem para medições com baixo ruído e requer uma estação de EM composta de múltiplas sondas. Em Perin et al's~\cite{Perin2014}, os autores consideram uma abordagem heurística baseada na diferença de médias para a seleção de pontos de interesse. Além disso, ambas soluções usam um único trace como entrada para a etapa de avaliação de vazamento, o qual pode ter sido muito afetado por uma grande quantidade de ruído. Perin e Chmielewski~\cite{PerinChmielewski2015} fornecem uma metodologia para ataques horizontais baseados em clustering que foca em corrigir as deficiências dos trabalhos mencionados anteriormente.
+
+\subsection{Ataque HCA à alg. Montgomery Ladder c/ SR + CRR}
+% Meu projeto na RSC, artigos Perin 2014 e 2015.
+
+
 
 \subsection{Ataques template versus Ataques horizontais}
 \erick[inline]{Ataques template versus HCA: vantagens e desvantagens de cada um.}
