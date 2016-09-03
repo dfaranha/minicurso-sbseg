@@ -210,10 +210,38 @@ Métodos baseados em aprendizado não supervisionado, mais especificamente aquel
 \subsection{Ataque HCA à alg. Montgomery Ladder c/ SR + CRR}
 % Meu projeto na RSC, artigos Perin 2014 e 2015.
 
+\subsubsection{Preparação: filtragem, segmentação e alinhamento}
+% filtragem dos traces
+% segmentação dos traces em iterações da ECSM
+% alinhamento dos subtraces
+
+Em ataques horizontais, devido a problemas como o alto nível de ruído presente em um trace, fenômenos como clock drift ou jitter~\erick{definir} e variações no tempo em que dispositivo de medição (p.ex., osciloscópio) inicia a medição após o recebimento do sinal de trigger, é fundamental o preprocessamento dos traces medidos antes de iniciar a análise, particularmente as operações de filtragem, segmentação e alinhamento.
+
+\erick[inline]{Filtragem: mostrar um trace não filtrado (da coleção de traces do paper SAC), com efeito de DC drifting visível, versus trace filtrado}
+
+Os traces de potência medidos tipicamente correspondem à operação criptográfica completa, sendo assim são contíguos e contêm todas as rodadas (rounds) ou sub-operações executadas; no contexto da multiplicação escalar, as rodadas são as $n$ iterações do laço do algoritmo de multiplicação escalar implementado. Tais traces devem ser primeiramente segmentados em iterações, de modo que um conjunto de $n$ subtraces é obtido, cada um contendo as amostras correspondentes a respectiva iteração.
+
+\erick[inline]{Alinhamento: capturar Printscreen de um traceset no Inspector ANTES e APÓS alinhamento}
+
+\subsubsection{Algoritmos para clustering}
+% Citar que K-Means, Fuzzy KMeans e Expectation-Maximization já foram empregados para este propósito, e apresentaram resultados semelhantes.
+% Detalhar com o Fuzzy KMeans funciona.
+
+\subsubsection{Análise com chave conhecida}
+% aplica-se clustering 1D no conjunto de amostras em um dado sample index
+
+\subsubsection{Avaliação de vazamento} % leakage asessment
+% aplica-se clustering 1D no conjunto de amostras em um dado sample index
+
+\subsubsection{Ataque de recuperação}
+% aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
+% ou aplica-se clustering em múltiplas dimensões.
+
+\subsubsection{Cálculo de confidence scores}
+\erick{ao concluir seção, transformar esta subseção em um simples parágrafo}
 
 
 \subsection{Ataques template versus Ataques horizontais}
-\erick[inline]{Ataques template versus HCA: vantagens e desvantagens de cada um.}
 
 \noindent \textbf{Precondições e limitações dos ataques baseados em template}: Ataques baseados em template são os mais poderosos ataques do tipo SCA, segundo a teoria da informação~\cite{ChariRaoRohatgi2003}. No entanto, ataques baseados em template só podem ser realizados quando a contramedida SR não é aplicada ou quando esta pode ser desabilitada durante a fase de criação de templates (profiling), caso contrário os templates não podem ser criados. Uma outra limitação deste tipo de ataque é de que dispositivos diferentes, mesmo que sejam do mesmo modelo, mesmo lote, etc., têm imperfeições únicas resultantes do processo de fabricação as quais resultam em diferenças no consumo de potência e radiação eletromagnética. Tais diferenças podem ser grandes o suficiente de modo que os templates gerados a partir dos traces provenientes do dispositivo de profiling não sejam bons modelos do vazamento observado no dispositivo alvo do ataque, assim reduzindo a taxa de sucesso do ataque~\cite{ElaabidGuilley2012}.
 
