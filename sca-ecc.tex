@@ -240,8 +240,28 @@ Dentre os algoritmos para clustering empregados com sucesso no contexto de ataqu
 % aplica-se clustering 1D no conjunto de amostras em um dado sample index
 %TODO: Figura com clusterizacao obtida pelo EM e os rotulos corretos (com erros destacados, se possível).
 
-\subsubsection{Avaliação de vazamento} % leakage asessment
+\subsubsection{Avaliação de vazamento} % leakage assessment
 % aplica-se clustering 1D no conjunto de amostras em um dado sample index. Um grande traceset é necessário.
+% a seguir é aplicada uma das funções "distinguisher": DoM, MIA, SOSD ou SOST.
+
+Técnicas de avaliação de vazamento determinam se um dispositivo criptográfico está vazando informação por canal lateral, com base em método estatístico e um modelo de vazamento. 
+Em \erick{citar [27]} os autores testaram informação mútua (MIA)\footnote{Mutual Information Analysis.} como um método para localizar vazamento no domínio da frequência e, consequentemente, as bandas de frequência no traces de EM do RSA em que as diferenças entre quadrados e multiplicações são maiores. O Welch $t$-test é um outro método estatístico que pode ser empregado para este fim, p.ex., em metodologias como a TVLA (cf.~\Cref{sec-tvla}). Os autores de \erick{citar [29]} demonstraram como empregar $t$-test e MIA para localizar vazamento no domínio do tempo. 
+
+No escopo de ataques horizontais, tais métodos são empregados sem que haja conhecimento do valor da chave secreta ou de números aleatórios gerados e/ou usados pelo dispositivo. Portanto, são aplicáveis em um cenário realista onde o adversário não tem qualquer controle (escrita ou leitura) da chave dispositivo ou outra informação secreta, em particular quando contramedidas como SR e CRR são aplicadas e não podem ser desabilitadas. Os pontos em que o vazamento é mais intenso, obtidos pela aplicação de um método para análise de vazamento, são tomados como pontos de interesse (POI). O valor das amostras em tais pontos são posteriormente utilizados na fase de ataque para recuperação da chave.
+
+O método de análise de vazamento proposto em~\cite{PerinChmielewski2015} demonstra como múltiplos traces podem ser combinados para a avaliação de vazamento, no contexto de ataques horizontais ao RSA. Tal método é baseado em clustering e funciona mesmo se o dispositivo emprega qualquer combinação das contramedidas clássicas aplicadas à implementações da exponenciação modular: exponent blinding, message or modulus randomization.\footnote{Exponent blinding e message randomization são equivalentes às contramedidas SR e CRR para ECC, respectivamente}
+
+\subsubsection{Avaliação de vazamento baseada em clustering}
+
+Descrevemos nesta Subseção como o método de análise de vazamento de Perin e Chmielewski~\cite{PerinChmielewski2015} pode adaptado à uma implementação do algoritmo Montgomery Ladder para multiplicação escalar. Supomos que deseja-se identificar o valor do bit do escalar utilizado em cada iteração do laço principal deste algoritmo através de algum vazamento direto ou indireto deste valor. Sejam $n_0$ e $n_1$ o número de bits 0 e 1 em um trace. A razão $n_0/n_1$ é aproximadamente constante, tendendo a $1.0$, partindo da premissa de que o bits do escalar são gerados aleatoriamente. Devido à contramedida SR, o escalar efetivamente utilizado no laço da ECSM varia entre uma execução e outra da ECSM, e portanto difere de um trace para outro.
+
+O método tem as seguintes premissas sobre o modelo de vazamento:
+\begin{itemize}
+	\item \textbf{Premissa 1}: em um trace $i$, o valor médio para o conjunto de amostras em um índice $m$ que correspondem às iterações cujo bit são 0 ou 1 são, respectivamente, $u_0^i + \gamma_0^i$ e $u_1^i + \gamma_1^i$, onde $\gamma_k^i$ é um ruído aleatório com distribuição normal, $k \in \{0,1\}$.
+	\item \textbf{Premissa 2}: para todos os traces $i$, as médias $u_0^i$ e $u_1^i$ são constantes.
+\end{itemize}
+
+Seja um trace $i$ e as amostras localizadas em um índice $m$ deste trace. A saída do algoritmo de clustering quando aplicado a este conjunto de amostras são dois centróides, $c_{0,m}$ e $c_{1,m}$ e dois clusters de amostras $g_{0,m}$ e $g_{1,m}$ contendo $p_{0,m}$ e $p_{1,m}$ elementos cada, respectivamente, tal que $p_{0,m} + p_{1,m}\approx n_0 + n_1$.
 
 \subsubsection{Ataque para recuperação de chave}
 % aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
