@@ -257,11 +257,30 @@ Descrevemos nesta Subseção como o método de análise de vazamento de Perin e 
 
 O método tem as seguintes premissas sobre o modelo de vazamento:
 \begin{itemize}
-	\item \textbf{Premissa 1}: em um trace $i$, o valor médio para o conjunto de amostras em um índice $m$ que correspondem às iterações cujo bit são 0 ou 1 são, respectivamente, $u_0^i + \gamma_0^i$ e $u_1^i + \gamma_1^i$, onde $\gamma_k^i$ é um ruído aleatório com distribuição normal, $k \in \{0,1\}$.
-	\item \textbf{Premissa 2}: para todos os traces $i$, as médias $u_0^i$ e $u_1^i$ são constantes.
+	\item \textbf{Premissa 1}: em um trace $i$, o valor médio para o conjunto de amostras em um índice $m$ que correspondem às iterações cujo bit são 0 ou 1 são, respectivamente, $\mu_0^i + \gamma_0^i$ e $\mu_1^i + \gamma_1^i$, onde $\gamma_k^i$ é um ruído aleatório com distribuição normal, $k=0,1$.
+	\item \textbf{Premissa 2}: para todos os traces $i$, as médias $\mu_0^i$ e $\mu_1^i$ são constantes.
 \end{itemize}
 
-Seja um trace $i$ e as amostras localizadas em um índice $m$ deste trace. A saída do algoritmo de clustering quando aplicado a este conjunto de amostras são dois centróides, $c_{0,m}$ e $c_{1,m}$ e dois clusters de amostras $g_{0,m}$ e $g_{1,m}$ contendo $p_{0,m}$ e $p_{1,m}$ elementos cada, respectivamente, tal que $p_{0,m} + p_{1,m}\approx n_0 + n_1$.
+Seja um trace $i$ e as amostras localizadas em um índice $m$ deste trace. A saída do algoritmo de clustering quando aplicado a este conjunto de amostras são dois centróides, $c_{0,m}$ e $c_{1,m}$ e dois clusters de amostras $\{g_{0,m}\}$ e $\{g_{1,m}\}$ contendo $p_{0,m}$ e $p_{1,m}$ elementos cada, respectivamente, tal que $p_{0,m} + p_{1,m}\approx n_0 + n_1$.
+
+Temos então, para todo trace $i$ e todo índice de amostra $m$ deste trace, o seguinte conjunto de parâmetros $c_{k,i}$, $\{g_{k,m}\}$, $p_{k,m} = |\{g_{k,m}\}|$ e $\sigma^2_{k,m} = Var(\{g_{k,m}\})$, para $k = 0,1$. Este conjunto de parâmetros é utilizado como entrada para uma dentre as seguintes funções estatísticas (também conhecidas como \textit{distinguishers}): diferença de médias (DoM), soma dos quadrados das diferenças (SOSD), soma dos quadrados dos $t$-values (SOST) e MIA.
+
+Defina o seguintes parâmetros, para $k=0,1$:
+
+\begin{equation}	r_{k,m} = \frac{min\{p_{k,m}, n_k\} }{ max\{p_{k,m}, n_k\}}	\end{equation}
+\begin{equation}	\beta_{k,m} = r_{0,m} \cdot r_{1,m}	\end{equation}
+
+As funções distinguisher DoM, SOSD, SOST podem ser então definidas do seguinte modo\footnote{Referimos o leitor a~\cite{PerinChmielewski2015} para a definição da função MIA neste caso.}:
+
+\begin{align*}
+	\text{DoM}: l_{\text{DOM}, m} 	&= |c_{0,m} - c_{1,m}| \\
+	\text{SOSD}: l_{\text{SOSD}, m} &= |c_{0,m} - c_{1,m}|^2 \\
+	\text{SOST}: l_{\text{SOST}, m} &= \left( \frac{|c_{0,m} - c_{1,m}|} {\sqrt{ \frac{\sigma^2_{0,m}}{p_{0,m}} + \frac{\sigma^2_{1,m}}{p_{1,m}} }}   \right) ^ 2
+\end{align*}
+
+A função distinguisher é aplicada em cada índice de amostra $m$, para cada trace $i$. O valor resultante é somado para todos os traces e a média é calculada, isto é, $\bar{l}_{\text{D}, m} = \frac{1}{N}\sum_{i=1}^{N} l^{(i)}_{\text{D}, m}$, onde $D \in \{$ DoM,SOSD,SOST,MIA $\}$. O valor $\bar{l}_{\text{D}, m}$ é portanto o valor estimado do vazamento no índice de amostra $m$, segundo a função distinguisher $D$.
+
+A aplicação de algoritmos de clustering fornece um estimativa para as médias $\mu_{k,m}$. Por causa do somatório usado na definição de $\bar{l}_{\text{D}, m}$ e das premissas acima, o ruído $\gamma_{k,m}$ em cada amostra $m$ é eliminado se o número de traces processados é suficientemente grande. A Figura~\erick{fig} mostra o valor estimado do vazamento em cada índice de amostra para o distinguisher SOST aplicado a traces provenientes de uma implementação do algoritmo Montgomery Ladder.
 
 \subsubsection{Ataque para recuperação de chave}
 % aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
