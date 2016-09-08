@@ -238,7 +238,16 @@ Dentre os algoritmos para clustering empregados com sucesso no contexto de ataqu
 
 \subsubsection{Análise com chave conhecida}
 % aplica-se clustering 1D no conjunto de amostras em um dado sample index
-%TODO: Figura com clusterizacao obtida pelo EM e os rotulos corretos (com erros destacados, se possível).
+
+A análise com chave conhecida consiste em determinar os pontos de interesse, isto é, os índices de amostra, onde o vazamento é mais forte, com base no conhecimento da chave. Devido à necessidade de conhecimento do valor chave/escalar, tal análise é empregada somente na fase de teste do ataque HCA, para determinar, por exemplo, quantos traces são necessários como entrada para a avaliação de vazamento, de um dado dispositivo, de modo que os pontos de interesse obtidos por aquela correspondam aos previstos e sabidamente relevantes obtidos pela análise com chave conhecida.
+
+Tal análise consiste em aplicar o algoritmo de clusterização no conjunto de amostras presentes em um dado índice de amostra ($m$), obtendo-se dois grupos de amostras: o primeiro grupo corresponde às amostras rotuladas com o valor b ($b\in \{0,1\}$, mas não se sabe se 0 ou 1) e o segundo grupo corresponde ao valor oposto $\bar{b}$. 
+
+O conhecimento da chave é utilizado para determinar quantos bits tiveram o seu valor corretamente identificado no agrupamento. Como não se sabe o valor de $b$, isto é, o rótulo de cada grupo, o seguinte procedimento é adotado. Toma-se $b=0$ e conta-se o número de bits corretamente identificados ($n_c$); o valor $n - n_c$ ($n$ é o comprimento em bits do escalar) é então o número de bits corretamente identificados caso a rotulação esteja errada (isto é, o correto é $b=1$). Finalmente, considera-se $max\{n_c, n - n_c\}$ o número de bits corretamente identificados.
+
+Este procedimento acima descrito é repetido para todos os índices de amostra, e o resultado são os pontos em que o vazamento de bits da chave é mais intenso. A ordenação destes pontos em ordem decrescente do número de bits corretamente identificados fornece os pontos de interesse.
+
+\erick[inline]{Figura com clusterizacao obtida pelo EM e os rotulos corretos (com erros destacados, se possível.}
 
 \subsubsection{Avaliação de vazamento} % leakage assessment
 % aplica-se clustering 1D no conjunto de amostras em um dado sample index. Um grande traceset é necessário.
@@ -283,8 +292,10 @@ A função distinguisher é aplicada em cada índice de amostra $m$, para cada t
 A aplicação de algoritmos de clustering fornece um estimativa para as médias $\mu_{k,m}$. Por causa do somatório usado na definição de $\bar{l}_{\text{D}, m}$ e das premissas acima, o ruído $\gamma_{k,m}$ em cada amostra $m$ é eliminado se o número de traces processados é suficientemente grande. A Figura~\erick{fig} mostra o valor estimado do vazamento em cada índice de amostra para o distinguisher SOST aplicado a traces provenientes de uma implementação do algoritmo Montgomery Ladder.
 
 \subsubsection{Ataque para recuperação de chave}
-% aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
-% ou aplica-se clustering em múltiplas dimensões.
+% 1) aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
+% Ou 2) aplica-se clustering em múltiplas dimensões.
+
+\erick[inline]{TODO}
 
 \subsubsection{Cálculo de confidence scores}
 \erick[inline]{ao concluir seção, transformar esta subseção em um simples parágrafo}
