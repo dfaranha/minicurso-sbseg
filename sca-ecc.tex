@@ -4,19 +4,13 @@
 \subsubsection{Operações na curva}
 \subsubsection{Operações no protocolo criptográfico}
 \subsubsection{Transferência da chave entre diferentes memórias}
-
 \subsubsection{Protocolo em nível de aplicação}
 \end{comment}
 
-%TODO: Figura com piramide de ataques SCA.
-
-%TODO 1 parag. p/ explicar a figura e discutir exemplos de ataques em cada nível.
-
-%TODO: "Transferência da chave entre diferentes memórias"
-
-%TODO: processamento da chave fora do algoritmo criptográfico.
-% Ref. sobre um SCA bem sucedido deste tipo: Witteman, M. (2013). Secure Application Programming in the Presence of Side Channel Attacks.\cite{Witteman2013_PatternsAppsecSCA}
-% Demonstra um ataque à verificação de paridade da chave na biblioteca GnuPG.
+\erick[inline]{TODO: Figura com piramide de ataques SCA.}
+\erick[inline]{TODO: 1 parag. p/ explicar a figura e discutir brevemente exemplos de ataques em cada nível.}
+\erick[inline]{TODO: Transferência da chave entre diferentes memórias}
+\erick[inline]{TODO: processamento da chave fora do algoritmo criptográfico. Ref. sobre um SCA bem sucedido deste tipo: Witteman, M. (2013). Secure Application Programming in the Presence of Side Channel Attacks.\cite{Witteman2013_PatternsAppsecSCA}. Autor demonstra um ataque à verificação de paridade da chave na biblioteca GnuPG.}
 
 %TODO: Protocolo em nivel de aplicacao
 
@@ -287,7 +281,7 @@ As funções distinguisher DoM, SOSD, SOST podem ser então definidas do seguint
 	\text{SOST}: l_{\text{SOST}, m} &= \left( \frac{|c_{0,m} - c_{1,m}|} {\sqrt{ \frac{\sigma^2_{0,m}}{p_{0,m}} + \frac{\sigma^2_{1,m}}{p_{1,m}} }}   \right) ^ 2
 \end{align*}
 
-A função distinguisher é aplicada em cada índice de amostra $m$, para cada trace $i$. O valor resultante é somado para todos os traces e a média é calculada, isto é, $\bar{l}_{\text{D}, m} = \frac{1}{N}\sum_{i=1}^{N} l^{(i)}_{\text{D}, m}$, onde $D \in \{$ DoM,SOSD,SOST,MIA $\}$. O valor $\bar{l}_{\text{D}, m}$ é portanto o valor estimado do vazamento no índice de amostra $m$, segundo a função distinguisher $D$.
+A função distinguisher é aplicada em cada índice de amostra $m$, para cada trace $i$. O valor resultante é somado para todos os traces e a média é calculada, isto é, $\bar{l}_{\text{D}, m} = \frac{1}{N}\sum_{i=1}^{N} l^{(i)}_{\text{D}, m}$, onde $D \in \{$ DoM,SOSD,SOST,MIA $\}$. O valor $\bar{l}_{\text{D}, m}$ é portanto o valor estimado do vazamento no índice de amostra $m$, segundo a função distinguisher $D$.\erick{falta explicar onde r e $\beta$ são usados}
 
 A aplicação de algoritmos de clustering fornece um estimativa para as médias $\mu_{k,m}$. Por causa do somatório usado na definição de $\bar{l}_{\text{D}, m}$ e das premissas acima, o ruído $\gamma_{k,m}$ em cada amostra $m$ é eliminado se o número de traces processados é suficientemente grande. A Figura~\erick{fig} mostra o valor estimado do vazamento em cada índice de amostra para o distinguisher SOST aplicado a traces provenientes de uma implementação do algoritmo Montgomery Ladder.
 
@@ -295,11 +289,40 @@ A aplicação de algoritmos de clustering fornece um estimativa para as médias 
 % 1) aplica-se clustering 1D e então método estatístico para combinar os resultados em cada POI;
 % Ou 2) aplica-se clustering em múltiplas dimensões.
 
-\erick[inline]{TODO}
+A etapa de ataque consiste na recuperação propriamente dita do escalar utilizando apenas um único trace, 
+de uma única execução da ECSM. Esta etapa recebe como entradas o conjunto de traces e uma lista de $n_{\mathrm{poi}}$ POIs, e consiste nos seguintes passos:
+\begin{itemize}
+	\item \textbf{Agrupamento}: para cada vetor de amostras em cada POI, é aplicado um dos algoritmos de clustering (K-Means, Fuzzy K-Means ou EM). O resultado são dois clusters para cada vetor de amostras, um correspondente ao bit 0 e o outro ao bit 1, e uma matriz de associação $M_{nx2}$, cujas entradas $m_{i,k}$ são a probabilidade de que a amostra $i$ pertença à classe $k\in \{0,1\}$. Tal rotulamento das amostras pode ser visto como um escalar aproximado. A saída deste passo são $n_{\mathrm{poi}}$ escalares aproximados/candidatos, $n_{\mathrm{poi}}$ matrizes de associação.
+	
+	\item \textbf{Estimação do escalar final}: neste passo os escalares aproximados são combinados em um escalar final. Para tanto, um classificador estatístico (Majority Rule, Log-likelihood ou estimação de Bayes) é empregado.
+	
+	\item \textbf{Cálculo de confidence scores}: neste passo é calculado o grau de confiança (confidence score) no valor de cada bit recuperado.
+	
+	\item \textbf{Cálculo da taxa de sucesso e nível de confiança}.
+\end{itemize}
 
-\subsubsection{Cálculo de confidence scores}
-\erick[inline]{ao concluir seção, transformar esta subseção em um simples parágrafo}
+\noindent \textbf{Majority Rule.} \erick{TODO} \\
 
+\noindent \textbf{Log-likelihood.} \erick{TODO} \\
+
+\noindent \textbf{Estimação de Bayes.} \erick{TODO}
+
+\noindent \textbf{Cálculo de confidence scores} \erick{TODO}
+
+\noindent \textbf{Taxa de sucesso e nível de confiança}\\
+Se o valor do escalar é conhecido, isto é, se o ataque não está sendo aplicado na prática em um alvo real, mas sim sendo testado, então podem ser calculados também a taxa de sucesso e o nível de confiança do ataque. 
+
+\noindent A taxa de sucesso é simplesmente a média do número de bits do escalar que são corretamente recuperados quando o ataque é aplicado a um grande conjunto de traces de execuções completas da ECSM.
+
+\noindent O nível de confiança é calculado da seguinte forma. Sejam $C_\mathrm{wrong}$ e $C_\mathrm{right}$ o conjunto de confidence scores para os bits cujo valor recuperado está, respectivamente, errado ou certo, e $C_\mathrm{all} = C_\mathrm{wrong} \cup C_\mathrm{right} $.
+%
+Calcule $c_\mathrm{max,wrong} = \mathrm{max}\{C_\mathrm{wrong}\}$, $n_\mathrm{known\_wrong} = |{c \in C_\mathrm{all}, c\leq c_\mathrm{max,wrong}}|$  e $n_\mathrm{known\_right} = |C_\mathrm{all}| - n_\mathrm{known\_wrong}$.
+%
+O nível de confiança é então definido por $\mathrm{conf\_level} = n_\mathrm{known\_right} / (n_\mathrm{known\_right} + n_\mathrm{known\_wrong})$ e representa a fração dos bits que foram corretamente recuperados com alta confiança, isto é, com confiança acima do limiar $c_\mathrm{max,wrong}$.
+%
+O nível de confiança indica a qualidade dos confidence scores obtidos, isto é, quão bem eles permitem separar os bits do escalar cujo valor foi corretamente recuperado daqueles cujo valor recuperado está errado. 
+
+\noindent Ambos taxa de sucesso e nível de confiança são indicadores da qualidade de um ataque horizontal, e em última instância, se este é viável ou não, dadas as seguintes condições, dentre outras: qualidade e adequação do aparato de medição, SNR dos traces medidos, segmentação e alinhamento dos traces, qualidade dos pontos de interesse obtidos na etapa de avaliação de vazamento.
 
 \subsection{Ataques template versus Ataques horizontais}
 
