@@ -43,45 +43,122 @@ Existem duas curvas elípticas que estão se destacando considerando o desempenh
 A curva de Montgomery tem a seguinte equação: $E: y^2 = x^3 + Ax^2 + x$. O valor do parâmetro $A$ pode ser alterado para melhorar o desempenho das multiplicações escalares. Iremos tratar a utilização dessa curva com o primo $25519$ $(2^{255}-19)$ e o valor de $A = 486662$, dessa maneira a curva é definida sobre o corpo $\mathbb{F}_{2^{255}-19}$ \cite{Dull:2015:HCM:2834659.2834708}. Considerando o corpo finito utilizado essa curva é chamada de 25519, onde os pontos na curva são mapeados como $P = (X : Z)$. 
 
 A curva de Edwards tem a fórmula: $E: -x^2 + y^2 = 1 + dx^2y^2$ \cite{Bernstein2012}. Nessa curva a soma de dois pontos segue a \textit{Edwards addition law}:
-$$ (x_1,y_1) + (x_2,y_2) = (\frac{x_1y_2 + x_2y_1}{1 + xd_1x_2y_1y_2},\frac{y_1y_2 + x_1x_2}{1 - dx_1x_2y_1y_2}) $$%//TODO
-
-Uma contramedida encontrada de fácil implementação para se tornar resistente a alguns ataques de canal lateral, como ataque de cache e hyperthreading, é possível apenas não escrever índices de dados secretos na memória RAM. Considerando que os ataques mencionados dependem das informações obtidas pela utilização dessas memórias eles não seriam efetivos. 
-
-Um outro ataque conhecido é o ataque por tempo, o mesmo analisa o tempo de execução da primitiva criptográfico que utiliza a chave secreta, para tentar obter os bits da chave. A resistência do algoritmo está baseada na execução em tempo constante, o que pode ser obtido sem a utilização de branchs condicionais. Na seção 6 do minicurso iremos apresentar melhor essa contramedida e a eficácia da mesma.
+$$ (x_1,y_1) + (x_2,y_2) = (\frac{x_1y_2 + x_2y_1}{1 + xd_1x_2y_1y_2},\frac{y_1y_2 + x_1x_2}{1 - dx_1x_2y_1y_2}) $$
+Já a duplicação de um ponto segue a mesma fórmula da adição, portanto a diferença é que ambos os pontos possuem os mesmos valores, sendo: $(x_1, y_1) + (x_1, y_1)$.
 
 \subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
+Considerando que a principal operação em curvas elípticas é a multiplicação escalar é necessário explorar as diferentes formas de implementar esse calculo. Nessa seção serão apresentados os mais simples, resistentes ou não a ataques de canal lateral, e pequenas variações criando novos algoritmos com propriedades diferentes.
 
-% Left-to-right binário (a.k.a. Point and Add Not-Always).
-% Left-to-right binário com contramedida “Dummy Adds” de Coron  (a.k.a. Point and Add Always).
-% Atomic Point and Add. Apresentar a idéia geral, e talvez um conjunto de fórmulas para uma dada curva como exemplo.
-% Montgomery Ladder. Apenas a versão para curvas na forma de Montgomery.
+O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{Double-and-add-not-always}), o mesmo é utilizado para calcular $dP$. Ele possui quatro variáveis, sendo $N$ para armazenar o resultado da operação de duplicação do ponto durante a execução, $Q$ armazena o resultado das operações, $P$ é o ponto escolhido na curva para a multiplicação escalar, e por fim $k$ é a chave utilizada na multiplicação.
 
-Existem vários métodos para executar a multiplicação escalar, sendo que os mais simples de implementar serão apresentados nessa seção. O primeiro é o método \textit{Double-and-add}, o mesmo é utilizado para calcular $dP$. Ele possui quatro entradas, sendo $N$ uma variável para armazenar o resultado da operação de duplicação do ponto, Q armazena o resultado das operações, P é o ponto escolhido na curva para a multiplicação escalar, e por fim $d$ é a chave utilizada na multiplicação. É importante citar que $m$ é o tamanho da chave em bits, sendo que cada bit da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 bytes.
+É importante citar que $m$ é o tamanho da chave em bits, sendo que cada \textit{bit} da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 \textit{bytes}. O algoritmo 1 é chamado também de \textit{left-to-right} considerando a orientação onde são percorridos os \textit{bits} da chave privada. É necessário citar que esse algoritmo não é resistente a ataques de canal lateral, sendo que existe uma variação de tempo dependendo do valor dos bits da chave.
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
-\caption{Double-and-add}
+\caption{Double-and-add left-to-right}
 \begin{algorithmic} 
-    \REQUIRE $N, Q, P, d$
-    \ENSURE $Q$
+    \REQUIRE $P, k$
+    \ENSURE $Q = kP$
     \STATE $N \leftarrow P$
     \STATE $Q \leftarrow 0$
-    \FOR{$i$ from $0$ \TO $m$} 
-        \IF{$d_i = 1$}
-            \STATE $Q \leftarrow addpoint(Q, N)$
+    \FOR{$i$ from $m-1$ \TO $0$} 
+        \STATE $N \leftarrow 2N$
+        \IF{$k_i = 1$}
+            \STATE $Q \leftarrow Q+N$
         \ENDIF
-        \STATE $N \leftarrow doublepoint(N)$
     \ENDFOR
     \RETURN Q
     \end{algorithmic}
 \end{algorithm}
 
+Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit} menos significativo para o  mais significativo, e é conhecida como \textit{right-to-left}. A mesma apresenta pequenas diferenças em relação ao algoritmo 1 em termos do código, modificando apenas a ordem dos \textit{bits} percorridos e a ordem as operações de adição e duplicação. Já em relação à segurança esse também não é resistente a ataques de canal lateral.
+
+\floatname{algorithm}{Algoritmo}
+\begin{algorithm}[H]
+\caption{Double-and-add right-to-left}
+\begin{algorithmic} 
+    \REQUIRE $P, k$
+    \ENSURE $Q = kP$
+    \STATE $N \leftarrow P$
+    \STATE $Q \leftarrow 0$
+    \FOR{$i$ from $0$ \TO $m$} 
+        \IF{$k_i = 1$}
+            \STATE $Q \leftarrow Q + N$
+        \ENDIF
+        \STATE $N \leftarrow 2N$
+    \ENDFOR
+    \RETURN Q
+    \end{algorithmic}
+\end{algorithm}
+
+Na seção 3.4 iremos tratar outros método de multiplicação escalar que são resistentes a ataques de canal lateral, tornando constante o número de operações executadas em cada iteração e o tempo de execução independente do valor da chave.
 
 \subsection{Uso de tabelas precomputadas para melhorar desempenho; algoritmos de janela fixa}
+Considerando a utilização de um ponto $P$ fixo, é possível executar o pré-processamento da exponenciação de $P$ e armazenar em uma tabela para ser utilizada em várias multiplicações escalares diferentes. Consequentemente existe um ganho de desempenho em relação a mesma implementação sem a utilização da tabela, pois torna rápida a multiplicação escalar onde a fatoração de $P$ é utilizada. Isso é possível considerando que o maior custo do algoritmo é na geração da tabela, tornando eficiente a partir da primeira multiplicação escalar.
+
+Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados: $2P, 2^2P, 2^3P,..., 2^mP$, sendo $m$ a quantidade de bits do multiplicador escalar $k$. Dessa maneira qualquer operação de duplicação do ponto já foi calculada. Agora iremos apresentar um algoritmo que faz esse pré-processamento que foi proposto por Brickell, Gordon, McCurley, e Wilson. 
 
 \subsection{Algoritmos regulares; atomicidade; montgomery ladder}
+Para que algoritmos de multiplicação escalar sejam resistentes à ataques de canal lateral é necessário que o fluxo de execução seja regular, isso significa que as operações a serem executadas não serão alteradas de acordo com o valor da chave privada. É possível observar que com essas alterações o tempo de execução será constante, já se tornando resistência minimamente ao ataque de canal lateral de tempo.
 
-Utilizando a curva de Montgomery é possível executar a multiplicação escalar pelo método chamado Montgomery Ladder. Esse método é dividido em degraus, sendo necessário executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}.
+Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-always}, proposto por Coron, onde o mesmo executa a adição e duplicação do ponto em todas a iterações. O pseudo-código pode ser observado no algoirtmo 3. Da mesma maneira dos outros algoritmos de multiplicação escalar apresentados os parâmetros de entrada são o ponto $P$ e o escalar $k$, e a saída é o resultado da computação $Q$.
+
+\begin{algorithm}[H]
+\caption{Double-and-add-always}
+\begin{algorithmic} 
+    \REQUIRE $P, k$
+    \ENSURE $Q = kP$
+    \STATE $R_0 \leftarrow P$
+    \FOR{$i$ from $m-2$ \TO $0$} 
+        \STATE $R_0 \leftarrow 2R_0$
+        \STATE $R_1 \leftarrow R_0 + P$
+        \STATE $b \leftarrow k_{i}$
+        \STATE $R_0 \leftarrow R_b$
+    \ENDFOR
+    \RETURN $R_0$
+    \end{algorithmic}
+\end{algorithm}
+
+Uma implementação mais promissora que a apresentada anteriormente é chamada de \textit{Atomic Double-and-Add}. Na mesma não é possível diferenciar qual operação no ponto está sendo executada. Além disso, no algoritmo o ponto principal da segurança está na execução da operação de $\oplus$ entre $b$ e os \textit{bits} da chave, sendo que a operação de $\oplus$ não vaza informações sobre a chave. O pseudocódigo do algoritmo pode ser observado no algoritmo 4, tendo entradas o ponto $P$ e o escalar $k$.
+
+\begin{algorithm}[H]
+\caption{Atomic Double-and-Add}
+\begin{algorithmic} 
+    \REQUIRE $P, k$
+    \ENSURE $Q = kP$
+    \STATE $R_0 \leftarrow P$
+    \STATE $R_1 \leftarrow P$
+    \STATE $j \leftarrow l - 2$
+    \STATE $b \leftarrow 0$
+    \WHILE{$j \ge 0$} 
+        \STATE $R_0 \leftarrow R_0 + R_b$
+        \STATE $b \leftarrow b \oplus k_j$
+        \STATE $j \leftarrow j + k_j -1$
+    \ENDWHILE
+    \RETURN $R_0$
+    \end{algorithmic}
+\end{algorithm}
+
+
+Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva.
+
+\begin{algorithm}[H]
+\caption{Montgomery-ladder}
+\begin{algorithmic} 
+    \REQUIRE $P, k$
+    \ENSURE $Q = kP$
+    \STATE $R_0 \leftarrow P$
+    \STATE $R_1 \leftarrow 2P$
+    \FOR{$j \leftarrow l - 2$ \TO $0$} 
+        \STATE $b \leftarrow k_j$
+        \STATE $R_{1-b} \leftarrow R_0 + R_1$
+        \STATE $R_b \leftarrow 2R_b$
+    \ENDFOR
+    \RETURN $R_0$
+    \end{algorithmic}
+\end{algorithm}
+
+O método \textit{Montgomery-ladder} possui uma implementação mais eficientes para a curva de Montgomery com o primo 25519. Na mesma, esse método é dividido em degraus, sendo necessário os executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}. São utilizadas duas entradas sendo $s$ o escalar com tamanho igual à 256 \textit{bits}, e $x_p$ a coordenada $x$ do ponto a ser multiplicado. A função \textit{cswap}, conhecida como \textit{conditional swap}, faz a troca dos valores dos dois primeiros parâmetros caso o valor de $c$ seja $1$. Essa primeira parte do algoritmo pode ser observada no algoritmo 5.
 
 \begin{algorithm}[H]
 \caption{Montgomery ladder}
@@ -104,6 +181,8 @@ Utilizando a curva de Montgomery é possível executar a multiplicação escalar
     \RETURN $(X_1,Z_1)$
     \end{algorithmic}
 \end{algorithm}
+
+No caso da operação de \textit{ladder} as operações executadas são necessárias para diminuir a quantidade de memória utilizada pelo algoritmo. Isso dificulta ataques considerando que o dado temporário não se mantém na memória. É possível observar a seguir no algoritmo 6 um pseudo-código do método de \textit{ladder}.
 
 \begin{algorithm}[H]
 \caption{Ladder}
