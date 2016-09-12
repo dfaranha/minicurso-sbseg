@@ -19,9 +19,17 @@
 \subsection{Ataques de tempo e SPA ao algoritmo double-and-add-not-always}
 
 \subsubsection{Ataque de tempo ao algoritmo double-and-add-not-always}
-\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+Considerando que o SPA de tempo se baseia na variação de tempo do algoritmo dependendo do valor da chave é possível realizar o ataque de tempo em algoritmos que não executam em tempo constante. Nesse caso, a maneira mas simples de observar uma implementação insegura é a presença de branchs condicionais. Um exemplo é no caso de um algoritmo possuir uma instrução de \textit{if} onde ele apenas executa as operações contidas nessa instrução dependendo dos \textit{bits} da chave privada.
+
+Nesse contexto podemos observar um ataque de tempo aplicado a uma implementação do RSA por \cite{Kocher96}, esse foi o primeiro ataque de tempo proposto. O mesmo pode ser aplicado a implementações de curvas elípticas considerando que basicamente o atacante faz a análise do tempo de execução do algoritmo, tenta advinhar os \textit{bits} da chave e valida se o resultado está correto.
+
+No trabalho de \cite{danger2013synthesis} é descrito um ataque à um implementação genérica de ECSM. O mesmo segue os seguintes passos: primeiramente o atacante coleta o tempo de execução de diferentes ECSMs com o mesmo escalar e diferentes pontos base. Para cada ECSM, ele simula a computação usando um simulador de software com exatamente a mesma implementação do chip alvo, "chutando" o valor do bit $i$ do escalar. 
+
+Agora suponha, sem perda de generalidade, que a hipótese é de que o valor do \textit{bit} é $0$.  Ele separa os diferentes tempos de execução em dois conjuntos, $S_1$ e $S_2$. Caso uma redução é necessária ao final da execução o tempo obtido é armazenado em $S_2$, senão é armazenado em $S_1$. Após toda a execução é feita uma média dos tempos armazenados em $S_1$ e $S_2$, e se a diferença entre as médias for aproximadamente o tempo de execução da redução portanto a hipótese estava correta.
 
 \begin{comment}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+
 1.	Ataque SPA à alg. ECSM binário left-to-right (Dbl-and-Add not Always)
 	a.	Se impl não é de tempo constante, então é possível realizar ataque de tempo.
 		i.	P.ex., se usa if and else, então pode-se determinar a cada iteração qual bloco, if ou else, é tomado.
@@ -38,9 +46,15 @@ Hellman, RSA, DSS, and other systems. In: Proceedings of CRYPTO’96, LNCS, vol.
 \end{comment}
 
 \subsubsection{Ataque SPA ao algoritmo double-and-add-not-always}
-\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+O algoritmo \textit{double-and-add-not-always} executa em tempo constante, contudo o ataque SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no \textit{trace} das iterações com apenas DBL (onde o \textit{bit} da chave é igual à $0$) daquelas com DBL+ADD (com \textit{bit} da chave igual à $1$). Um ataque deste tipo segmenta/divide o \textit{trace} de potência de uma execução do ECSM em \textit{subtraces}, cada uma contendo uma operação de ponto (ADD ou DBL). 
+
+Se o tempo de execução de uma operação de ADD for diferente do tempo de DBL, então o comprimento dos \textit{subtraces} revela onde estão os ADDs e consequentemente os bits do escalar. Se o tempo da operação ADD e o tempo da DBL forem iguais, e uma fórmula unificada para ADD and DBL é utilizada, então, se for aplicada correlação (coeficiente de correlação de Pearson) entre todos os pares de \textit{subtraces}, o resultado será que a correlação será mais alta para os pares de subtraces cuja operação correspondente é a mesma (i.e., (ADD,ADD) ou (DBL,DBL)), identificando portanto as operações de ponto e consequentemente os \textit{bits} do escalar.
+
+Mesmo sendo que a implementação seja vulnerável a SPA é desejável que execute em tempo constante, o que cria uma base para a implementação de outras contramedidas. Portanto, é necessário observar que para executar o ataque SPA são requisitados equipamentos para medir a potência como um osciloscópio, além disso, o ataque por tempo possui simplicidade em comparação com SPA sendo que apenas é necessária a capacidade de verificar o tempo de execução do algoritmo e inserir entradas distintas.
 
 \begin{comment}
+\erick[inline]{Lucas: ver o comentario no fonte. Converter comentario em texto}.
+
 b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para distinguir os padrões no trace das iterações com apenas DBL (bit=0) daquelas com DBL+ADD (bit=1). Um ataque deste tipo segmenta/divide o trace de potencia de uma execucao do ECSM em subtraces, cada um contendo uma operacao de ponto (ADD ou DBL). Se as tempo(ADD) != tempo(DBL), então o comprimento dos subtraces revela onde estão os ADDs e consequentemente os bits do escalar. Se tempo(ADD) == tempo(DBL) e uma formula unificada para ADD and DBL é utilizada, então, se for aplicada correlação (coeficiente de correlacao de Pearson) entre todos os pares de subtraces, o resultado será que a correlação será mais alta para os pares de subtraces cuja operação correspondente é a mesma (i.e., (ADD,ADD) ou (DBL,DBL)), identificando portanto as operações de ponto e consequentemente os bits do escalar.
 \end{comment}
 
@@ -48,7 +62,11 @@ b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para
 
 \subsection{Double-and-add-always algorithm of Coron~\cite{Coron1999}}
 
-\erick[inline]{Lucas: traduzir esta secao}The {\it double-and-add-always} algorithm of Coron~\cite{Coron1999} (Algorithm~\ref{Double-and-add-Coron}) uses a dummy point addition when the scalar bit $k_i$ is $0$, such that the sequence of operations to compute the scalar multiplication is independent of the value of the secret scalar.
+\begin{comment}
+\erick[inline]{Lucas: traduzir esta secao}
+\end{comment}
+
+O algoritmo {\it double-and-add-always} de \cite{Coron1999} (Algoritmo 8) utiliza uma adição de ponto falsa conhecida como \textit{dummy point addition} quando o \textit{bit} escalar $k_i$ é $0$, tornando a sequência de operações computadas durante a multiplicação escalar independente do valor do escalar.
 
 \begin{algorithm}[h] %\scriptsize %\footnotesize
 	\caption{\small{\textit{Double-and-add always} algorithm resistant against SPA}}
@@ -66,14 +84,20 @@ b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para
 	\end{algorithmic}
 \end{algorithm}
 
-Therefore an adversary cannot, in principle, guess the value of bit $k_i$ by SPA. A drawback of this method is its low efficiency. It requires $nA+nD$ field operations, a $33\%$ increase in the amount of field operations in comparison to the (unprotected) binary left-to-right algorithm.
+Portanto o adversário não consegue, em princípio, advinhar o valor do \textit{bit} $k_i$ por SPA. Uma desvantagem desse método é a sua baixa eficiência. Ele requer $nA + nD$ operações no corpo, um aumento de $33\%$ nas operações do corpo em comparação a versão desprotegida binária do algoritmo \textit{left-to-right}.
 
 \subsubsection{Fouque and Valette's Doubling Attack \cite{CHES:FouVal03}}\label{Fouque-Valette-DoublingAttack}
+O ataque de duplicação de Fouque-Valette~\cite{CHES:FouVal03} é baseado no fato de que é possível detectar se dois valores intermediários são iguais quando o algoritmo calcula a multiplicação escalar para pontos escolhidos $P$ e $2P$. Diversos algoritmos protegidos contra SPA são vulneráveis ao ataque d eFouque e Valette's, como o algoritmo clássico \textit{left-to-right} binário, incluindo as variações do mesmo, como o \textit{double-and-add-always} de Coron.
+
+No algoritmo de Coron \textit{double-and-add-always}, algoritmo (Algoritmo~\ref{Double-and-add-Coron}), a soma parcial é calculada da seguinte maneira: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. Então o resultado intermediário do algoritmo no passo $m$ quando a entrada for $P$ será igual ao resultado intermediário no passo $m-1$ quando a entrada for $2P$, se e somente se, $k_{n-m} = 0$. Portanto, um atacante pode obter o escalar secreto comparando a computação de duplicação no passo $m+1$ para $P$ e no passo $m$ para $2P$ para recuperar o bit $k_{n-m}$. Se ambas as computações forem idênticas, $k_{n-m} = 0$, senão $k_{n-m} = 1$. Isso mostrou que com apenas duas requisições de multiplicação escalar escolhidas pelo atacante, é possível recuperar todos os \textit{bits} do escalar.~\footnote{O atacante coleta um traço de energia para a computação de $kP$ e um para a computação de $k(2P)$. Para cada iteração $m=1,...,n$ ele executa o ataque como descrito e encontra $k_{n-m}$.}
+
+\begin{comment}
 The doubling attack of Fouque-Valette~\cite{CHES:FouVal03} is based on the fact that it is possible to detect if two intermediate values are equal when the algorithm computes the scalar multiplication for points chosen points $P$ and $2P.$ Several algorithms protected against SPA are vulnerable to Fouque and Valette's attack, such as the classic binary left-to-right algorithm, including those derived from it, such as Coron's double-and-add-always algorithm.
 
 %In ~\textit{double-and-add-always} algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_k(P) = \sum_{i=0}^{k}d_{n-i}2^{k-i} P=\sum_{i=0}^{k-1}d_{n-i}2^{k-1-i}(2P)+d_{n-k}P= S_{k-1}(2P)+d_{n-k}P$. So, the intermediate result of the algorithm at step $k$ when given input $P$ will be equal to the intermediate result at step $k-1$ when given input $2P$, if and only if, $d_{n-k}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $k+1$ for $P$ and at step $k$ for $2P$ to recover the bit $d_{n-k}.$ If both computations are identical, $d_{n-k}=0$, otherwise $d_{n-k}=1$.
 In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}), the partial sums are computed as follows: $S_m(P) = \sum_{i=1}^{m}k_{n-i}2^{m-i} P=\sum_{i=1}^{m-1}k_{n-i}2^{m-1-i}(2P)+k_{n-m}P= S_{m-1}(2P)+k_{n-m}P$. So, the intermediate result of the algorithm at step $m$ when given input $P$ will be equal to the intermediate result at step $m-1$ when given input $2P$, if and only if, $k_{n-m}=0$. Therefore, an attacker can obtain the secret scalar by comparing the doubling computation at step $m+1$ for $P$ and at step $m$ for $2P$ to recover the bit $k_{n-m}.$ If both computations are identical, $k_{n-m}=0$, otherwise $k_{n-m}=1$. It has been shown that with only two scalar multiplication requests chosen by the attacker, it is possible to recover all the bits of the scalar.~\footnote{The attacker collects one power trace for the computation of $kP$ and one for the computation of $k(2P)$. For each iteration $m=1,...,n$, he runs the attack as described and finds $k_{n-m}$.}
 %%\vspace{-0.5cm}
+\end{comment}
 
 
 \subsection{Contramedidas}
@@ -105,7 +129,14 @@ In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}
 	%	\end{itemize}
 
 \subsubsection{Projective Coordinates (Re-)Randomization (CR)~\cite{Coron1999}}
+As coordenadas projetivas usadas em Montgomery Ladder são $(X : Z)$. Durante o método ECSM primeiramente é necessário gerar um valor randômico $\lambda \mathbb{F}_p \backslash \{0\}$. Então calcule $Z_2 \rcv \lambda$ and $X_2 \rcv u \cdot \lambda$, onde $u$ é a coordenada $x$ do ponto $P$ da entrada. Então utilize $P'=(X_2:Z_2)$ no lugar de $P$.
+
+Existe um custo de geração de $\ceil{log_2(p)}$ \textit{bits} aleatórios. Além disso, algumas vantagens ligadas a essa randomização das coordenadas como por exemplo a resistência à ataques online de template \cite{BatinaChmielewski2014}, pode ser aplicada para as curvas de Edwards, \textit{twisted} Edwards e Montgomery. Por fim, a cada iteração do método de ECSM ela pode ser aplicada, sendo apenas necessária a coordenada $x$ no caso de Montgomery Ladder.
+
+
+\begin{comment}
 \erick[inline]{Lucas: traduzir e escrever em texto corrido. Descrito para o caso de Montgomery Ladder somente com a coordenada $x$}
+
 Original projective coordinates used in Mont Ladder: $(X:Z)$.\\
 In the beginning of the ECSM, do:
 \begin{enumerate}
@@ -120,9 +151,16 @@ In the beginning of the ECSM, do:
 	\item Can also be applied to Edwards, twisted Edwards and Montgomery curves.
 	\item Can also be used at every ECSM iteration (re-randomization).
 \end{itemize}
+\end{comment}
 
 \subsubsection{Point Blinding (PB)~\cite{Coron1999}}
+Essa contramedida pode ser aplicada seguindos os passos apresentados a seguir: antes da primeira multiplicação escalar com o escalar $k$ é necessário gerar um ponto aleatório $R$ no subgrupo. Então, pre-compute e armazene $S = [k]R$. No início de cada operação escalar calcule $T \rcv P + R$ e $Q \rcv [k] T$. Atualize $R$ e $S$ da seguinte maneira: $R \rcv (-1)^t 2R$ e $S \rcv (-1)^t 2S$, $t \in \{0,1\}$ escolhido de forma aleatória. Por fim, retorne $W = Q - S$.
+
+O custo encontrado nessa contramedida é de 2 ECADD, 2 ECDBL, e memória SRAM para valores temporários. Provavelmente também é utilizada memória não volátil para armazenar $R$ e $S$. \textit{Point Blinding} protege contra SVA horizontal \cite{MurdicaGuilley2012}, RPA \cite{Goubin2003}, e ZPA \cite{AkishitaTakagi2003}, mas é vulnerável à OTA \cite{BatinaChmielewski2014}
+
+\begin{comment}
 \erick[inline]{Lucas: traduzir e escrever em texto corrido.}
+
 Before the first scalar multiplication with scalar $k$:
 \begin{itemize}
 	\item Generate random point $R$ in the subgroup.
@@ -139,6 +177,8 @@ At the beginning of each scalar multiplication:
 
 \noindent  \underline{Cost}: 2 ECADD, 2 ECDBL, SRAM memory for temps. Probably also writable non-volatile memory to store $R$ and $S$.\\
 \noindent \underline{Effectiveness}: protects against horizontal SVA~\cite{MurdicaGuilley2012}, RPA~\cite{Goubin2003} and ZPA\cite{AkishitaTakagi2003}. Vulnerable to OTA~\cite{BatinaChmielewski2014}.
+\end{comment}
+
 
 % Definitions ==========================================================
 % RPA = Refined Power Analysis. Intermed. point with one of the coords zero.
