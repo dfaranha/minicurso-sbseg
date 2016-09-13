@@ -1,7 +1,39 @@
 
 \subsection{Métodos empíricos para análise de vazamentos}
 
+%% \erick[inline]{usar paper e slides SPACE e slides talk at Riscure ~\cite{GoodwillJun2011, WittemanJaffe2013, TunstallGoodwill2016}}
+
+Avaliações de segurança de dispositivos criptográficos com respeito a canais laterais compreende duas fases: \textit{medição} e \textit{análise}.
+%
+A saída ou resultado de tal avaliação deve Falhou (\textit{Fail}) ou Passou (\textit{Pass}). 
+%
+O resultado de tal avaliação deve ser interpretado segundo as restrições do processo de avaliação, tais como a acurácia do equipamento de teste, expertise técnica dos avaliadores e tempo disponível para a avaliação.
+%
+A medição dos traces e suas limitações deve ser levada em consideração, caso contrário a fase posterior, de análise, pode ser prejudicada ou invalidada, resultando em falsos positivos, ou pior, em falsos negativos.
+%%
+%%
+
+As metodologias de avaliação atuais (p.ex., Common Criteria~\cite{CommonCriteria2014}) consistem na realização de um bateria de ataques por canais laterais conhecidos contra o dispositivo sob teste (DUT)~\footnote{Device under test.} em uma tentativa de recuperar a chave. Apesar disto, a rápida evolução das técnicas de análise por canais laterais atuais propostas na literatura incorrem em ambos um nível crescente de expertise dos testadores e um crescimento no tempo requerido para avaliação. Mesmo quando todas as tentativas de ataque falham, vazamentos residuais no canal lateral avaliado podem ainda estar presentes, o que pode revelar novos caminhos de ataque (\textit{attack paths}) para um adversário.
+%
+%For these reasons, NIST organized a workshop~\cite{NIST_NIAT_2011} to encourage the development of test methods, metrics and tools for evaluating the effectiveness of mitigations against non-invasive attacks on cryptographic modules.
+%%
+%%
+
 \subsubsection{Test Vector Leakage Assessment (TVLA)}\label{sec-tvla}
 
-\erick[inline]{usar paper e slides SPACE e slides talk at Riscure ~\cite{GoodwillJun2011, WittemanJaffe2013, TunstallGoodwill2016}}
+Por estas razões o NIST organizou um workshop em 2011~\cite{NIST_NIAT_2011} para encorajar o desenvolvimento de métodos de teste, métricas e ferramentas para avaliação da eficácia de mitigações contra ataques não-invasivos à módulos criptográficos.
 
+% cRI proposed the Test Vector Leakage Assessment (TVLA) testing methodology, to solve the aforementioned issues, which is claimed to be effective, in the sense that it is reproducible and is a reliable indicator of the resistance achieved, and cost effective, meaning that ``validating a moderate level of resistance (e.g., FIPS 140 level 3 or 4) should not require an excessive amount of testing time per algorithm or test operator skills"~\cite{Goodwill2011}. Their approach differs fundamentally from the attack-focused evaluation strategies currently employed, taking a black-box and detection-focused strategy~\cite{MatherOswaldBandenburg2013}.
+
+Neste workshop a CRI\footnote{Empresa ``Cryptography Research'', atualmente incorporada à Rambus.} propôs a metodologia \textit{Test Vector Leakage Assessment} (TVLA)~\cite{Goodwill2011} com o propósito de resolver os problemas acima. Os autores desta metodologia consideram duas figuras de mérito são importantes, a eficácia, no sentido de que ela é reprodutível e é um indicador confiável da resistência atingida pelo dispositivo, e a relação custo-benefício, isto é, na palavra dos autores, ``validar um nível moderado de resistência (p.ex., FIPS 140 nível 3 ou 4) não deve requerer uma quantidade excessiva de tempo de teste por algoritmo ou de habilidade do operador de teste''~\cite{Goodwill2011}. A abordagem da metodologia TVLA difere fundamentalmente das estratégias de avaliação focadas em ataque atualmente empregadas, adotando uma estratégia caixa-preta com foco na detecção de vazamento.
+
+% cRI's methodology measurement phase is based on the collection of side-channel traces when standardized test vectors are provided as input to the algorithm implementation being tested, and establishes requirements for power measurement equipment and setup, data collection, signal alignment and preprocessing. 
+A fase de medição na TVLA é baseada na aquisição de traces de canal lateral quando vetores de teste padronizados são fornecidos como entrada para a implementação sob teste, e estabelece requisitos para os equipamentos e setup de medição, alinhamento e preprocessamento dos traces.
+
+% The analysis phase comprises statistical hypothesis testing, more specifically, Welch's $t$-test, which is able to detect different types of leakages and allows the analyst to identify points in time that deserve further investigation. 
+A fase de análise compreende teste de hipótese estatístico, mais especificamente, o $t$-test de Welch, o qual é capaz de detectar diferentes tipos de vazamento e permite ao analista identificar pontos no tempo que merecem investigação adicional.
+
+% The testing methodology has so far been applied to AES hardware and software implementations (by the proposal authors~\cite{Goodwill2011,Cooper2013} and independently~\cite{MatherOswaldBandenburg2013}), and RSA software implementations~\cite{Witteman2011}.
+A metodologia TVLA até então foi aplicada à implementações do AES em hardware e software~\cite{Goodwill2011,Cooper2013,MatherOswaldBandenburg2013}, e implementações em software do RSA~\cite{Witteman2011} e ECC (multiplicação escalar com base variável)~\cite{Nascimento2015_Space}. Bem recentemente, os autores da TVLA detalharam mais a aplicação da metodologia ao RSA e como adaptá-la aos esquemas ECDSA e ECDH.~\cite{TunstallGoodwill2016}.
+
+\erick[inline]{TODO}
