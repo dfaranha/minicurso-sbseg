@@ -36,4 +36,125 @@ A fase de análise compreende teste de hipótese estatístico, mais especificame
 % The testing methodology has so far been applied to AES hardware and software implementations (by the proposal authors~\cite{Goodwill2011,Cooper2013} and independently~\cite{MatherOswaldBandenburg2013}), and RSA software implementations~\cite{Witteman2011}.
 A metodologia TVLA até então foi aplicada à implementações do AES em hardware e software~\cite{Goodwill2011,Cooper2013,MatherOswaldBandenburg2013}, e implementações em software do RSA~\cite{Witteman2011} e ECC (multiplicação escalar com base variável)~\cite{Nascimento2015_Space}. Bem recentemente, os autores da TVLA detalharam mais a aplicação da metodologia ao RSA e como adaptá-la aos esquemas ECDSA e ECDH.~\cite{TunstallGoodwill2016}.
 
+\subsubsection{Outras metodologias para análise de vazamentos}
+
+%Other methodologies, based on continuous~\cite{Chothia2011} and discrete~\cite{Chatzikokolakis2010} mutual information have also been proposed.
+%
+Outras metodologias, baseadas em informação mútua contínua~\cite{Chothia2011} e discreta~\cite{Chatzikokolakis2010} também foram propostas.
+%
+%Oswald et al~\cite{MatherOswaldBandenburg2013} analyzed methodologies~\cite{Goodwill2011},~\cite{Chatzikokolakis2010} and ~\cite{Chothia2011}, and concluded they have similar statistical power.
+%
+Oswald et al~\cite{MatherOswaldBandenburg2013} analisaram as metodologias~\cite{Goodwill2011},~\cite{Chatzikokolakis2010} e ~\cite{Chothia2011}, e concluiu que elas tem poder estatístico similar.
+%
+%The recent work of Schneider and Moradi~\cite{SchneiderMoradi2015} address how to perform the $t$-test in~\cite{Goodwill2011} at higher orders, and how to extend it to multivariate settings.
+%
+O trabalho recente de Schneider e Moradi~\cite{SchneiderMoradi2015} aborda como realizar o teste $t$ em~\cite{Goodwill2011} em ordens mais altas e como estendê-lo para o contexto multivariado.
+%
+\subsubsection{Aplicação da metodologia TVLA para ECC}
+
+% We show the application of CRI's methodology to an implementation of ECDH-Curve25519 for the AVR microcontroller~\cite{Nascimento2015_Space}. 
+%
+Nós mostramos a aplicação da metodologia TVLA à um implementação para microcontrolador AVR do esquema ECDH utilizando a curva Curve25519 e o algoritmo Montgomery Ladder para ECSM~\cite{Nascimento2015_Space}.
+%
+% Specifically, we select a set of test vectors (Table \ref{tbSetsTVs}) to be used for the power measurement phase, which cover normal and special cases of the field and group arithmetic when implemented using the chosen algorithms. 
+Especificamente, os conjuntos de vetores de teste na ~\Cref{tbSetsTVs}) foram selecionados para serem usados para a fase de medição de consumo de potência, os quais cobrem casos normais e especiais da aritmética de corpo finito e de grupo.
+%
+% Table \ref{tbSpecialValuesECDH} shows categories of special values used in Sets $4$ and $5$ for the compute shared secret function.
+%
+A~\Cref{tbSpecialValuesECDH} mostra categorias de valores especiais usados nos conjuntos 4 e 5 para a função compute shared secret do esquema ECDH-Curve25519.
+
+\begin{table}[htb]\scriptsize
+	\caption{Conjuntos de vetores de teste para análise de vazamento SPA ($k$ é um escalar secreto e $P$ é um ponto).}
+	\label{tbSetsTVs}
+	%\resizebox{1.0\textwidth}{!} { \begin{minipage}{\textwidth}
+	\centering%\begin{center}
+	\bgroup
+	\def\arraystretch{\tblvertpaddingfactor} %cell vertical padding
+	\setlength{\tabcolsep}{\tblhorizpadding} %cell horizontal padding
+	\begin{tabular}{|c|c|c|} 	%\begin{tabular}{|c|c|m{0.5\textwidth}|}
+		\hline 
+		\# Conj.	& Propriedades	& Descrição \\ \hline \hline
+		1		& $k$ constante, $P$ constante	&	Este é o baseline. Os testes comparam os traces dos outros conjuntos contra este. \\ \hline 
+		2		& $k$ constante, $P$ varia	&	Meta é detectar relações sistemáticas entre consumo de potência e o valor de $P$. %Goal is to detect systematic relationships between power consumption and the $P$ value. 
+		\\ \hline 
+		3		& $k$ varia, $P$ constante	&	Meta é detectar relações sistemáticas entre consumo de potência e o valor de $k$. \\ \hline  %Goal is to detect systematic relationships between power consumption and the $k$ value.
+		4		& $k$ constante, $P$ especial	&	Casos de borda dos algoritmos utilizados. \\ \hline %Edge cases of the algorithms used.		 
+		5		& $k$ especial, $P$ constante	&	Casos de borda dos algoritmos utilizados. %Edge cases of the algorithms used.
+		\\ \hline
+	\end{tabular}
+	\egroup
+	%\end{center}%\end{minipage} }
+\end{table}
+
+\begin{table}[htb]\scriptsize
+	\caption{Categorias de valores especiais para $n$ e $q$ na função compute shared secret em ECDH-Curve25519 ($q$ é um ponto codificado, $n$ é um escalar codificado e $l$ é a ordem do subgrupo).}
+	\label{tbSpecialValuesECDH}
+	%\resizebox{1.0\textwidth}{!} { \begin{minipage}{\textwidth}
+	\begin{center}
+		\bgroup
+		\def\arraystretch{\tblvertpaddingfactor} %cell vertical padding
+		\setlength{\tabcolsep}{\tblhorizpadding} %cell horizontal padding
+		\begin{tabular}{|c|l|}
+			\hline
+			Cat. \#	& Propriedades	\\ \hline \hline
+			1		& $q \in \{0,1,...,1023\}$	\\ \hline 
+			2		& $q \in \{p_{25519}-1,...,p_{25519}-1024\}$	\\ \hline 
+			3		& $n \in \{0,...,1023\}$	\\ \hline
+			4		& $n \in \{l-1,...,l-1024\}$	\\ \hline 
+			5		& $q$ tem um alto peso de Hamming ($\geq 230$) \\ \hline
+			6		& $q$ tem um baixo peso de Hamming ($\leq 25$) \\ \hline
+		\end{tabular}
+		\egroup
+	\end{center} 
+	%\end{minipage} }
+\end{table}
+
 \erick[inline]{TODO}
+
+% We obtained 200 average traces for each test vector set, for a total of 1000 traces. 
+%
+
+%
+\begin{comment}
+The leakage analysis phase of our implementation of ECDH-Curve25519 with
+randomized coordinates countermeasure is identical to CRI’s TVLA [50], and is
+conducted in the following way. Let {DS 1 , . . . , DS 5 } be the sets of power traces
+corresponding to the selected test vectors sets. 
+\end{comment}
+%
+
+%
+\begin{comment}
+The full test consists of running
+the (pairwise) tests described in [50] for each of the following pairs of datasets:
+{(DS 1 , DS 2 ), . . . , (DS 1 , DS 5 )}. 
+\end{comment}
+%
+
+%
+\begin{comment}
+If any of the previous tests fails, then the top-
+level test fails and the implementation is deemed to have FAILED. Otherwise,
+it PASSED. We chose the conﬁdence threshold C = 4.5, the same value used in
+CRI’s methodology for RSA [50].
+\end{comment}
+%
+
+%
+\begin{comment}
+SPA Analysis. The leakage analysis methodology was applied to our imple-
+mentation of ECDH-Curve25519 with randomized coordinates. Figure 2 shows
+the t-statistic for a small range of sample indices 12 (time instants), for one run of
+Welch’s t-test for group A (S A,1 , S A,2 ) of vectors selected from DS 1 and DS 3 , and
+the same test run over the independent group B (S B,1 , S B,2 ). 13 The t-statistic
+for group A is above C = 4.5 at one time instant, meaning a possible strong
+dependence between power consumption and key value at that instant. But, as
+it did not occur at the same time and in the same direction for group B, it
+is therefore considered a false positive by the methodology and thus discarded.
+The test results for each pair of test vector sets {(DS 1 , DS 2 ), . . . , (DS 1 , DS 5 )}
+showed that at a few time instants the t-statistic value for one of the groups is
+above 4.5 or below −4.5, but not for both groups at the same time. Therefore,
+we can conclude that our SPA protected implementation of ECDH-Curve25519
+passed the SPA leakage evaluation.
+\end{comment}
+%
