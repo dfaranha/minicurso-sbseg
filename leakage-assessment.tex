@@ -54,7 +54,7 @@ O trabalho recente de Schneider e Moradi~\cite{SchneiderMoradi2015} aborda como 
 
 % We show the application of CRI's methodology to an implementation of ECDH-Curve25519 for the AVR microcontroller~\cite{Nascimento2015_Space}. 
 %
-Nós mostramos a aplicação da metodologia TVLA à um implementação para microcontrolador AVR do esquema ECDH utilizando a curva Curve25519 e o algoritmo Montgomery Ladder para ECSM~\cite{Nascimento2015_Space}.
+Nesta subseção nós mostramos a aplicação da metodologia TVLA à um implementação para microcontrolador AVR do esquema ECDH utilizando a curva Curve25519 e o algoritmo Montgomery Ladder para ECSM protegida com a contramedida de aleatorização de coordenadas projetivas (CR)~\cite{Nascimento2015_Space}.
 %
 % Specifically, we select a set of test vectors (Table \ref{tbSetsTVs}) to be used for the power measurement phase, which cover normal and special cases of the field and group arithmetic when implemented using the chosen algorithms. 
 Especificamente, os conjuntos de vetores de teste na ~\Cref{tbSetsTVs}) foram selecionados para serem usados para a fase de medição de consumo de potência, os quais cobrem casos normais e especiais da aritmética de corpo finito e de grupo.
@@ -109,52 +109,64 @@ A~\Cref{tbSpecialValuesECDH} mostra categorias de valores especiais usados nos c
 	%\end{minipage} }
 \end{table}
 
-\erick[inline]{TODO}
-
 % We obtained 200 average traces for each test vector set, for a total of 1000 traces. 
 %
-
+\noindent \textbf{Fase de aquisição}. Os autores~\cite{Nascimento2015_Space} capturaram 200 traces de potência para cada um dos conjuntos de vetores de teste, totalizando 1000 traces.
 %
 \begin{comment}
-The leakage analysis phase of our implementation of ECDH-Curve25519 with
-randomized coordinates countermeasure is identical to CRI’s TVLA [50], and is
-conducted in the following way. Let {DS 1 , . . . , DS 5 } be the sets of power traces
-corresponding to the selected test vectors sets. 
+The leakage analysis phase of our implementation of ECDH-Curve25519 with randomized coordinates countermeasure is identical to CRI's TVLA~\cite{Witteman2011}, and is conducted in the following way. Let $\{DS_1,\ldots,DS_5\}$ be the sets of power traces corresponding to the selected test vectors sets.
+\end{comment}
+%
+A fase de análise de vazamento é idêntica à proposta na metodologia TVLA para o RSA~\cite{Witteman2011}, e é conduzida da seguinte forma. Sejam $\{DS_1,\ldots,DS_5\}$ os conjuntos de traces de potência correspondentes aos conjuntos de vetores de teste selecionados.
+%
+\begin{comment}
+The full test consists of running the (pairwise) tests described in~\cite{Witteman2011} for each of the following pairs of datasets: $\{(DS_1,DS_2)$, \dots, $(DS_1,DS_5) \}$.
 \end{comment}
 %
 
+O teste completo consiste em executar os testes pareados descritos em~\cite{Witteman2011} para cada um dos seguintes pares de datasets: $\{(DS_1,DS_2)$, \dots, $(DS_1,DS_5) \}$.
 %
 \begin{comment}
-The full test consists of running
-the (pairwise) tests described in [50] for each of the following pairs of datasets:
-{(DS 1 , DS 2 ), . . . , (DS 1 , DS 5 )}. 
+If any of the previous tests fails, then the top-level test fails and the implementation is deemed to have FAILED. Otherwise, it PASSED. We chose the confidence threshold $C = 4.5$, the same value used in CRI's methodology for RSA~\cite{Witteman2011}.
 \end{comment}
+%
+Se qualquer um dos testes anteriores falha, então o resultado da avaliação da implementação é~\textit{FALHOU}. Caso contrário, o resultado é~\textit{PASSOU}. Nós escolhemos o limiar de confiança $C = 4.5$, o mesmo valor usado na metodologia TVLA para o RSA~\cite{Witteman2011}.
+%
+% \textbf{SPA Analysis.} The leakage analysis methodology was applied to our implementation of ECDH-Curve25519 with randomized coordinates. ~\Cref{fig:graph__t_statistic__x__sample_index_for_groups_A_and_B__pair_DS1_DS3} shows the $t$-statistic for a small range of sample indices
 %
 
+\noindent \textbf{Fase de análise SPA}. A ~\Cref{fig:graph__t_statistic__x__sample_index_for_groups_A_and_B__pair_DS1_DS3} mostra a estatística $t$ para um pequeno intervalo de índices de amostra.
 %
-\begin{comment}
-If any of the previous tests fails, then the top-
-level test fails and the implementation is deemed to have FAILED. Otherwise,
-it PASSED. We chose the conﬁdence threshold C = 4.5, the same value used in
-CRI’s methodology for RSA [50].
-\end{comment}
+%\footnote{This time interval was selected because it illustrates a range where the $t$-statistic values are relatively high, compared to other time instants.} (time instants), 
+%
+\footnote{Este intervalo de tempo foi selecionado porque ele ilustra um intervalo onde os valores da estatística $t$ são altos comparados com os os instantes de tempo} (i.e., time instants),
+%
+% for one run of Welch's $t$-test for group A $(S_{A,1},S_{A,2})$ of vectors selected from $DS_1$ and $DS_3$, and the same test run over the independent group B $(S_{B,1},S_{B,2})$.
+%
+para uma execução do teste $t$ para grupo A $(S_{A,1},S_{A,2})$ de vetores selecionados de $DS_1$ e $DS_3$, e o mesmo teste executado sobre o grupo (independente) B $(S_{B,1},S_{B,2})$.
+%
+%\footnote{Groups A and B are a partition of test vector sets $DS_1$ and $DS_3$: $(S_{A,1}\subset DS_1,\ \  S_{A,2}\subset DS_3)$ and $(S_{B,1} = DS_1\setminus S_{A,1},\ \ S_{B,2} = DS_3\setminus S_{A,2})$.} 
+%
+\footnote{Os grupos A e B são uma partição dos conjuntos de vetores de teste $DS_1$ e $DS_3$: $(S_{A,1}\subset DS_1,\ \  S_{A,2}\subset DS_3)$ e $(S_{B,1} = DS_1\setminus S_{A,1},\ \ S_{B,2} = DS_3\setminus S_{A,2})$.} 
+%
+% The $t$-statistic for group A is above $C = 4.5$ at one time instant, meaning a possible strong dependence between power consumption and key value at that instant. But, as it did not occur at the same time and in the same direction for group B, it is therefore considered a false positive by the methodology and thus discarded. 
 %
 
+A estatística $t$ para grupo A está acima do limiar $C = 4.5$ em um instante de tempo, significando uma possível dependência forte entre o consumo de potência e o valor da chave naquele instante. Mas, como este evento não ocorreu ao mesmo tempo e na mesma direção para o grupo B, ele é considerado um falso positivo pelo metodologia e assim é descartado.
 %
-\begin{comment}
-SPA Analysis. The leakage analysis methodology was applied to our imple-
-mentation of ECDH-Curve25519 with randomized coordinates. Figure 2 shows
-the t-statistic for a small range of sample indices 12 (time instants), for one run of
-Welch’s t-test for group A (S A,1 , S A,2 ) of vectors selected from DS 1 and DS 3 , and
-the same test run over the independent group B (S B,1 , S B,2 ). 13 The t-statistic
-for group A is above C = 4.5 at one time instant, meaning a possible strong
-dependence between power consumption and key value at that instant. But, as
-it did not occur at the same time and in the same direction for group B, it
-is therefore considered a false positive by the methodology and thus discarded.
-The test results for each pair of test vector sets {(DS 1 , DS 2 ), . . . , (DS 1 , DS 5 )}
-showed that at a few time instants the t-statistic value for one of the groups is
-above 4.5 or below −4.5, but not for both groups at the same time. Therefore,
-we can conclude that our SPA protected implementation of ECDH-Curve25519
-passed the SPA leakage evaluation.
-\end{comment}
+%The test results for each pair of test vector sets $ \{(DS_1,DS_2), \dots, (DS_1,DS_5) \}$ showed that at a few time instants the $t$-statistic value for one of the groups is above $4.5$ or below $-4.5$, but not for both groups at the same time. 
 %
+
+Os resultados de teste para cada par de conjuntos de vetores de teste $ \{(DS_1,DS_2), \dots, (DS_1,DS_5) \}$ mostrou que em poucos instantes de tempo o valor da estatística $t$ para um dos grupos esteve acima de $4.5$ ou abaixo de $-4.5$, mas nunca para ambos os grupos ao mesmo tempo.
+%Therefore, we can conclude that our SPA protected implementation of ECDH-Curve25519 passed the SPA leakage evaluation.
+%
+Portanto, pode-se concluir que a implementação passou a avaliação de vazamento SPA segundo a metodologia TVLA.
+
+\begin{figure}[htb]
+	\centering
+	\centerline{
+		\includegraphics[width=1.1\textwidth]{figures/graph__t_statistic__x__sample_index_for_groups_A_and_B__pair_DS1_DS3-eps-converted-to.pdf}
+	}
+	\caption{$t$-statistic versus sample index for the experiment comparing $DS_1$ and $DS_3$, for two independent groups of traces; group A (blue) and group B (red).}
+	\label{fig:graph__t_statistic__x__sample_index_for_groups_A_and_B__pair_DS1_DS3}
+\end{figure}
