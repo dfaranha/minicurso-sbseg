@@ -2,7 +2,28 @@
 
 %\subsubsection{Aplicação semi-automática de contramedidas}
 
-\erick[inline]{Copiar texto proposta projeto Intel SCA de 2014}
+%==================================================================================================
+%% texto proposta projeto Intel-Fapesp "Secure execution of cryptographic algorithms" de 2014
+%==================================================================================================
 
+%Formal verification also has been applied to power analysis. Moss et al.~\cite{moss2011automatic} introduce an algorithm to  automate the process of application of masking countermeasures against DPA, at the assembly code level. 
 
+%%% Formal verification of software implementations of cryptographic algorithms against power analysis has been studied.
+Verificação formal de implementações em software de algoritmos criptográficos contra análise de potência é um assunto que tem sido pesquisado recentemente.
+%
+% Maggi et al.~\cite{maggi2013automated, Agosta:2013:CSC:2463209.2488833} propose a method based on data flow analysis, to be able to identify dependencies of each instruction on secret data. 
+%
+Por exemplo, Maggi et al.~\cite{maggi2013automated, Agosta2013} propuseram um método baseado em análise de fluxo de dados para identificar dependências entre as instruções executadas e dados secretos.
+%
+% The method is implemented into the LLVM compiler as a specialized pass that works at the intermediate representation level, thus it is architecture agnostic, supporting any of the architectures supported by LLVM. The tool automatically instantiates the essential masking countermeasures. 
+%
+O método é implementado em um compilador LLVM como uma passada especializada operando no nível de representação intermediária, portanto ela é agnóstica em arquitetura, suportando quaisquer das arquiteturas de computador suportadas por LLVM. A ferramenta automaticamente instancia contramedidas de masking à implementação.
+%
 
+% Most recently, Bayrak et al~\cite{BayrakRegazzoniNovo:2013, Bayrak2014} showed how to reduce the verification problem, in the case of power channels, into a set of Boolean satisfiability problems, which can be efficiently handled by current SAT solvers, and which overcome some of shortcomings of the information flow analysis approach. 
+
+Mais recentemente, Bayrak et al~\cite{BayrakRegazzoniNovo2013, Bayrak2014} mostraram como reduzir o problema de verificação da resistência de uma implementação a vazamento por canais de potência à um conjunto de problemas SAT, os quais podem ser eficientemente tratados pelos resolvedores SAT atuais. Tal método a princípio endereça as limitações da abordagem baseada em análise de fluxo de informação.
+
+% Their approach motivated the introduction of satisfiability module theories (SMT) solvers by Eldib et al~\cite{EldibWang2014, EldibWang2014_QMS, EldibWang2014_SMT, EldibWang2014_sc_sniffer} to tackle the problem in the case of power analysis. The latter authors also proposed methods for the automated application of countermeasures.
+%
+Resolvedores baseados em teorias do módulo de satisfabilidade (SMT) foram aplicados por Eldib et al~\cite{EldibWang2014, EldibWang2014_QMS, EldibWang2014_SMT, EldibWang2014_sc_sniffer} a este problema. Estes últimos também propuseram métodos para a aplicação automatizada de contramedidas.
