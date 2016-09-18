@@ -247,3 +247,24 @@ No caso da operação de \textit{ladder} as operações executadas são necessá
 \end{algorithm}
 
 \subsection{Protocolos de IoT que envolvem ECC}
+
+No trabalho de \cite{SimplicioJr2016} podemos observar um protocolo de internet das coisas (IoT, do inglês Internet of Things) que utiliza criptografia de curvas elípticas. Esse protocolo é aplicado à redes de sensores sem fio que fazem o monitoramente do ambiente aplicado. Nessa rede um nó (mote) não possui grande capacidade de processamento, largura de banda, energia, memória, entre outros. Sendo assim, a comunicação entre os nós requer implementações eficientes de protocolos criptográficos, para acordo de chaves autenticada, encriptação e decriptação.
+
+Nesse projeto foi estudado um protocolo eficiente baseado em ECC para acordo de chaves autenticadas (iSMQV, do inglês Implicitly-Certified Authenticated Key Agreement). Esse protocolo utiliza um centro gerador de chaves (KGC, do inglês Key Generation Center) para gerar o par de chaves, sendo pública e privada. Essas chaves apresentam certificado e podem ser verificadas com informações públicas. O objetivo das mesmas é a utilização para estabelecer uma chave comum entre dois nós da rede.
+
+No protocolo iSMQV para que o nó da rede, que chamaremos de $A$, obtenha o seu par de chaves é necessário seguir os passos:
+\begin{itemize}
+    \item A escolhe um número aleatório $\alpha$ e computa $V = \alpha \cdot G$, sendo $G$ o gerador do grupo $\mathbb{G}$. O valor de $V$ e a sua identidade $ID_A$ são enviadas para o KGC;
+    \item Então KGC verifica a identidade de $A$ e computa $V_A = V + \beta \cdot G$, para um $\beta$ aleatório;
+    \item Além disso, KGC calcula o hash $h = H(ID_A, V_A)$ e cria a assinatura $s = h \cdot \beta + r$;
+    \item $s$ e $V_A$ são enviados ao nó $A$;
+    \item Por fim, $A$ calcula $h = H(ID_A, V_A)$, a chave privada $r_A = h \cdot \alpha + s$, e a chave pública $U_A = r_A \cdot G$.
+\end{itemize}
+
+Após cada nó ter o seu par de chaves eles podem iniciar o acordo de chaves, para então com posse de uma chave simétrica única trocar mensagens. Esse acordo é feito com o protocolo Diffie-Hellman, onde o $ID$ e $Y$ também são trocados para verificar a identidade de ambas as partes. 
+
+Vamos apresentar o protocolo inteiro considerando dois nós que desejam se comunicar, $A$ e $B$. Cada nó escolhe um $x$ aleatório e computa $X = x \cdot G$. Esse resultado é trocado entre $A$ e $B$, e cada parte executa a multiplicação do seu $G$ pelo resultado do outro, sendo os resultados $s_A = X_B \cdot G$ e $s_B = X_A \cdot G$.
+
+Após a troca da chave pública ela é validada e se for aprovada continuam o processo. Ambos $A$ e $B$ calculam os \textit{hashs} $d$ e $e$ da chave pública do outro e concatenam com a sua própria chave privada para computar $\sigma$. A chave secreta $K$ é computada criando um \textit{hash} de $\sigma$ e as informações públicas trocadas.
+
+Esse é um exemplo de um protocolo com chave autenticada para acordo de chaves. É possível observar que com a utilização do protocolo Diffie-Hellman e a criptografia curvas elípticas é possível obter desempenho no acordo de chaves considerando o desempenho já apresentado nessa seção.
