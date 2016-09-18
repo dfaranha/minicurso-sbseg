@@ -111,6 +111,16 @@ In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}
 \end{comment}
 
 \subsubsection{Scalar Randomization (SR)}
+Essa contramedida é aplicada no início da multiplicação escalar, e é executada da seguinte maneira:
+\begin{itemize}
+    \item Aleatoriamente selecione $r\in_R \{0,1\}^n$, para um pequeno $n$. $n=32$ é um parâmetro razoável no quesito do \textit{trade-off} entre segurnaça/eficiência;
+    \item Calcule $k' \rcv k + r |E|$;
+    \item Utilize $k'$ no lugar de $k$.
+\end{itemize}
+
+O custo da aplicação dessa contramedida está ligado à geração dos \textit{bits} pseudo-aleatório, $n$ iterações da ECMS, as adições e multiplicações para calcular $k'$ e $n$ \textit{bits} da SRAM. Já no quesito eficiência é necessário verificar que é vulnerável a ataques de template online (OTA) \cite{BatinaChmielewski2014}, entre outros. 
+
+\begin{comment}
 	%	\begin{itemize}
 	%\item 
 	At the beginning of the scalar multiplication:
@@ -127,8 +137,15 @@ In Coron's double-and-add-always algorithm (Algorithm~\ref{Double-and-add-Coron}
 	\underline{Effectiveness}: vulnerable to Online Template Attacks (OTA) {[Batina,2014]}, among others.
 	%	\end{itemize}
 
+\end{comment}
+
 \subsubsection{Projective Coordinates (Re-)Randomization (CR)~\cite{Coron1999}}
-As coordenadas projetivas usadas em Montgomery Ladder são $(X : Z)$. Durante o método ECSM primeiramente é necessário gerar um valor randômico $\lambda \mathbb{F}_p \backslash \{0\}$. Então calcule $Z_2 \rcv \lambda$ and $X_2 \rcv u \cdot \lambda$, onde $u$ é a coordenada $x$ do ponto $P$ da entrada. Então utilize $P'=(X_2:Z_2)$ no lugar de $P$.
+As coordenadas projetivas usadas em Montgomery Ladder são $(X : Z)$. Os passos para aplicar essa contramedida são:
+\begin{itemize}
+    \item Gerar um valor pseudo-aleatório $\lambda \mathbb{F}_p \backslash \{0\}$;
+    \item Calcule $Z_2 \rcv \lambda$ and $X_2 \rcv u \cdot \lambda$, onde $u$ é a coordenada $x$ do ponto $P$ da entrada;
+    \item Utilize $P'=(X_2:Z_2)$ no lugar de $P$.
+\end{itemize}
 
 Existe um custo de geração de $\ceil{log_2(p)}$ \textit{bits} aleatórios. Além disso, algumas vantagens ligadas a essa randomização das coordenadas como por exemplo a resistência à ataques online de template \cite{BatinaChmielewski2014}, pode ser aplicada para as curvas de Edwards, \textit{twisted} Edwards e Montgomery. Por fim, a cada iteração do método de ECSM ela pode ser aplicada, sendo apenas necessária a coordenada $x$ no caso de Montgomery Ladder.
 
@@ -153,7 +170,19 @@ In the beginning of the ECSM, do:
 \end{comment}
 
 \subsubsection{Point Blinding (PB)~\cite{Coron1999}}
-Essa contramedida pode ser aplicada seguindos os passos apresentados a seguir: antes da primeira multiplicação escalar com o escalar $k$ é necessário gerar um ponto aleatório $R$ no subgrupo. Então, pre-compute e armazene $S = [k]R$. No início de cada operação escalar calcule $T \rcv P + R$ e $Q \rcv [k] T$. Atualize $R$ e $S$ da seguinte maneira: $R \rcv (-1)^t 2R$ e $S \rcv (-1)^t 2S$, $t \in \{0,1\}$ escolhido de forma aleatória. Por fim, retorne $W = Q - S$.
+Essa contramedida pode ser aplicada, antes da primeira multiplicação escalar, seguindos os passos apresentados a seguir: 
+\begin{itemize}
+    \item Com o escalar $k$ é necessário gerar um ponto aleatório $R$ no subgrupo;
+    \item Pre-calcule e armazene $S = [k]R$;
+    \item No início de cada operação escalar calcule $T \rcv P + R$ e $Q \rcv [k] T$;
+    \item Atualize $R$ e $S$ da seguinte maneira:
+    \begin{itemize}
+        \item $R \rcv (-1)^t 2R$;
+        \item $S \rcv (-1)^t 2S$;
+        \item $t \in \{0,1\}$ escolhido de forma aleatória.
+    \end{itemize}
+    \item Retorne $W = Q - S$.
+\end{itemize}
 
 O custo encontrado nessa contramedida é de 2 ECADD, 2 ECDBL, e memória SRAM para valores temporários. Provavelmente também é utilizada memória não volátil para armazenar $R$ e $S$. \textit{Point Blinding} protege contra SVA horizontal \cite{MurdicaGuilley2012}, RPA \cite{Goubin2003}, e ZPA \cite{AkishitaTakagi2003}, mas é vulnerável à OTA \cite{BatinaChmielewski2014}
 
@@ -185,12 +214,16 @@ At the beginning of each scalar multiplication:
 % SVA = Same Value Analysis. Generalization of ZPA when the intermediate value has a special value (not necessarily 0), that can be easily distinguished.
 %==========================================================
 \subsubsection{Scalar Splitting (SS)~\cite{ClavierJoye2001}}
+A aplicação dessa contramedida segue, sendo $k$ o escalar original de $n$ \textit{bits}, os seguintes passos:
+\begin{itemize}
+    \item Gere um inteiro $k_1 < k$ aleatoriamente
+    \item Faça $k_2\rcv k - k_1$
+    \item Calcule $Q\rcv [k_1]P$
+    \item $T\rcv[k_2]P$ 
+    \item $R\rcv Q + T$. 
+\end{itemize}
 
-Seja $k$ o escalar original de $n$ bits. Gere um inteiro $k_1 < k$ aleatoriamente e faça $k_2\rcv k - k_1$. Calcule $Q\rcv [k_1]P$, $T\rcv[k_2]P$ e $R\rcv Q + T$. 
-
-\noindent \underline{Custo}: 1 ECSM de $n$ bits e 1 ECADD. Pode ser reduzido se for empregado truque de Shamir para multiplicação escalar dupla (versão regular)~\cite{CietJoye2003}.\\
-\noindent \underline{Eficácia}: Resistente à TA, SPA clássico e CPA clássico.\\
-\noindent \underline{Variantes}: Euclidean splitting~\cite{CietJoye2003} e multiplicative splitting~\cite{TrichinaBelleza2003}, ambas com a mesma eficácia da versão original, também conhecida como additive splitting.
+O custo dessa contramedida é a execução de 1 ECSM de $n$ \textit{bits} e 1 ECADD. O mesmo pode ser reduzido se for empregado truque de Shamir para multiplicação escalar dupla (versão regular)~\cite{CietJoye2003}. A eficácia está ligada a resistência aos ataques TA, SPA clássico e CPA clássico. As variantes dessa contramedida são: Euclidean splitting~\cite{CietJoye2003} e \textit{multiplicative splitting}~\cite{TrichinaBelleza2003}, ambas com a mesma eficácia da versão original, também conhecida como \textit{additive splitting}.
 
 \begin{comment} % === Ataques SCA contra ECC devem ser do tipo single-trace  ===
 5.	Explicar porque no contexto de PKC (RSA e ECC) não fazem sentido ataques que envolvem mais de um trace, como p.ex., DPA.
