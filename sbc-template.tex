@@ -1,6 +1,4 @@
-\documentclass[12pt]{article}
-
-\usepackage{sbc-template}
+\documentclass{SBCbookchapter}
 \usepackage{verbatim}
 \setcounter{secnumdepth}{4}
 \usepackage{graphicx,url}
@@ -68,24 +66,21 @@
 
 \title{Canais laterais em criptografia simétrica e de curvas elípticas: ataques e contramedidas}
 
-\author{Lucas Zanco Ladeira\inst{1} (apresentador), Erick Nascimento\inst{1}, JP Ventura\inst{1}\and \\ Ricardo Dahab\inst{1}, Diego Aranha\inst{1}, Julio Lopez\inst{1}}
+\author{Lucas Zanco Ladeira, Erick Nascimento, João Paulo Fernantes Ventura,\\ Ricardo Dahab, Diego F. Aranha, Julio Lopez}
 
 
-\address{Instituto de Computação – Universidade Estadual de Campinas (Unicamp)\\
-Caixa Postal 6176 – 13.084-970 – Campinas – SP – Brasil
-    \email{lucas.ladeira@students.ic.unicamp.br}
-  \email{\{erick.nogueira.nascimento,joao.ventura\}@gmail.com}
-  \email{\{rdahab,dfaranha,jlopez\}@ic.unicamp.br}
-}
 
 \begin{document} 
 
 \maketitle
      
 \begin{resumo}
-Existe uma infinidade de ataques visando a quebra de sistemas criptogr\'aficos, buscando a obtenção de informação sigilosa, acesso não-autorizado, entre outros. Tais ataques ocorrem tanto sobre os algoritmos quanto implementações de um sistema. Um tipo de ataque sobre implementações \'e o de canais laterais, que faz uso do vazamento de informa\c{c}\~oes durante a execu\c{c}\~ao de alguma primitiva criptogr\'afica. Ataques dessa categoria utilizam variações do tempo de execução, do consumo de pot\^encia, do campo magn\'etico, entre outros. As contramedidas podem ser baseadas em modificações no software ou no hardware. Neste minicurso, nossa atenção se restringe ao software, voltada para métodos criptográficos simétricos, e os assimétricos baseados em curvas elípticas.
+Para fornecer segurança em um ambiente hostil, algoritmos criptográficos precisam resistir a uma infinidade de ataques buscando a obtenção de informação sigilosa, acesso não-autorizado, entre outros. Tais ataques ocorrem tanto sobre os algoritmos e seus problemas computaconais subjacentes, quanto as implementações de um criptossistema. Uma classe de ataques sobre implementações de algoritmos é chamada ataques de canal lateral, que faz uso de informações vazadas durante a execução de uma primitiva criptográfica. Ataques dessa natureza utilizam variações no tempo de execução, no consumo de energia, emanações eletromagnéticas e outras características do dispositivo alvo. Contramedidas contra esses ataques podem ser baseadas em modificações no software ou no hardware. Nesse minicurso, discutem-se ataques e contramedida sobre implementações em software de métodos criptográficos simétricos e assimétricos baseados em curvas elípticas.
 \end{resumo}
 
+\begin{abstract}
+In order to provide security in a hostile environment, cryptographic algorithms must resist against many attacks aiming to capture confidential information, obtain non-authorized access, among others. These attacks can target either the algorithms and their underlying hardness assumptions, and the implementations of a cryptosystem. Side-channel attacks are a class of attacks directed at the implementations of a cryptographic algorithm and make use of information leaked during the execution of a cryptographic primitive. Such attacks are based on variances in execution time, energy consumption, electromagnetic emanations and other features of the device. Countermeasures against this approach can be both based on software and hardware mechanisms. In this short course, we discuss side-channel attacks and countermeasures against software implementations of symmetric primitives and curve-based public key cryptography.
+\end{abstract}
 
 
 \input{introducao}
