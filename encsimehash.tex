@@ -60,9 +60,9 @@ Classicamente, o paradigma Merkle-Damg\aa rd constrói uma função de resumo cr
 
 Um pardigma de construção que se tornou imensamente popular é a classe de \emph{esponjas criptográficas}. Uma esponja é uma função com estado interno $s$ de tamanho finito $b$, dividido em duas seções: a taxa de \emph{bits} de tamanho $r$ e a capacidade de tamanho $c$, tais que $b = c + r$. Completam a especificação uma função de permutação $f$ de tamanho fixo que transforma o estado interno e uma regra de preenchimento. Durante a inicialização, uma função esponja atribui o valor 0 ao estado interno e completa a mensagem de entrada para que seu tamanho seja múltiplo de $r$, de forma que a entrada possa ser dividida em blocos de tamanho $r$. A cada iteração da função, um novo bloco da entrada é adicionado a parte do estado interno pela operação \texttt{XOR} e o estado interno $s$ é substituído por $f(s)$. Em outras palavras, os blocos da entrada são absorvidos sucessivamente no estado interno. Na etapa final, toma-se $r$ bits do estado interno por iteração até que a saída atinja um tamanho pré-determinado, alternando com novas aplicações da função de permutação $f(s)$. A resistência a colisões ou ataques de pré-imagem dependem do tamanho $c$, tipicamente escolhido como duas vezes o nível de segurança desejado. A Figura~\ref{fig:sponge} apresenta a construção~\cite{BertoniDPA08}.
 
-\begin{figure}
+\begin{figure}[h!]
 \begin{center}
-    \includegraphics[scale=0.75]{figures/sponge.png}
+    \includegraphics{figures/sponge.pdf}
     \caption{Esponja criptográfica, e suas fases de absorção e extração.}
     \label{fig:sponge}
 \end{center}
