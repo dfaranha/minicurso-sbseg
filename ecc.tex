@@ -1,4 +1,22 @@
-Curvas elípticas se definem por equações cúbicas com grau 3, um exemplo é a equação: $y^2 = x^3 + x$. A mesma pode ser observada na figura 3. Umas das funcionalidades das curvas é provar o último teorema de Fermat que diz que uma equação $x^n + y^n = z^n$, quando $n > 2$, não possui uma solução com inteiros diferentes de $0$ \cite{Hankerson:2003:GEC:940321}.
+Curvas elípticas se definem por equações cúbicas com grau 3, um exemplo é a equação: $y^2 = x^3 - x$. Na figura \ref{fig:curvas} é possível observar a curva mencionada anteriormente e a $y^2 = x^3 -x + 1$ para exemplificar o formato de uma curva elíptica. Umas das funcionalidades das curvas é provar o último teorema de Fermat que diz que uma equação $x^n + y^n = z^n$, quando $n > 2$, não possui uma solução com inteiros diferentes de $0$ \cite{Hankerson:2003:GEC:940321}.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{figures/curve1.png}
+  \caption{$y^2 = x^3 -x + 1$}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{figures/curve2.png}
+  \caption{$y^2 = x^3 - x$}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Exemplo de duas curvas elípticas}
+\label{fig:curvas}
+\end{figure}
 
 Uma outra maneira de utilizar as curvas é na criptografia de chave pública, onde a aritmética de pontos na curva é utilizada para encriptar e decriptar um dado. Sendo assim, iremos apresentar algumas curvas e suas vantagens em comparação com outros esquemas criptográficos.
 
