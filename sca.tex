@@ -105,7 +105,7 @@ Opera\c{c}\~{o}es com dados sens\'{i}veis geram alter\c{c}\~{o}es na corrente ou
 A tecnologia de semicondutores dominante em microprocessadores, mem\'{o}rias e dispositivos embarcados \'{e} a CMOS   \cite{sedra:1997}, sendo inversores l\'{o}gicos sua unidade b\'{a}sica de constru\c{c}\~{a}o. Como dispositivos utilizam fontes constantes de tens\~{a}o, a pot\^{e}ncia consumida varia de acordo com o fluxo de sinais nos componentes, e esses de acordo com as opera\c{c}\~{o}es realizadas. Se esse consumo de pot\^{e}ncia for monitorado com aux\'{i}lio de um oscilosc\'{o}pio poderemos estabelecer um rastro de consumo de pot\^{e}ncia (\textit{power trace}) a cada ciclo do dispositivo.
 
 \subsubsection{An\'{a}lise simples de pot\^{e}ncia sobre ECDSA}
-Uma das rotinas mais executadas em dispositivos que utilizam ECC s\~{a}o os algoritmos de assinatura digital de curvas el\'{i}pticas (\textit{ECDSA} ou \textit{Elliptic Curve Digital Signature Algorithm}), tendo como opera\c{c}\~{a}o central a multiplica\c{c}\~{a}o de um ponto por um escalar (Algoritmo 8).
+Uma das rotinas mais executadas em dispositivos que utilizam ECC s\~{a}o os algoritmos de assinatura digital de curvas el\'{i}pticas (\textit{ECDSA} ou \textit{Elliptic Curve Digital Signature Algorithm}), tendo como opera\c{c}\~{a}o central a multiplica\c{c}\~{a}o de um ponto por um escalar (Algoritmo 9).
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
@@ -140,7 +140,7 @@ O que torna a forma n\~{a}o adjacente de $k$ mais interessante do que sua repres
 
 Entretanto um advers\'{a}rio que soubesse que o dispositivo implementa um algoritmo \textit{ECDSA} poderia monitorar o consumo de pot\^{e}ncia do dispositivo utilizando um oscilosc\'{o}pio, obtendo o gr\'{a}fico mostrado na Figura~\ref{fig:Fig5}. No Algoritmo 9, vemos que adi\c{c}\~{o}es s\~{a}o realizadas apenas quando $k_{i} \neq 0$; logo, uma maior quantidade de pot\^{e}ncia \'{e} despendida para d\'{i}gitos n\~{a}o nulos. Portanto os intervalos curtos denominados $D$ correspondem a itera\c{c}\~{o}es em que $k_{i} = 0$, enquanto intervalos longos denominados $S$ correspondem a itera\c{c}\~{o}es em que $k_{i} \neq 0$. Essa informa\c{c}\~{a}o torna vi\'{a}vel descobrir a chave atrav\'{e}s de ataques por for\c{c}a bruta, pois apenas $1/3$ dos d\'{i}gitos s\~{a}o n\~{a}o nulos.
 
-A solu\c{c}\~{a}o mais simples contra SPA consiste em inserir opera\c{c}\~{o}es redundantes no algoritmo de multiplica\c{c}\~{a}o (Algoritmo 1.6), de modo que a seq\"{u}\^{e}ncia de opera\c{c}\~{o}es elementares envolvidas sejam realizadas em igual propor\c{c}\~{a}o. Comparando o novo \textit{power trace} obtido (Figura~\ref{fig:Fig7}) n\~{a}o \'{e} poss\'{i}vel diferenciar adi\c{c}\~{o}es de multiplica\c{c}\~{o}es.
+A solu\c{c}\~{a}o mais simples contra SPA consiste em inserir opera\c{c}\~{o}es redundantes no algoritmo de multiplica\c{c}\~{a}o (Algoritmo 10), de modo que a seq\"{u}\^{e}ncia de opera\c{c}\~{o}es elementares envolvidas sejam realizadas em igual propor\c{c}\~{a}o. Comparando o novo \textit{power trace} obtido (Figura~\ref{fig:Fig7}) n\~{a}o \'{e} poss\'{i}vel diferenciar adi\c{c}\~{o}es de multiplica\c{c}\~{o}es.
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]

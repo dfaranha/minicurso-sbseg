@@ -1,32 +1,16 @@
 
-\subsection{Ferramentas para verificação de código de alto nível em relação à execução em tempo constante}
+\subsection{Ferramentas para verificação de tempo constante}
 
-Métodos iniciais para verificação de contramedidas são construídos a partir de análise de informação estática baseada em tipos, e tem sido aplicados para
-canais laterais de tempo~\cite{MolnarPiotrowskiSchultz:2006, SP:CVDD09, LuxMantelPerner:2010, LuxStarostin:2011}.
-Molnar et al.~\cite{MolnarPiotrowskiSchultz:2006} propõem métodos para detectar canais laterais de controle de fluxo e transformar código fonte em C para eliminar as vulnerabilidades, abrangendo ataques de tempo e disparo de erros. Coppens et al.~\cite{SP:CVDD09} modificam um compilador para converter comandos condicionais de forma que o código \emph{Assembly} resultante não mais tenha comportamento no tempo dependente dos dados processados.
-Lux et al.~\cite{LuxMantelPerner:2010, LuxStarostin:2011}
-propõem uma ferramenta para detectar potenciais canais laterais em
-implementações em Java de algoritmos criptográficos, baseados em anotações do programador.
-Cleemput et al.~\cite{Cleemput:2012:CMT:2086696.2086702} avaliam até onde
-técnicas automatizadas de compilação podem proteger contra canais laterais de tempo.
-Kopf et al.~\cite{kopf2012automatic} propõem um método novo baseado em limitantes superiores
-automaticamente derivados na quantidade de informação sobre a entrada que o adversário consegue
-extrair de um programa a partir da observação do comportamento da \emph{cache} durante a execução.
-Doychev et al.~\cite{doychev2013cacheaudit} propõem métodos para calcular
-aproximações precisas da quantidade de informação vazada que podem ser observadas
-nos canais laterais a seguir: transições de estado na \emph{cache}, traços de acertos e erros,
-e tempo de execução. Os autores também sugerem provas formais de segurança para contramedidas
+Os primeiros métodos para verificação formal de contramedidas para canais laterais de tempo foram construídos a partir de análise estática. \cite{MolnarPSW05} propõem métodos para detectar canais laterais de controle de fluxo e transformar código fonte em C para eliminar as vulnerabilidades, abrangendo ataques de tempo e tratamento de erros. \cite{CoppensVBS09} modificam um compilador para converter comandos condicionais de forma que o código \emph{Assembly} resultante não mais tenha comportamento no tempo dependente dos dados processados.
+~\cite{LuxS11} propõem uma ferramenta para detectar potenciais canais laterais em implementações em Java de algoritmos criptográficos, baseados em anotações do programador. Em~\cite{KopfMO12}, os autores propõem um método novo baseado em limitantes superiores automaticamente derivados na quantidade de informação sobre a entrada que o adversário consegue extrair de um programa a partir da observação do comportamento da \emph{cache} durante a execução. \cite{DoychevKMR15} propõem métodos para calcular aproximações precisas da quantidade de informação vazada que podem ser observadas nos canais laterais a seguir: transições de estado na \emph{cache}, traços de acertos e erros, e tempo de execução. Os autores também sugerem provas formais de segurança para contramedidas
 como pré-carga de endereços e padrão de acesso independente de dados.
 
-Para canais de tempo, outras abordagens para verificação foram propostas recentemente.
-Almeida et al.~\cite{AlmeidaBarbosa:2011} consideram as políticas em alto nível adotadas
-na implementação da biblioteca NaCl que dizem respeito a prevenção de canais de tempo:
+Ainda considerando ataques de tempo, outras abordagens para verificação foram propostas recentemente. O trabalho~\cite{AlmeidaBPV13} considera as políticas em alto nível adotadas na implementação da biblioteca NaCl:
 ausência de desvios condicionais e endereçamento de vetores dependentes de dados;
 formalizam as políticas e propõem um método de verificação formal baseado em auto-composição,
 demonstrando-o pela aplicação no código \emph{Assembly} otimizado de algumas funções da biblioteca.
-Langley~\cite{Langley:2012} propõe um método de análise dinâmico baseado no módulo 
-\texttt{memcheck} da ferramenta \emph{Valgrind}, que amplifica sua capacidade para
-reconhecer dados não-inicializados na granularidade de \emph{bits}. A ferramenta \emph{FlowTracker}\footnote{\url{http://cuda.dcc.ufmg.br/flowtracker/}}~\cite{RodriguesPA16} foi proposta recentemente para verificar comportamento constante de código compilado para representação intermediária LLVM. As vantagens da ferramenta são a facilidade de descrição das interfaces e a baixa intrusão, já que nenhuma alteração é necessária no código. CT-Verif é uma abordagem similar que fornece garantias formais adicionais, mas exige alteração do código pelo provador.
+\cite{Langley12} propõe um método de análise dinâmico baseado no módulo \texttt{memcheck} da ferramenta \emph{Valgrind}, que amplifica sua capacidade para
+reconhecer dados não-inicializados na granularidade de \emph{bits}. A ferramenta \emph{FlowTracker}\footnote{\url{http://cuda.dcc.ufmg.br/flowtracker/}}~\cite{RodriguesPA16} foi proposta recentemente para verificar comportamento constante de código compilado pela análise estática de fluxo de informação na representação intermediária LLVM. As vantagens da ferramenta são a facilidade de descrição das interfaces e a baixa intrusão, já que nenhuma alteração é necessária no código. CT-Verif~\cite{AlmeidaBBDE16} é uma ferramenta seguindo uma abordagem similar que fornece garantias formais adicionais, mas exige alteração do código pelo verificador.
 
 \subsection{Ferramentas para verificação de implementações contra ataques de potência}
 
