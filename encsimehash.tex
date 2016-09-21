@@ -10,7 +10,25 @@ As funções $E$ e $D$ podem então ser implementadas por um algoritmo simétric
 
 Há muitos paradigmas diferentes para se construir cifras simétricas. Em geral, os algoritmos seguem a idéia proposta por Shannon~\cite{Shannon49} de um \emph{produto iterado de cifras}, em que uma \emph{função de rodada} composta por cifras menores e parametrizada por \emph{chaves de rodada} é repetida um número fixo $r$ de vezes. A função de rodada combina pequenas \emph{cifras de substituição}, que substituem símbolos para confundir a relação entre o criptograma e a chave criptográfica, com uma \emph{cifra de transposição}, que altera a ordem dos \emph{bits} para espalhar a redundância do texto claro ao longo do criptograma. O cálculo de chaves de rodada $k_i$ a partir da chave $k$ é também chamado de \emph{escalonamento de chaves}.
 
-Os paradigmas clássicos mais comuns para construção de cifras de bloco são \emph{Redes de Feistel} e \emph{Redes de Substituição-Permutação} (SPN -- \emph{Substitution-Permutation Network}). Redes de Feistel (ou cifras de Luby-Rackoff~\cite{LubyR88} utilizam uma função de rodada não-inversível $f$ que atua sobre o bloco de texto claro $(L_0 \parallel R_0)$. A cada rodada, a função $f$ calcula a próxima metade do estado interno pela regra $R_{i+1} = L_i \oplus f(R_i, k_i)$, enquanto a metade restante é uma simples cópia $L_{i+1} = R_i$, até que seja atingido o bloco de criptograma $(L_r \parallel R_r)$. A decriptação segue processo análogo, utilizando as regras inversas $R_{i} = L_{i+1}$ e $L_{i+1} = R_{i+1} \oplus f(L_{i+1}, k_i)$. SPNs alternam \emph{caixas de substituição} que operam sobre pedaços de $\ell$ \emph{bits} do texto claro (que implementam cifras de substituição) com uma \emph{camada de difusão linear} que opera sobre todo o estado interno. Ao final de cada rodada, a chave de rodada $k_i$ é adicionada ao estado interno por uma operação \texttt{XOR}. A decriptação é realizada pela aplicação de operações inversas também na ordem inversa.
+Os paradigmas clássicos mais comuns para construção de cifras de bloco são \emph{Redes de Feistel} e \emph{Redes de Substituição-Permutação} (SPN -- \emph{Substitution-Permutation Network}). Redes de Feistel (ou cifras de Luby-Rackoff~\cite{LubyR88} utilizam uma função de rodada não-inversível $f$ que atua sobre o bloco de texto claro $(L_0 \parallel R_0)$. A cada rodada, a função $f$ calcula a próxima metade do estado interno pela regra $R_{i+1} = L_i \oplus f(R_i, k_i)$, enquanto a metade restante é uma simples cópia $L_{i+1} = R_i$, até que seja atingido o bloco de criptograma $(L_r \parallel R_r)$. A decriptação segue processo análogo, utilizando as regras inversas $R_{i} = L_{i+1}$ e $L_{i+1} = R_{i+1} \oplus f(L_{i+1}, k_i)$. SPNs alternam \emph{caixas de substituição} $S_i$ que operam sobre pedaços de $\ell$ \emph{bits} do texto claro (que implementam cifras de substituição) com uma \emph{camada de difusão linear} $P$ que opera sobre todo o estado interno. Ao final de cada rodada, a chave de rodada $k_i$ é adicionada ao estado interno por uma operação \texttt{XOR}. A decriptação é realizada pela aplicação de operações inversas também na ordem inversa. As Figuras~\ref{fig:feistel} e~\ref{fig:spn} apresentam diagramas para Redes de Feistel e de Permutação-Substituição, respectivamente.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{figures/feistel.pdf}
+  \caption{Rodada de uma Rede de Feistel.}
+  \label{fig:feistel}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/spn.pdf}
+  \caption{Rede de Permutação-Substituição.}
+  \label{fig:spn}
+\end{subfigure}
+\caption{Construções para cifras de bloco.}
+\label{fig:bloco}
+\end{figure}
 
 Cifras de fluxo, por sua vez, possuem construções derivadas de geradores pseudo-aleatórios, onde a chave criptográfica faz o papel da semente que termina expandida como uma cadeia de chave pseudo-aleatória muito mais longa. Estas devem ser construídas de modo a maximizar o período do gerador, para evitar repetição na cadeia de chaves. Pode-se dizer que cifras de fluxo são um relaxamento do \emph{one-time pad} (OTP), onde cada símbolo do texto claro é combinado com um símbolo aleatório da chave, que deve possuir o mesmo tamanho da mensagem a ser encriptada. A cadeia de chave pseudo-aleatória de uma cifra de fluxo abre mão da \emph{segurança incondicional} do OTP, em favor de introduzir uma premissa computacional para ganho de eficiência.
 
@@ -22,7 +40,25 @@ Diversos modos de operação já foram padronizados por agências de padronizaç
 
 No modo de operação CBC (\emph{Cipher Block Chaining}), o próximo bloco de criptograma é calculado a partir de um bloco de texto claro e o bloco de criptograma anterior, pela regra $C_i = E_k(M_i \oplus C_{i-1})$, para $2 \leq i \leq n$. O bloco $C_0$ é definido como um \emph{vetor de inicialização} $IV$ único e imprevisível, que não deve se repetir ao longo de encriptações distintas. Observe que o encadeamento da encriptação aleatoriza o bloco de texto claro antes da próxima encriptação, fazendo com que blocos idênticos produzem blocos distintos no criptograma. Como apenas a decifração de blocos distintos pode ser feita de modo independente, paralelismo pode ser extraído apenas no processo de decifração.
 
-O modo de operação CTR (\emph{Counter} simula uma cifra de fluxo a partir de uma cifra de bloco. Os blocos do criptograma são calculados pela operação \texttt{XOR} entre blocos de texto claro e encriptação de valores consecutivos do vetor de inicialização $IV$. Portanto, a regra é dada por $C_i = M_i \oplus E_k(IV + i)$, para $1 \leq i \leq n$. Como o processamento de cada bloco é independente, este modo de operação oferece paralelismo tanto na cifração quanto decifração, sendo tipicamente mais eficiente que o modo CBC.
+O modo de operação CTR (\emph{Counter} simula uma cifra de fluxo a partir de uma cifra de bloco. Os blocos do criptograma são calculados pela operação \texttt{XOR} entre blocos de texto claro e encriptação de valores consecutivos do vetor de inicialização $IV$. Portanto, a regra é dada por $C_i = M_i \oplus E_k(IV + i)$, para $1 \leq i \leq n$. Como o processamento de cada bloco é independente, este modo de operação oferece paralelismo tanto na cifração quanto decifração, sendo tipicamente mais eficiente que o modo CBC. A Figura~\ref{fig:modos} ilustra os dois modos de operação.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=.75\linewidth]{figures/cbc.pdf}
+  \caption{Encriptação no modo CBC.}
+  \label{fig:cbc}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=.75\linewidth]{figures/ctr.pdf}
+  \caption{Encriptação no modo CTR.}
+  \label{fig:ctr}
+\end{subfigure}
+\caption{Modos de operação para cifras de bloco.}
+\label{fig:modos}
+\end{figure}
 
 O modo de cifração autenticada \emph{GCM} (\emph{Galois/Counter Mode}) utiliza o modo CTR para cifração e atualiza um autenticador calculado a partir dos blocos de criptograma $C_i$ que permite detectar posteriormente qualquer manipulação do criptograma em trânsito, com alta probabilidade. Opcionalmente, o modo também autentica dados associados transmitidos às claras, funcionalidade útil para autenticar cabeçalhos de pacotes de rede ou outra informação pública cuja integridade deva ser preservada e possa ser verificada pelo destinatário.
 
