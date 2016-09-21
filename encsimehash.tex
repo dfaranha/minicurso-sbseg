@@ -30,7 +30,7 @@ O modo de cifração autenticada \emph{GCM} (\emph{Galois/Counter Mode}) utiliza
 
 O objetivo de funções de \emph{hash} ou resumo criptográfico é mapear uma cadeia de \emph{bits} de tamanho arbitrário em um \emph{resumo} com tamanho fixo em \emph{bits}. Este resumo tem como papel identificar unicamente a mensagem de entrada, servindo como uma espécie de ``impressão digital''da mesma. São muitas as aplicações em Criptografia e Segurança Computacional de funções criptográficas: armazenamento seguro de senhas, esquemas de assinatura digital, verificação de integridade, derivação de chaves criptográficas, geração de números pseudo-aleatórios, projeto de cifras de fluxo e autenticadores, provas de trabalho de moedas criptográficas, entre outras. A Figura~\ref{fig:hash} apresenta essa funcionalidade abstrata de funções de resumo criptográfico.
 
-\begin{figure}
+\begin{figure}[htbp]
 \begin{center}
     \includegraphics[scale=0.25]{figures/hash.pdf}
     \caption{Função de resumo criptográfico mapeando mensagem $M$ para valor de resumo $H(M)$.}
@@ -50,7 +50,7 @@ Há muitas formas diferentes de se construir essas funções.
 Observe que, pelo tamanho e natureza dos conjuntos de domínio e imagem, \emph{colisões} entre diferentes entradas sob uma função $h$ necessariamente irão existir. O desafio é projetar uma função que torne computacionalmente inviável encontrar essas colisões, mesmo que seu número seja infinito.
 Classicamente, o paradigma Merkle-Damg\aa rd constrói uma função de resumo criptográfico resistente a colisão a partir de uma função de compressão $h$ com entrada de tamanho fixo, também resistente a colisão~\cite{Merkle79,Damgard89a}. Na Figura~\ref{fig:merkle}, a entrada $X$ é dividida entre $B$ blocos, com aplicação de preenchimento para formar o último bloco, e a saída da última função de compressão define o valor de resumo. Funções de resumo podem também ser construídas a partir de cifras de bloco~\cite{PreneelGV93}, ou problemas difíceis de Teoria dos Números, como a fatoração de inteiros.
 
-\begin{figure}
+\begin{figure}[htbp]
 \begin{center}
     \includegraphics[scale=0.2]{figures/merkle.pdf}
     \caption{Construção Merkle-Damg\aa rd para funções de resumo criptográfico.}
@@ -60,7 +60,7 @@ Classicamente, o paradigma Merkle-Damg\aa rd constrói uma função de resumo cr
 
 Um pardigma de construção que se tornou imensamente popular é a classe de \emph{esponjas criptográficas}. Uma esponja é uma função com estado interno $s$ de tamanho finito $b$, dividido em duas seções: a taxa de \emph{bits} de tamanho $r$ e a capacidade de tamanho $c$, tais que $b = c + r$. Completam a especificação uma função de permutação $f$ de tamanho fixo que transforma o estado interno e uma regra de preenchimento. Durante a inicialização, uma função esponja atribui o valor 0 ao estado interno e completa a mensagem de entrada para que seu tamanho seja múltiplo de $r$, de forma que a entrada possa ser dividida em blocos de tamanho $r$. A cada iteração da função, um novo bloco da entrada é adicionado a parte do estado interno pela operação \texttt{XOR} e o estado interno $s$ é substituído por $f(s)$. Em outras palavras, os blocos da entrada são absorvidos sucessivamente no estado interno. Na etapa final, toma-se $r$ bits do estado interno por iteração até que a saída atinja um tamanho pré-determinado, alternando com novas aplicações da função de permutação $f(s)$. A resistência a colisões ou ataques de pré-imagem dependem do tamanho $c$, tipicamente escolhido como duas vezes o nível de segurança desejado. A Figura~\ref{fig:sponge} apresenta a construção~\cite{BertoniDPA08}.
 
-\begin{figure}[h!]
+\begin{figure}[htbp]
 \begin{center}
     \includegraphics{figures/sponge.pdf}
     \caption{Esponja criptográfica, e suas fases de absorção e extração.}
