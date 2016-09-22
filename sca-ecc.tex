@@ -65,8 +65,9 @@ b.	Se é de tempo constante, SPA (com ou sem power model) pode ser aplicado para
 \erick[inline]{Lucas: traduzir esta secao}
 \end{comment}
 
-O algoritmo {\it double-and-add-always} de \cite{Coron1999} (Algoritmo 11) utiliza uma adição de ponto falsa conhecida como \textit{dummy point addition} quando o \textit{bit} escalar $k_i$ é $0$, tornando a sequência de operações computadas durante a multiplicação escalar independente do valor do escalar.
+O algoritmo {\it double-and-add-always} de \cite{Coron1999} (Algoritmo 4) utiliza uma adição de ponto falsa conhecida como \textit{dummy point addition} quando o \textit{bit} escalar $k_i$ é $0$, tornando a sequência de operações computadas durante a multiplicação escalar independente do valor do escalar.
 
+\begin{comment}
 \begin{algorithm}[h] %\scriptsize %\footnotesize
 	\caption{\small{\textit{Double-and-add always} algorithm resistant against SPA}}
 	\label{Double-and-add-Coron}
@@ -82,6 +83,7 @@ O algoritmo {\it double-and-add-always} de \cite{Coron1999} (Algoritmo 11) utili
 		\STATE return $R_0$\\
 	\end{algorithmic}
 \end{algorithm}
+\end{comment}
 
 Portanto o adversário não consegue, em princípio, advinhar o valor do \textit{bit} $k_i$ por SPA. Uma desvantagem desse método é a sua baixa eficiência. Ele requer $nA + nD$ operações no corpo, um aumento de $33\%$ nas operações do corpo em comparação a versão desprotegida binária do algoritmo \textit{left-to-right}.
 
