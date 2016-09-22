@@ -64,7 +64,7 @@ Infelizmente esse ataque funciona bem se os bits contendo erros são adjacentes 
 
 % Alternatively (or combined with the informed brute-force search), we apply the second algorithm from~\cite{chain_recovery_2007}, which is originally designed for \emph{square-and-multiply chains}, to the Montgomery ladder. 
 %%%
-Alternativamente, ou combinado com uma busca de força bruta informada, nós aplicamos o segundo algoritmo de~\cite{Gopalakrishnan2007} à Montgomery ladder. Tal algoritmo é baseado no compromisso entre tempo e memória (\textit{time-memory trade-off}) e foi originalmente projetado para~\textit{cadeias de quadrado e multiplicação}.
+Alternativamente, ou combinado com uma busca de força bruta informada, os autores de~\cite{Nascimento2016_SAC} aplicaram o segundo algoritmo de~\cite{Gopalakrishnan2007} à Montgomery ladder, e este é o objeto desta seção. Tal algoritmo é baseado no paradigma de compromisso entre tempo e memória (\textit{time-memory trade-off}) e foi originalmente projetado para cadeias de quadrado e multiplicação.
 
 
 %%%
@@ -114,37 +114,37 @@ R - [b] P = [a] H
 %Now, following~\cite{chain_recovery_2007}, we use a time-memory trade-off technique to speed up an exhaustive search: 
 %Consider all different possible guesses for $a$. 
 %%%
-Nós podemos usar \erick{CONT HERE}.
-%TODO
+Nós podemos usar~\Cref{eq:check} para verificar a corretude do chute. Agora, seguindo~\cite{Gopalakrishnan2007}, nós usamos uma técnica de compromisso entre tempo e memória para acelerar uma busca exaustiva.
 %%%
 %For each guess, we compute $[a] H$ and store all pairs $(a, [a] H)$. 
 %We then sort all pairs based on the value of $[a] H$ and store them in an ordered table.
 %%%
-%TODO
+Para cada chute do valor de $a$, nós computamos $[a] H$ e armazenamos todos os pares $(a, [a] H)$ em uma tabela. Nós então ordenamos todos os pares pelo valor do ponto $A = [a] H$.
 %%%
 
 
-
-% Next, we make a guess for $b$ and compute $z = R - [b] P$. 
-%If our guess for $b$ 
-%is correct, then $z$ is present in the second column of some row in the table we built---the first column is the corresponding $a$. 
-%Finding such a pair can be done using binary search, as the table is sorted as per the second column. 
+% Next, we make a guess for $b$ and compute $Z = R - [b] P$. 
+% If our guess for $b$ is correct, then $z$ is present in the second column of some row in the table we built---the first column is the corresponding $a$. 
+% Finding such a pair can be done using binary search, as the table is sorted as per the second column. 
 %%%
-%TODO
+A seguir, nós chutamos uma valor para $b$ e computamos $Z = R - [b] P$. Se nosso chute para $b$ está correto, então $Z$ está presente na tabela, e o valor do escalar $z$ correspondente, tal que $Z = [z] P$, é imediamente obtido pois está na mesma linha desta tabela.
 %%%
 %If $z$ is present, we are done since we have determined the scalar. 
 %Otherwise, we make a new, different guess for $b$ and continue. 
 %%%
-%TODO
+Se $Z$ está presente, então a busca termina e o escalar correto é $s^* = z||a$.
+
+
 %%%
 %Since there are approximately $2^{\frac{s}{2}}$ guesses for $a$ and $b$, the time complexity is $O(2^{\frac{s}{2}})$ operations. 
 % As there are $2^{\frac{s}{2}}$ guesses for $a$, the table has that many entries and the space complexity is $O(2^{\frac{s}{2}})$ points.
 %%%
-%TODO
+Como há aproximadamente $2^{\frac{s}{2}}$ possibilidades para $a$ e $b$, a complexidade de tempo é $O(2^{\frac{s}{2}})$ operações.
+Como há $2^{\frac{s}{2}}$ possibilidades para $a$, a tabela tem aquele número de entradas e a complexidade de espaço é $O(2^{\frac{s}{2}})$.
 %%%
 % This way, we limit the time complexity to $O(2^{\frac{s}{2}})$ (cf.~\cite{chain_recovery_2007} for a detailed complexity analysis), which is $O(2^{\complexity})$ for the example trace. 
 %%%
-%TODO
+Desta forma nós limitamos a complexidade de tempo para $O(2^{\frac{s}{2}})$ (cf.~\cite{Gopalakrishnan2007} para uma análise de complexidade detalhada), a qual é da ordem de $2^54$ para o escalar de exemplo.
 %%%
 
 
@@ -152,44 +152,43 @@ Nós podemos usar \erick{CONT HERE}.
 % We do not know which trace contains the smallest number of suspicious bits since we do not know the maximum confidence score of a falsely identified bit. 
 % However, to use the above algorithm we assume that we know the number of suspicious bits to be bruteforced to recover the correct scalar. 
 %%%
-%TODO
+Dado um conjunto de traces provenientes de medições da ECSM no dispositivo alvo, nós não sabemos qual trace contém o menor número de bits suspeitos pois nós não sabemos o score de confiança máximo de um bit incorretamente identificado.
 %%%
 % This can be determined by using templates to attack some traces, for which we know the randomized key. 
 % Furthermore, note that if the attack fails, we can extend the execution to the second most likely suspicious bit and reuse the previously obtained data. 
 %%%
-%TODO
+No entanto, este valor pode ser determinado atacando alguns traces para os quais a escalar aleatorizado é conhecido.
+
 %%%
 % Based on our experiments, we determined that the number $54$ of suspicious bits should cover all falsely identified bits for at least one trace. 
 % Our complete attack works as follows: in parallel, we run the above algorithm for each of the $n$ traces. 
 % We stop the attack as soon as the time-memory trade-off technique succeeds for one trace. 
 %%%
-%TODO
+No trabalho~\cite{Nascimento2016_SAC}, os autores determinaram que, para o dispositivo e implementação em software da Curve25519 considerados, o número $54$ de bits suspeitos cobre todos os bits identificados incorretamente para pelos um trace dentro de um conjunto de $m = 100$ traces.
+Logo, o ataque completo para recuperar o valor correto do escalar funciona do seguinte modo:
 %%%
-
+% in parallel, we run the above algorithm for each of the $n$ traces. 
+% We stop the attack as soon as the time-memory trade-off technique succeeds for one trace. 
+%%%
+o algoritmo acima descrito é executado para cada um dos $m$ traces, em sequência. O ataque pára quando o algoritmo encontra um ponto na tabela, e portanto o escalar foi determinado. Se nenhum dos pontos foi encontrado na tabela, para nenhum dos traces, então o ataque falhou.
+%%%
 
 
 % Since we are running the attack $n$ times in parallel the complexity of the complete attack is multiplied by $n$. 
 %The complexity totals $O(n \cdot 2^{\frac{s}{2}})$ operations and $O(n \cdot 2^{\frac{s}{2}})$ points in memory. 
 %%%
-%TODO
+Como o algoritmo é executado $m$ vezes, a complexidade do ataque completo é multiplicada por $m$. A complexidade totaliza $O(n \cdot 2^{\frac{s}{2}})$ operações e $O(n \cdot 2^{\frac{s}{2}})$ em memória.
 %%%
 % For the attack from the previous section, this corresponds to $O\left(\n \cdot 2^{\complexity}\right) = O\left(2^{\total}\right)$ operations. 
 %%%
-%TODO
+Para o ataque da seção anterior, isso corresponde à $O\left(m \cdot 2^{27}\right) = O\left(2^{32}\right)$ operações.
 %%%
 % Therefore, We conclude that we can efficiently recover the scalar successfully even in the presence of multiple errors and uncertain bits (for experimental results see~\cref{recovery_experimental}). 
-%%%
-%TODO
-%%%
 % Furthermore, we believe that the above technique may be of independent interest since it can be applied to a commonly used ECSM algorithm, i.e., Montgomery ladder, even if errors are spread independently in the scalar.
-%%%
-%TODO
-%%%
 
+%\subsection{Aplicação do Algoritmo de Gopalakrishnan, Theriault e Yao~\cite{GopalakrishnanTheriaultYao07} à curva elíptica Curve25519}
 
-\subsection{Aplicação do Algoritmo de Gopalakrishnan, Theriault e Yao~\cite{GopalakrishnanTheriaultYao07} à curva elíptica Curve25519}
-
-\erick[inline]{Explicar as otimizações de desempenho que podem ser aplicadas à nível de aritmética na curva}
+%\erick[inline]{Explicar as otimizações de desempenho que podem ser aplicadas à nível de aritmética na curva}
 
 \begin{comment}
 The first challenge we faced is how to compute the point subtraction in Equation 2. Curve25519 is a curve in the Montgomery form, and as such, there is an efficient formula for differential point addition using XZ coordinates, but no efficient formula to compute a standard point addition, as far as we know. For that reason, we decided to do the point addition in affine coordinates, which costs a field inversion and a few multiplications. However, to use them we need to know the $y$-coordinates $y(R)$ and $y([b]P)$. The attack assumes that $x(R)$ (the ECSM output) is known, but $y(R)$ is not, and thus has to be computed. To do so, we use the curve formula directly to compute the two possible values for $y(R)$, at the cost of a field square root, an expensive operation, but it has to be done only once for each value of $R$. In the case of $y([b]P)$, an efficient algorithm by Okeya and Sakurai~\cite{OkeyaSakurai2001} costs one field inversion.
