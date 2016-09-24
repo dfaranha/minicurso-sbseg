@@ -1,19 +1,28 @@
 \subsection{Níveis em que os ataques SCA podem ser aplicados}
 
-\begin{comment}
-\subsubsection{Operações na curva}
-\subsubsection{Operações no protocolo criptográfico}
-\subsubsection{Transferência da chave entre diferentes memórias}
-\subsubsection{Protocolo em nível de aplicação}
-\end{comment}
+% 1 parag. p/ explicar a figura e discutir brevemente exemplos de ataques em cada nível.
 
-\erick[inline]{TODO: Figura com piramide de ataques SCA.}
-\erick[inline]{TODO: 1 parag. p/ explicar a figura e discutir brevemente exemplos de ataques em cada nível.}
-\erick[inline]{TODO: Transferência da chave entre diferentes memórias}
-\erick[inline]{TODO: processamento da chave fora do algoritmo criptográfico. Ref. sobre um SCA bem sucedido deste tipo: Witteman, M. (2013). Secure Application Programming in the Presence of Side Channel Attacks.\cite{Witteman2013_PatternsAppsecSCA}. Autor demonstra um ataque à verificação de paridade da chave na biblioteca GnuPG.}
+\begin{figure}[h!tb]
+	\centering   %height=0.20\textheight
+	\includegraphics[width=0.9\textwidth]{figures/piramide_ECC.png}
+	\caption{
+		Pirâmide de implementação de criptografia baseada em curvas elípticas (ECC). Qualquer uma destas camadas pode ser vulnerável a ataques pode canais laterais.
+	}
+	%\vspace{.5mm}
+	\label{fig:pyramid-ecc}
+\end{figure}
 
-%TODO: Protocolo em nivel de aplicacao
+A implementação de protocolos criptográficos baseados em curvas elípticas depende da existência de implementações de um conjunto de operações básicas, tais como: multiplicação de ponto por escalar, adição e duplicação de ponto, aritmética de corpo finito e aritmética de inteiros grandes. Protocolo criptográficos podem ser implementados a partir destas operações primitivas, os quais por sua vez possibilitam implementar um aplicação. A~\Cref{fig:pyramid-ecc} ilustra tais operações como níveis/camadas de uma pirâmide, onde a implementação de uma operação em uma camada depende apenas da existência de funcionalidades na camada imediatamente inferior\footnote{Operações adicionais podem ser necessárias para alguns protocolos, como a aritmética modular cujo módulo é o número de pontos da curva. Além disso, curvas elípticas definidas sobre corpos finitos binários dependem da aritmética em polinômios grandes.}.
 
+A representação em pirâmide entretanto esconde a interdependência que existe entre as operações. Na prática, bibliotecas de primitivas e protocolos criptográficos há interação em todos os níveis da pirâmide, pois tais interações ou interdependências são relevantes para desempenho, e em alguns casos, segurança. 
+
+Em uma implementação de uma dada aplicação, qualquer um dos níveis da pirâmide da figura acima pode estar vulnerável a ataques por canais laterais. Com relação ao canal de tempo, por exemplo, se uma operação não é de tempo constante com a relação à chave ou valores intermediários dependentes da chave, então todas as operações em níveis superiores à esta, bem como protocolo e aplicação vazam por diferenças potencialmente observáveis de tempo tais informações, as quais podem, a princípio, serem exploradas pelo atacante e portanto vulneráveis.
+
+% (dentre aquelas entre a aritmética de inteiros grandes até a multiplicação escalar)
+
+%\subsection{Transferência de chaves}
+%\erick[inline]{TODO: Transferência da chave entre diferentes memórias}
+%\erick[inline]{TODO: processamento da chave fora do algoritmo criptográfico. Ref. sobre um SCA bem sucedido deste tipo: Witteman, M. (2013). Secure Application Programming in the Presence of Side Channel Attacks.\cite{Witteman2013_PatternsAppsecSCA}. Autor demonstra um ataque à verificação de paridade da chave na biblioteca GnuPG.}
 
 \subsection{Ataques de tempo e SPA ao algoritmo double-and-add-not-always}
 
