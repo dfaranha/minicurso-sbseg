@@ -1,18 +1,156 @@
-\subsection{Utilização de CPA em implementação do AES}
+Implementações inseguras de criptografia simétrica podem ser suscetíveis a diversos tipos de ataques
+de canal lateral. Mesmo implementações de algoritmos de alto desempenho podem ser vulneráveis a canais
+laterais de tempo executados localmente (via latência da memória \emph{cache}) ou remotamente
+(tempo de resposta na comunicação em rede). Contramedidas comuns para criptografia simétrica contra ataques de canal lateral
+envolvem execução em tempo constante e mascaramento.
 
-\subsection{Ataques por canal lateral de tempo}
+\subsection{Ataques por canal lateral de tempo e contramedidas}
 
-Ataques de latência de \emph{cache} e verificação de MAC:
-ataques no AES e comparação de strings.
+Um ataque simples contra a utilização de criptografia simétrica envolve a aplicação de funções de resumo criptográfico
+para autenticação. Nessas aplicações, é comum que o algoritmo simétrico produza um autenticador ou \emph{hash} das credenciais
+que precisa ser comparado com o resultado correto. Durante a comparação de cadeias de caracteres,
+pequenas variações no tempo de execução podem fornecer informação útil para o adversário reduzir enormemente a complexidade de um
+ataque de busca exaustiva. Ao comparar cadeias, se a interrupção do laço acontecer exatamente na primeira posição diferente,
+o adversário é capaz de realizar um ataque de busca exaustiva em cada \emph{byte} individualmente,
+baseado no tempo de resposta. Desta forma, é possível determinar o autenticador de uma mensagem ou \emph{hash} de uma senha, por exemplo,
+sem conhecimento de segredos. O trecho de código abaixo ilustra uma forma segura de comparação, cujo tempo de execução é invariante e saturado para o pior caso:
+\begin{center}
+\begin{verbatim}
+int cmp_const(const void * a, const void * b,
+              const size_t size) {
+    const unsigned char *_a = a, *_b = b;
+    unsigned char result = 0;
+    size_t i;
+    for (i = 0; i < size; i++) {
+        result |= _a[i] ^ _b[i];
+    }
+    return result;
+}
+\end{verbatim}
+\end{center}
 
-Ataques a HMAC baseado em funções de hash construídas por cifras de bloco.
+Desvios condicionais dentro de algoritmos criptográficos podem ser outra fonte de problemas, 
+especialmente em processadores modernos com execução especulativa e predição de desvios.
+A remoção de desvios condicionais envolve a aplicação de técnicas de programação sem desvios condicionais.
+A aplicação correta dessas técnicas é altamente dependente do algoritmo sendo estudado, mas uma
+generalização útil é calcular os dois ramos do desvio condicional simultaneamente e utilizar
+operações mascaradas para selecionar o valor correto apenas ao final da execução. A ideia é ilustrada pelo
+trecho de código abaixo para seleção entre dois valores em tempo constante, dependendo de um bit de condição:
+\begin{center}
+\begin{verbatim}
+unsigned select(unsigned a, unsigned b,
+                unsigned bit) {
+  /* -0 = 0, -1 = 0xFF....FF */
+  unsigned mask = - bit;
+  unsigned ret = mask & (a^b);
+  ret = ret ^ a;
+  return ret;
+}
+\end{verbatim}
+\end{center}
+Outra possibilidade é utilizar uma variante da função de seleção para alterar em tempo constante os valores de entrada do trecho de código
+protegido ser executado.
 
-Cube attacks em cifras de bloco.
+Acessos à memória devem também ser cuidadosamente protegidos. No contexto de cifras de bloco, a preocupação
+se concentra na representação de caixas de substituição como vetores ou introdução de qualquer tabela
+pré-calculada para acelerar operações sobre bits realizadas pela cifra. O algoritmo AES ilustra muito bem o problema,
+pois seu desempenho depende enormemente da eficiência das caixas de substituição, motivando o implementador
+a utilizar tabelas simples. Entretanto, um adversário capaz de monitorar o comportamento da memória \emph{cache}
+pode determinar que porções da caixa de substituição são usadas na etapa de cifração e recuperar
+informação sensível~\cite{Bernstein04, Percival05, Bonneau06, TromerOS10}.
+Por exemplo, em um ataque \emph{Flush and Reload} utiliza a instrução \texttt{clflush} em processadores Intel
+para eliminar endereços de páginas compartilhados da memória \emph{cache} e verifica se os dados retornam à cache
+após permitir que o programa atacado execute um pequeno número de instruções~\cite{YaromF14}. Por funcionar no nível
+mais baixo e compartilhado da memória \emph{cache}, o ataque se torna possível entre núcleos distintos e contra ambientes virtualizados.
 
-\subsection{Contramedida de mascaramento}
+Existem contramedidas de diversos tipos para mitigar o problema. Uma opção simples é adotar
+arquiteturas com latência de acesso uniforme à memória, como alguns microcontroladores simples.
+Outra possibilidade é utilizar uma implementação em hardware do algoritmo, quando disponível, que deve oferecer uma superfície de ataque menor.
+Alternativas mais sofisticadas para implementação em software são \emph{bitslicing}, onde as operações sobre bits são realizadas explicitamente,
+sem ajuda de tabelas pré-calculadas, e o impacto em desempenho é reduzido pela aplicação do mesmo circuito lógico
+a bits de diferentes variáveis simultaneamente~\cite{Biham97a,KasperS09}. Para tabelas pequenas, também é possível
+utilizar uma instrução para acesso a tabela armazenada em um registrador~\cite{Hamburg09} ou
+percorrer a tabela inteira a cada leitura, utilizando a função de seleção apresentada anteriormente
+para realizar uma cópia condicional entre o valor lido e um valor atual da variável de interesse.
 
+\subsection{Ataques de potência e contramedidas}
 
+Ataques de potência também são possíveis contra implementações de primitivas simétricas, por exemplo algoritmos como o HMAC para autenticação de mensagens (MAC) utilizando uma função de resumo criptográfico $H$ como fonte de segurança. Para uma chave simétrica $k$, o algoritmo HMAC calcula o autenticador
+de uma mensagem $M$:
+\[ \text{HMAC}_k(M) = H((k \oplus opad)\parallel H((k \oplus ipad) \parallel M)),\]
+onde $ipad$ é a cadeia produzida pela repetição do valor \texttt{0x36} e $opad$ pela repetição do valor \texttt{0x5C}.
+Ataques diferenciais de potência foram demonstrados contra implementações inseguras do HMAC utilizando tanto funções de resumo
+construídas segundo o paradigma Merkle-Damg\aa rd quanto aquelas baseadas em cifras de bloco.
+
+A característica principal de um ataque diferencial de potência é que, em um certo ponto na execução do algoritmo,
+uma variável combina conhecimento de uma função $f$ sobre um valor secreto fixo com outro valor conhecido pelo adversário.
+O adversário pode então formular hipóteses sobre o valor secreto fixo e aplicar a função de acordo com um certo modelo de vazamento.
+Pela captura de traços de consumo de energia, é possível verificar a validade das hipóteses.
+Supondo que o adversário possui controle do dispositivo e obtém informação sobre a distância de Hamming entre estados internos consecutivos
+durante o cálculo instâncias de HMAC e conhece as mensagens cuja autenticação é verificada, o objetivo é combinar informação fixa desconhecida
+com informação variável conhecida.
+
+O ataque proposto por~\cite{McEvoyTMM07} se concentra na primeira execução da função de resumo interna $H(k \oplus ipad)$ ao HMAC, que é imutável entre execuções distintas. Esse cálculo irá produzir um valor de resumo intermediário, e o processamento prossegue com a mensagem conhecida $M$.
+Portanto, o objetivo do ataque é recuperar o valor intermediário pela formulação de hipóteses verificadas após o processamento de $M$.
+Na fase final, o ataque é repetido na função de resumo externa do HMAC, permitindo a forja de autenticadores para mensagens da escolha do atacante,
+sem conhecimento da chave criptográfica. Um ataque similar pode ser montado contra funções de resumo construídas a partir de cifras de bloco,
+mesmo quando a cifra de bloco é ideal e resistente contra ataques de canal lateral. \cite{Okeya06} demonstrou ser possível recuperar
+a chave criptográfica completa nesse caso, permitindo forja de autenticadores para mensagens escolhidas pelo adversário.
+
+Ataques cúbicos~\cite{DinurS12} são ataques genéricos de recuperação de chaves que podem ser aplicados automaticamente
+a qualquer criptossistema em que um único bit de informação pode ser representado por um polinômio de grau
+pequeno na chave e texto claro, como cifras de fluxo baseadas em registradores de deslocamento.
+O ataque consiste em somar o bit de saída de todos os possíveis valores de um subconjunto de bits públicos de entrada,
+escolhidos de forma que o bit resultante seja uma combinação linear de bits secretos. Aplicações repetidas da mesma técnica produzem
+relações lineares entre bits secretos que podem ser resolvidas para descobrir esses bits.
+Os autores demonstram que bits públicos dessa forma existem com alta probabilidade quando a cifra aproxima um polinômio aleatório de grau suficientemente pequeno
+e podem ser encontrados em uma fase de pré-computação. A versão de canal lateral do ataque funciona por meio da captura de bits individuais que satisfazem
+as características do ataque, tipicamente por um ataque de potência.
+
+\subsubsection*{Mascaramento}
+
+\emph{Mascaramento} é uma das contramedidas contra ataques de potência mais investigadas na literatura para proteger valores sensíveis, como texto claro durante a encriptação ou criptogramas durante a decriptação. Como a informação calculada durante esses processos se tornará a saída dos algoritmos, todos os valores intermediários precisam ser protegidos a todo o tempo. Ao se aplicar mascaramento, um conjunto de $n$ máscaras $m_0,\ldots,m_n$ pseudo-aleatórias é utilizado por meio da operação \texttt{XOR} para representar valores intermediários, de forma que a informação vazada por canais laterais não mais está correlacionada com informação secreta legítima. O valor mascarado $m$ com $d+1$ máscaras é dado por $m = \bigoplus\limits_{i=0}^{d}m_i  = m_0 \oplus m_1 \oplus \ldots \oplus m_d$. As operações em um corpo binário podem então ser adaptadas para funcionar sobre valores mascarados: 
+
+\begin{enumerate}
+        \item Toda operação linear $L$ sobre um valor mascarado consiste em aplicar a mesma operação sobre as máscaras:
+        $$L(m) \equiv L(m_0 \oplus m_1 \oplus \ldots \oplus m_d) \equiv L(m_0)  \oplus L(m_1) \oplus \ldots \oplus L(m_d)$$
+        \item Uma operação \texttt{NOT} pode ser calculada como:
+        $$\neg m \equiv \neg m_0 \oplus m_1 \oplus \ldots \oplus m_d$$
+        \item Uma operação \texttt{XOR} entre valores mascarados $a =  \bigoplus\limits_{i=0}^{d}a_i$ e $b =  \bigoplus\limits_{i=0}^{d}b_i$ pode ser calculada como:
+        $$ a \oplus b \equiv \bigoplus\limits_{i=0}^{d}a_i \oplus \bigoplus\limits_{i=0}^{d}b_i \equiv \bigoplus\limits_{i=0}^{d}(a_i \oplus b_i)$$
+        \item Uma operação \texttt{AND} entre $a =  \bigoplus\limits_{i=0}^{d}a_i$ e $b =  \bigoplus\limits_{i=0}^{d}b_i$ é mais complicada e exige um algoritmo específico (Algoritmo~\label{alg:and})~\cite{IshaiSW03}.
+\end{enumerate}
+
+\begin{algorithm}[H]
+\caption{Operação \texttt{AND} aplicada sobre valores mascarados $a$ e $b$.}\label{alg:and}
+\begin{algorithmic}[1]
+        \REQUIRE $\text{Valores }(a_i) \text{ e } (b_i) \text{ tais que } \oplus_{i=0}^da_i = a  \text{ e }  \oplus_{i=0}^db_i = b \text{.} $
+        \ENSURE $\text{Valores }(c_i) \text{ tais que } \oplus_{i=0}^dc_i = a \wedge b$
+        
+        \FOR{$i$ \textbf{from} $0$ \textbf{to} $d$} 
+                \STATE  $r_{i,i}\gets 0;$
+                \FOR{$j$ \textbf{from} $i + 1$ \textbf{to} $d$} 
+                        \STATE $r_{i,j}\gets random( );$
+                        \STATE $r_{j,i}\gets (r_{i,j} \oplus (a_i \wedge b_j)) \oplus (a_j \wedge b_i); $
+                \ENDFOR
+        \ENDFOR
+        
+        \FOR{$i$ \textbf{from} $0$ \textbf{to} $d$} 
+                \STATE  $c_i \gets a_i \wedge b_i;$
+                \FOR{$j$ from $0$ to $d$} 
+                        \STATE $c_i \gets c_i \oplus r_{i,j};$
+                \ENDFOR
+        \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+Estas observações permitem que qualquer algoritmo utilizando operações binárias seja implementado de maneira mascarada.
+A contramedida causa baixa penalidade em desempenho quando aplicada sobre sequências de operações binárias lineares, mas o impacto aumenta consideravelmente sobre operações binárias não-lineares, que exigem formulação distinta da computação.
 
 \subsection{Oráculo de preenchimento}
 
-Ataque de Vaudenay no modo CBC.
+Em um ataque de oráculo de preenchimento, um servidor (oráculo) vaza informação sobre quanto uma mensagem possui preenchimento no formato correto.
+O adversário entào manipula partes do criptograma para conseguir decriptar (ou algumas vezes encriptar) mensagens utilizando a chave criptográfico do oráculo, mesmo sem conhecê-la. Por se tratar de um ataque ativo, a forma mais simples de mitigá-lo é autenticar criptogramas utilizando um algoritmo de MAC, com verificação realizada em tempo constante. O ataque original foi proposto por Vaudenay~\cite{Vaudenay02}, mas implementações de protocolos criptográficos em que o ataque foi mitigado mostraram-se posteriormente vulneráveis à versão do ataque no canal lateral de tempo \emph{Lucky Thirteen}~\cite{AlFardanP13}.
+
+Em criptografia simétrica, o ataque é particularamente efetivo contra o modo de operação CBC para cifras de bloco. Suponha que o atacante capturou vetor de inicialização $IV$ e três blocos de criptograma $C_1,C_2,C_3$ e procura decriptar o segundo bloco para recuperar $M_2$, sabendo que $C_3$ possui preenchimento correto. Se o adversário manipula o último byte de $C_1$ e submete $(IV, C_1, C_2)$ para o servidor, a decriptação deverá alterar completamente o resultado de $M_1$ e o último byte de $M_2$. O servidor então verifica o preenchimento correto de $M_2$ e retorna essa informação para o adversário. Para descobrir o último byte de $M_1$, basta somar ao último byte de $C_1$ uma estimativa do último byte de $M_2$ e o byte correto de preenchimento, de forma que a ausência de erro de preenchimento indica que a estimativa estava correta. Após descobrir o último byte de $M_2$ com várias tentativas, o ataque pode continuar sobre os bytes individuais restantes do bloco.
+
