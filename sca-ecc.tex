@@ -292,7 +292,31 @@ Métodos baseados em aprendizado não supervisionado, mais especificamente aquel
 
 Em ataques horizontais, devido a problemas como o alto nível de ruído presente em um trace, fenômenos como clock drift\footnote{Clock drift ou clock jitter é o desvio do sinal de clock real em relação ao sinal verdadeiramente periódico de referência. Devido ao clock drift, o sinal de clock real não é periódico, mas sim aproximadamente periódico.} e variações no tempo em que dispositivo de medição (osciloscópio) inicia a medição após o recebimento do sinal de trigger (\textit{trigger jitter}), é fundamental o preprocessamento dos traces medidos antes de se iniciar a análise, particularmente as operações de filtragem, segmentação e alinhamento.
 
-\noindent \textbf{Filtragem.} A Figura~\erick{fig} mostra um trace não filtrado (a) e o mesmo trace após aplicação de filtro passa banda centralizado na frequência de operação do dispositivo (b), onde pode-se identificar com mais clareza características do sinal, como periodicidade e amplitude. É recomendável que filtros analógicos sejam aplicados, sempre que possível, de modo que o sinal que é digitalizado pelo osciloscópio contém apenas as frequências desejadas, permitindo o uso da menor resolução (range) vertical suportada pelo dispositivo, o que pode não ocorrer caso picos em frequências indesejadas estejam presentes.
+\noindent \textbf{Filtragem.} A \Cref{fig:tracesFiltering} mostra um trace não filtrado e o mesmo trace após aplicação de filtro baixa, onde pode-se identificar com mais clareza características do sinal, como periodicidade e amplitude, bem como as rodadas ou iterações. É recomendável que filtros analógicos sejam aplicados, sempre que possível, de modo que o sinal que é digitalizado pelo osciloscópio contém apenas as frequências desejadas, permitindo o uso da menor resolução (range) vertical suportada pelo dispositivo, o que pode não ocorrer caso picos em frequências indesejadas estejam presentes.
+
+\begin{figure}
+	\label{fig:tracesFiltering}
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Trace_EM___MontLadder___CPU_168MHz___SR_1GHz___32MS___UNFiltered.png}
+		\caption{}
+		\label{fig:traceUnfiltered} 
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.8\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Trace_EM___MontLadder___CPU_168MHz___SR_1GHz___32MS___Filtered.png}
+		\caption{}
+		\label{fig:filtered}
+	\end{subfigure}	
+
+	\begin{subfigure}[b]{0.8\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Trace_EM___MontLadder___CPU_168MHz___SR_1GHz___32MS___Filtered___Zoom_in.png}
+		\caption{}
+		\label{fig:filteredZoomIn}
+	\end{subfigure}			
+	
+	\caption{Um trace de radiação eletromagnética de uma execução de ECSM com algoritmo Montgomery Ladder: original não filtrado (a), após aplicação de filtro baixa (b) e zoom no início deste último (c).}	
+\end{figure}
 
 \noindent \textbf{Segmentação.} Os traces de potência medidos tipicamente correspondem à execução completa da operação criptográfica, sendo assim são contíguos e contêm todas as rodadas (rounds) ou sub-operações executadas; no contexto da multiplicação escalar, as rodadas são as $n$ iterações do laço do algoritmo de multiplicação escalar implementado. Tais traces devem ser primeiramente segmentados em iterações, de modo que um conjunto de $n$ subtraces é obtido, cada um contendo as amostras correspondentes à respectiva iteração.
 
