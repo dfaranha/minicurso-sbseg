@@ -45,9 +45,19 @@
 %==========================================================
 \usepackage{algorithm}
 \usepackage{algorithmic}
-\renewcommand{\algorithmicrequire} {\textbf{\textsc{Inputs:}}}
-\renewcommand{\algorithmicensure}  {\textbf{\textsc{Outputs:}}}
+\renewcommand{\algorithmicrequire}{\textbf{Entrada:}}
+\renewcommand{\algorithmicensure}{\textbf{Sa\'ida:}}
 \usepackage{enumitem}
+
+\makeatletter
+\newcommand{\ALOOP}[1]{\ALC@it\algorithmicloop\ #1%
+  \begin{ALC@loop}}
+\newcommand{\ENDALOOP}{\end{ALC@loop}\ALC@it\algorithmicendloop}
+\newcommand{\algorithmicbreak}{\textbf{break}}
+\newcommand{\BREAK}{\STATE \algorithmicbreak}
+\makeatother
+
+
 
 %===============================================================
 % Package to simplify referencing of section, figure, algorithm, etc.
