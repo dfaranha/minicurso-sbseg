@@ -409,7 +409,7 @@ Temos então, para todo trace $i$ e todo índice de amostra $m$ deste trace, o s
 Defina o seguintes parâmetros, para $k=0,1$:
 
 \begin{equation}	r_{k,m} = \frac{min\{p_{k,m}, n_k\} }{ max\{p_{k,m}, n_k\}}	\end{equation}
-\begin{equation}	\beta_{k,m} = r_{0,m} \cdot r_{1,m}	\end{equation}
+\begin{equation}	\beta_{m} = r_{0,m} \cdot r_{1,m}	\end{equation}
 
 As funções distinguisher DoM, SOSD, SOST podem ser então definidas do seguinte modo\footnote{Referimos o leitor a~\cite{PerinChmielewski2015} para a definição da função MIA neste caso.}:
 
@@ -419,7 +419,7 @@ As funções distinguisher DoM, SOSD, SOST podem ser então definidas do seguint
 	\text{SOST}: l_{\text{SOST}, m} &= \left( \frac{|c_{0,m} - c_{1,m}|} {\sqrt{ \frac{\sigma^2_{0,m}}{p_{0,m}} + \frac{\sigma^2_{1,m}}{p_{1,m}} }}   \right) ^ 2
 \end{align*}
 
-A função distinguisher é aplicada em cada índice de amostra $m$, para cada trace $i$. O valor resultante é somado para todos os traces e a média é calculada, isto é, $\bar{l}_{\text{D}, m} = \frac{1}{N}\sum_{i=1}^{N} l^{(i)}_{\text{D}, m}$, onde $D \in \{$ DoM,SOSD,SOST,MIA $\}$. O valor $\bar{l}_{\text{D}, m}$ é portanto o valor estimado do vazamento no índice de amostra $m$, segundo a função distinguisher $D$.\erick{falta explicar onde r e $\beta$ são usados}
+A função distinguisher é aplicada em cada índice de amostra $m$, para cada trace $i$. O valor resultante é somado para todos os traces, a média é calculada e o valor é ajustado pelo coeficiente $\beta_{m}$, isto é, $\bar{l}_{\text{D}, m} = \beta_{m} \frac{1}{N} \sum_{i=1}^{N} l^{(i)}_{\text{D}, m}$, onde $D \in \{$ DoM,SOSD,SOST,MIA $\}$. O valor $\bar{l}_{\text{D}, m}$ é portanto o valor estimado do vazamento no índice de amostra $m$, segundo a função distinguisher $D$.
 
 A aplicação de algoritmos de clustering fornece um estimativa para as médias $\mu_{k,m}$. Por causa do somatório usado na definição de $\bar{l}_{\text{D}, m}$ e das premissas acima, o ruído $\gamma_{k,m}$ em cada amostra $m$ é eliminado se o número de traces processados é suficientemente grande. A \Cref{fig:traceCLA_SOST} mostra o valor estimado do vazamento em cada índice de amostra para o distinguisher SOST aplicado a traces provenientes de uma implementação do algoritmo Montgomery Ladder.
 
