@@ -358,13 +358,28 @@ Dentre os algoritmos para clustering empregados com sucesso no contexto de ataqu
 
 A análise com chave conhecida consiste em determinar os pontos de interesse, isto é, os índices de amostra, onde o vazamento é mais forte, com base no conhecimento da chave. Devido à necessidade de conhecimento do valor chave/escalar, tal análise é empregada somente na fase de teste do ataque HCA, para determinar, por exemplo, quantos traces são necessários como entrada para a avaliação de vazamento, de um dado dispositivo, de modo que os pontos de interesse obtidos por aquela correspondam aos previstos e sabidamente relevantes obtidos pela análise com chave conhecida.
 
-Tal análise consiste em aplicar o algoritmo de clusterização no conjunto de amostras presentes em um dado índice de amostra ($m$), obtendo-se dois grupos de amostras: o primeiro grupo corresponde às amostras rotuladas com o valor b ($b\in \{0,1\}$, mas não se sabe se 0 ou 1) e o segundo grupo corresponde ao valor oposto $\bar{b}$. 
+Tal análise consiste em aplicar o algoritmo de clusterização no conjunto de amostras presentes em um dado índice de amostra ($m$), obtendo-se dois grupos de amostras: o primeiro grupo corresponde às amostras rotuladas com o valor b ($b\in \{0,1\}$, mas não se sabe se 0 ou 1) e o segundo grupo corresponde ao valor oposto $\bar{b}$ (\Cref{fig:clustering}).
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Clustering_EM_2_POIs__clusters.PNG}
+		\caption{}
+		\label{fig:clusteringClusters}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Clustering_EM_2_POIs__correct_labels.PNG}
+		\caption{}
+		\label{fig:clusteringCorrectLabels}
+	\end{subfigure}	
+	\caption{Visualização dos clusters obtidos pelo algoritmo EM em múltiplas dimensões/atributos. Cada dimensão corresponde ao índice de um POI, de um total de 20 POIs, porém para o propósito de visualização apenas duas destas dimensões são exibidas. Em (a) estão os clusters obtidos pelo algoritmo; e em (b) os rótulos corretos. Amostras com a mesma cor foram rotuladas com o mesmo valor do bit.}	
+	\label{fig:clustering}
+\end{figure}
 
 O conhecimento da chave é utilizado para determinar quantos bits tiveram o seu valor corretamente identificado no agrupamento. Como não se sabe o valor de $b$, isto é, o rótulo de cada grupo, o seguinte procedimento é adotado. Toma-se $b=0$ e conta-se o número de bits corretamente identificados ($n_c$); o valor $n - n_c$ ($n$ é o comprimento em bits do escalar) é então o número de bits corretamente identificados caso a rotulação esteja errada (isto é, o correto é $b=1$). Finalmente, considera-se $max\{n_c, n - n_c\}$ o número de bits corretamente identificados.
 
 Este procedimento acima descrito é repetido para todos os índices de amostra, e o resultado são os pontos em que o vazamento de bits da chave é mais intenso. A ordenação destes pontos em ordem decrescente do número de bits corretamente identificados fornece os pontos de interesse.
-
-\erick[inline]{Figura com clusterizacao obtida pelo EM e os rotulos corretos (com erros destacados, se possível.}
 
 \subsubsection{Avaliação de vazamento} % leakage assessment
 % aplica-se clustering 1D no conjunto de amostras em um dado sample index. Um grande traceset é necessário.
