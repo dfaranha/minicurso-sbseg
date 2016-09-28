@@ -313,7 +313,7 @@ Em ataques horizontais, devido a problemas como o alto nível de ruído presente
 		\includegraphics[width=1\linewidth]{figures/Trace_EM___MontLadder___CPU_168MHz___SR_1GHz___32MS___Filtered___Zoom_in.png}
 		\caption{}
 		\label{fig:filteredZoomIn}
-	\end{subfigure}			
+	\end{subfigure}
 	
 	\caption{Um trace de radiação eletromagnética de uma execução de ECSM com algoritmo Montgomery Ladder: original não filtrado (a), após aplicação de filtro baixa (b) e zoom no início deste último (c).}	
 \end{figure}
@@ -322,7 +322,25 @@ Em ataques horizontais, devido a problemas como o alto nível de ruído presente
 
 \noindent Tal segmentação pode ser realizada de diversas maneiras. Um método ingênuo é identificar os índices das amostras de início e fim da execução do laço da ECSM, e então dividir este segmento em $n$ segmentos de igual (ou quase igual) comprimento, cada qual correspondendo a uma iteração. Tal método apresenta dois problemas, o primeiro é de que em geral é difícil identificar as amostras de início e fim; o segundo é que o comprimento dos segmentos das iterações podem variar devido ao clock jitter. Um método mais robusto, que ameniza tais dificuldades, é aplicar um filtro passa baixa forte, de modo a identificar segmentos do trace que se repetem de uma iteração para outra; localizar então picos nestes segmentos cuja distância entre si é aproximadamente a mesma (Tal distância é o valor aproximado do comprimento daquela iteração) e por fim cortar o trace original utilizando tais comprimentos como referência. No entanto, devido às dificuldades anteriormente mencionadas, é provável que a segmentação obtida não seja perfeita, e portanto amostras do início de um iteração poderão estar presentes no trace da iteração anterior, bem como amostras do fim de um iteração poderão estar no início do trace da iteração seguinte e analogamente com relação à primeira e a última iterações e as partes do trace externas ao laço da ECSM.
 
-\noindent \textbf{Alinhamento.} Dado que a segmentação provavelmente não será perfeita, uma operação aritmética realizada no intervalo de amostras $tr_i[s..e]$ no trace da iteração $i$ muito provavelmente ocorrerá em um itervalo diferente $tr_j[s'..e']$ no trace da iteração $j$. Logo, é necessário alinhar todos os subtraces de iterações da ECSM. A Figura~\erick{capturar Printscreen de um traceset no Inspector ANTES e APÓS alinhamento} mostra alguns traces resultantes da segmentação antes e após alinhamento estático por correlação. Diversos algoritmos para alinhamento de traces para SCA são propostos na literatura, dentre eles o alinhamento estático e o alinhamento elástico~\cite{WoudenbergWittemanBakker2011}. O alinhamento estático é um método simples que consiste, a grosso modo, em escolher um trace de referência e deslizar incrementalmente o trace a ser alinhado sobre o de referência e computar a distância entre eles de acordo com alguma métrica, p.ex. o coeficiente de correlação de Pearson; após deslizar por um dado número de posições, dentro de uma janela, considera-se que o trace estará alinhado se for deslocado (\textit{shifted}) até a posição cuja distância foi mínima.
+\noindent \textbf{Alinhamento.} Dado que a segmentação provavelmente não será perfeita, uma operação aritmética realizada no intervalo de amostras $tr_i[s..e]$ no trace da iteração $i$ muito provavelmente ocorrerá em um itervalo diferente $tr_j[s'..e']$ no trace da iteração $j$. Logo, é necessário alinhar todos os subtraces de iterações da ECSM. A \Cref{fig:traceAlignment} mostra alguns traces resultantes da segmentação antes e após alinhamento estático por correlação. Diversos algoritmos para alinhamento de traces para SCA são propostos na literatura, dentre eles o alinhamento estático e o alinhamento elástico~\cite{WoudenbergWittemanBakker2011}. O alinhamento estático é um método simples que consiste, a grosso modo, em escolher um trace de referência e deslizar incrementalmente o trace a ser alinhado sobre o de referência e computar a distância entre eles de acordo com alguma métrica, p.ex. o coeficiente de correlação de Pearson; após deslizar por um dado número de posições, dentro de uma janela, considera-se que o trace estará alinhado se for deslocado (\textit{shifted}) até a posição cuja distância foi mínima.
+
+\begin{figure}
+	\label{fig:traceAlignment}
+	\centering
+	\begin{subfigure}[b]{0.8\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Traces_EM___MontLadder___CPU_168MHz___SR_1GHz___28MS___Misaligned.png}
+		\caption{}
+		\label{fig:misaligned} 
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.8\textwidth}
+		\includegraphics[width=1\linewidth]{figures/Traces_EM___MontLadder___CPU_168MHz___SR_1GHz___28MS___Aligned.png}
+		\caption{}
+		\label{fig:aligned}
+	\end{subfigure}	
+	
+	\caption{Traces de iterações da ECSM: logo após segmentação, desalinhados (a); e após alinhamento (b).}
+\end{figure}
 
 \subsubsection{Algoritmos para clustering}
 % Citar que K-Means, Fuzzy KMeans e Expectation-Maximization já foram empregados para este propósito, e apresentaram resultados semelhantes.
