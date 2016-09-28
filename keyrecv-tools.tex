@@ -1,8 +1,8 @@
-%\subsection{Ferramentas para recuperação de chaves com erros}
+\subsection{Ferramentas para recuperação de chaves com erros em criptossistemas baseados no (EC)DLP}
 
-%\subsubsection{Criptossistemas baseados no (EC)DLP}
-%\erick[inline]{Citar a minha ferramenta de código aberto para a Curve25519}
-%\erick[inline]{Citar ferramenta do paper Kangaroos da Vrendevaal}
+Lange et al~\cite{LangeVredendaalWakker2014} propuseram um algoritmo chamado $\epsilon$-\textit{enumeration} para computação do ranque de uma chave usando como entrada as probabilidades/confidence scores obtidos do ataque SCA juntamente com uma variação do algoritmo kangaroo de Pollard. O código fonte da implementação deste algoritmo foi disponibilizada pelos autores~\cite{Vrendendaal-keyrecv-sckangaroo}.
+
+Os autores de~\cite{Nascimento2016_SAC} disponibilizaram o código fonte da implementação do algoritmo de Gopalakrishnan et al~\cite{Gopalakrishnan2007} (cf.~\Cref{sec:alg-keyrecv-Gopalakrishnan}) para recuperação de chaves com erros~\cite{Nascimento-github-ecc-keyrecv}. Tal implementação foi otimizada para ECSM por Montgomery Ladder na Curve25519.
 
 %\subsubsection{AES}
 %\erick[inline]{Ferramentas de Veyrat~\cite{VeyratGerard2013,VeyratGerardStandaert2013} e da Vredendaal~\cite{BernsteinLangeVredendaal2015} para enumeração de chaves para o AES}
