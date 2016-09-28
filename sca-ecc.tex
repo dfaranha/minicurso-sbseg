@@ -446,11 +446,9 @@ de uma única execução da ECSM. Esta etapa recebe como entradas o conjunto de 
 	\item \textbf{Cálculo da taxa de sucesso e nível de confiança}.
 \end{itemize}
 
-\noindent \textbf{Majority Rule.} \erick{TODO} \\
+\noindent \textbf{Majority Rule.} Este classificador simplesmente toma o rótulo da amostra de cada POI obtido pelo agrupamento (i.e., chute para o valor do bit) como um voto e então considera o valor que recebeu a maioria dos votos como o valor real do bit. \\
 
-\noindent \textbf{Log-likelihood.} \erick{TODO} \\
-
-\noindent \textbf{Estimação de Bayes.} \erick{TODO}
+\noindent \textbf{Log-likelihood e Estimação de Bayes.} Estes são classificadores paramétricos; no contexto de SCA o modelo gaussiano é tipicamente adotado. Referimos o leitor à~\cite{Perin2014,PerinChmielewski2015} para uma descrição do uso de tais classificadores no contexto de ataques horizontais baseados em clustering.
 
 \noindent \textbf{Cálculo de confidence scores} \erick{TODO}
 
