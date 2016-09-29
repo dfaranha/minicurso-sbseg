@@ -109,10 +109,9 @@ Uma das rotinas mais executadas em dispositivos que utilizam ECC s\~{a}o os algo
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
-\caption{M\'{e}todo NAF bin\'{a}rio de multiplica\c{c}\~{a}o escalar de um ponto}
+\caption{Binary NAF method for scalar multiplication}
 \begin{algorithmic}
-    \REQUIRE $k \in \mathbb{N}$
-    \REQUIRE $P \in E(\mathbb{F}_p)$
+    \REQUIRE $P \in E(\mathbb{F}_p), k \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $(k_{l-1}, k_{l-2}, ..., k_{1}, k_{0}) \leftarrow NAF(k)$
     \STATE $Q \leftarrow \infty$
@@ -144,10 +143,9 @@ A solu\c{c}\~{a}o mais simples contra SPA consiste em inserir opera\c{c}\~{o}es 
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
-\caption{M\'{e}todo NAF bin\'{a}rio de multiplica\c{c}\~{a}o escalar resistente \`{a} SPA}
+\caption{Binary NAF method for scalar multiplication resistant to SPA}
 \begin{algorithmic}
-    \REQUIRE $k \in \mathbb{N}$
-    \REQUIRE $P \in E(\mathbb{F}_p)$
+    \REQUIRE $P \in E(\mathbb{F}_p), k \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $(k_{l-1}, k_{l-2}, ..., k_{1}, k_{0}) \leftarrow NAF(k)$
     \STATE $Q \leftarrow \infty$\\

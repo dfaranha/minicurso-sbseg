@@ -75,16 +75,16 @@ Já a duplicação de um ponto segue a mesma fórmula da adição, portanto a di
 \subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
 Considerando que a principal operação em curvas elípticas é a multiplicação escalar é necessário explorar as diferentes formas de implementar esse calculo. Nessa seção serão apresentados os mais simples, resistentes ou não a ataques de canal lateral, e pequenas variações criando novos algoritmos com propriedades diferentes.
 
-O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{Double-and-add-not-always}), o mesmo é utilizado para calcular $kP$. Ele possui quatro variáveis, sendo $N$ para armazenar o resultado da operação de duplicação do ponto durante a execução, $Q$ armazena o resultado das operações, $P$ é o ponto escolhido na curva para a multiplicação escalar, e por fim $k$ é a chave utilizada na multiplicação.
+O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{Double-and-add-not-always}) \cite{DBLP:journals/iacr/Rivain11}, o mesmo é utilizado para calcular $kP$. Ele possui quatro variáveis, sendo $N$ para armazenar o resultado da operação de duplicação do ponto durante a execução, $Q$ armazena o resultado das operações, $P$ é o ponto escolhido na curva para a multiplicação escalar, e por fim $k$ é a chave utilizada na multiplicação.
 
 É importante citar que $m$ é o tamanho da chave em bits, sendo que cada \textit{bit} da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 \textit{bytes}. O algoritmo 1 é chamado também de \textit{left-to-right} considerando a orientação onde são percorridos os \textit{bits} da chave privada. É necessário citar que esse algoritmo não é resistente a ataques de canal lateral, sendo que existe uma variação de tempo dependendo do valor dos bits da chave.
 
 \floatname{algorithm}{Algoritmo}
-\begin{algorithm}[H]
+\begin{algorithm}
 \caption{Double-and-add left-to-right}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $N \leftarrow P$
     \STATE $Q \leftarrow 0$
     \FOR{$i$ from $d-1$ \textbf{downto} $0$} 
@@ -97,14 +97,14 @@ O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{
     \end{algorithmic}
 \end{algorithm}
 
-Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit} menos significativo para o  mais significativo, e é conhecida como \textit{right-to-left}. A mesma apresenta pequenas diferenças em relação ao algoritmo 1 em termos do código, modificando apenas a ordem dos \textit{bits} percorridos e a ordem as operações de adição e duplicação. Já em relação à segurança esse também não é resistente a ataques de canal lateral. É possível observar essas diferenças no algoritmo 2.
+Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit} menos significativo para o  mais significativo, e é conhecida como \textit{right-to-left} \cite{DBLP:journals/iacr/Rivain11}. A mesma apresenta pequenas diferenças em relação ao algoritmo 1 em termos do código, modificando apenas a ordem dos \textit{bits} percorridos e a ordem as operações de adição e duplicação. Já em relação à segurança esse também não é resistente a ataques de canal lateral. É possível observar essas diferenças no algoritmo 2.
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
 \caption{Double-and-add right-to-left}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $N \leftarrow P$
     \STATE $Q \leftarrow 0$
     \FOR{$i$ from $0$ \TO $d$} 
@@ -130,8 +130,8 @@ Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados
 \begin{algorithm}[H]
 \caption{Fixed-base windowing method for point multiplication}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE Compute $P_i = 2^{wi}P, 0 \le i \le d-1$
     \STATE $A \leftarrow \infty$
     \STATE $B \leftarrow \infty$
@@ -149,13 +149,13 @@ Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados
 \subsection{Algoritmos regulares; atomicidade; montgomery ladder}
 Para que algoritmos de multiplicação escalar sejam resistentes à ataques de canal lateral é necessário que o fluxo de execução seja regular, isso significa que as operações a serem executadas não serão alteradas de acordo com o valor da chave privada. É possível observar que com essas alterações o tempo de execução será constante, já se tornando resistência minimamente ao ataque de canal lateral de tempo.
 
-Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-always}, proposto por Coron, onde o mesmo executa a adição e duplicação do ponto em todas a iterações. O pseudo-código pode ser observado no algoirtmo 4. Da mesma maneira dos outros algoritmos de multiplicação escalar apresentados os parâmetros de entrada são o ponto $P$ e o escalar $k$, e a saída é o resultado da computação $Q$.
+Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-always}, proposto por Coron~\cite{Coron1999}, onde o mesmo executa a adição e duplicação do ponto em todas a iterações. O pseudo-código pode ser observado no algoritmo 4. Da mesma maneira dos outros algoritmos de multiplicação escalar apresentados os parâmetros de entrada são o ponto $P$ e o escalar $k$, e a saída é o resultado da computação $Q$.
 
 \begin{algorithm}[H]
 \caption{Double-and-add-always}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $R_0 \leftarrow P$
     \FOR{$i$ from $d-2$ \textbf{downto} $0$} 
         \STATE $R_0 \leftarrow 2R_0$
@@ -167,13 +167,13 @@ Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-alway
     \end{algorithmic}
 \end{algorithm}
 
-Uma implementação mais promissora que a apresentada anteriormente é chamada de \textit{Atomic Double-and-Add}. Na mesma não é possível diferenciar qual operação no ponto está sendo executada. Além disso, no algoritmo o ponto principal da segurança está na execução da operação de $\oplus$ entre $b$ e os \textit{bits} da chave, sendo que a operação de $\oplus$ não vaza informações sobre a chave. O pseudocódigo do algoritmo pode ser observado no algoritmo 5, tendo entradas o ponto $P$ e o escalar $k$.
+Uma implementação mais promissora que a apresentada anteriormente é chamada de \textit{Atomic Double-and-Add} \cite{BatinaChmielewski2014}. Na mesma não é possível diferenciar qual operação no ponto está sendo executada. Além disso, no algoritmo o ponto principal da segurança está na execução da operação de $\oplus$ entre $b$ e os \textit{bits} da chave, sendo que a operação de $\oplus$ não vaza informações sobre a chave. O pseudocódigo do algoritmo pode ser observado no algoritmo 5, tendo entradas o ponto $P$ e o escalar $k$.
 
 \begin{algorithm}[H]
-\caption{Atomic Double-and-Add}
+\caption{Atomic double-and-add}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $R_0 \leftarrow P$
     \STATE $R_1 \leftarrow P$
     \STATE $j \leftarrow l - 2$
@@ -188,13 +188,13 @@ Uma implementação mais promissora que a apresentada anteriormente é chamada d
 \end{algorithm}
 
 
-Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva, onde ela pode ser observada no algoritmo 6.
+Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder} \cite{Dull:2015:HCM:2834659.2834708}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva, onde ela pode ser observada no algoritmo 6.
 
 \begin{algorithm}[H]
 \caption{Montgomery-ladder}
 \begin{algorithmic} 
-    \REQUIRE $P, k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
-    \ENSURE $Q = kP$
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
     \STATE $R_0 \leftarrow P$
     \STATE $R_1 \leftarrow 2P$
     \FOR{$j \leftarrow l - 2$ \TO $0$} 
@@ -206,20 +206,20 @@ Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder
     \end{algorithmic}
 \end{algorithm}
 
-O método \textit{Montgomery-ladder} possui uma implementação mais eficientes para a curva de Montgomery com o primo 25519. Na mesma, esse método é dividido em degraus, sendo necessário os executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}. São utilizadas duas entradas sendo $s$ o escalar com tamanho igual à 256 \textit{bits}, e $x_p$ a coordenada $x$ do ponto a ser multiplicado. A função \textit{cswap}, conhecida como \textit{conditional swap}, faz a troca dos valores dos dois primeiros parâmetros caso o valor de $c$ seja $1$. Essa primeira parte do algoritmo pode ser observada no algoritmo 7.
+O método \textit{Montgomery-ladder} possui uma implementação mais eficientes para a curva de Montgomery com o primo 25519. Na mesma, esse método é dividido em degraus, sendo necessário os executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}. São utilizadas duas entradas sendo $k$ o escalar com tamanho ($d$) igual à 256 \textit{bits}, e $x_p$ a coordenada $x$ do ponto a ser multiplicado. A função \textit{cswap}, conhecida como \textit{conditional swap}, faz a troca dos valores dos dois primeiros parâmetros caso o valor de $c$ seja $1$. Essa primeira parte do algoritmo pode ser observada no algoritmo 7.
 
 \begin{algorithm}[H]
 \caption{Montgomery ladder}
 \begin{algorithmic} 
-    \REQUIRE $s, x_p$
-    \ENSURE $X_1, Z_1$
+    \REQUIRE $x_p \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $X_1, Z_1 \in E(\mathbb{F}_p)$
     \STATE $X_1 \leftarrow 1$
     \STATE $Z_1 \leftarrow 0$
     \STATE $X_2 \leftarrow x_p$
     \STATE $Z_2 \leftarrow 1$
     \STATE $p \leftarrow 0$
     \FOR{$i \leftarrow 254$ \TO $0$}
-        \STATE $b \leftarrow s_i$
+        \STATE $b \leftarrow k_i$
         \STATE $c \leftarrow b \oplus p$
         \STATE $p \leftarrow b$
         \STATE $(X_1, X_2) \leftarrow cswap(X_1,X_2,c)$
