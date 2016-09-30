@@ -292,10 +292,9 @@ Métodos baseados em aprendizado não supervisionado, mais especificamente aquel
 
 Em ataques horizontais, devido a problemas como o alto nível de ruído presente em um trace, fenômenos como clock drift\footnote{Clock drift ou clock jitter é o desvio do sinal de clock real em relação ao sinal verdadeiramente periódico de referência. Devido ao clock drift, o sinal de clock real não é periódico, mas sim aproximadamente periódico.} e variações no tempo em que dispositivo de medição (osciloscópio) inicia a medição após o recebimento do sinal de trigger (\textit{trigger jitter}), é fundamental o preprocessamento dos traces medidos antes de se iniciar a análise, particularmente as operações de filtragem, segmentação e alinhamento.
 
-\noindent \textbf{Filtragem.} A \Cref{fig:tracesFiltering}\erick{Cite Inspector in all trace figures} mostra um trace não filtrado e o mesmo trace após aplicação de filtro baixa, onde pode-se identificar com mais clareza características do sinal, como periodicidade e amplitude, bem como as rodadas ou iterações. É recomendável que filtros analógicos sejam aplicados, sempre que possível, de modo que o sinal que é digitalizado pelo osciloscópio contém apenas as frequências desejadas, permitindo o uso da menor resolução (range) vertical suportada pelo dispositivo, o que pode não ocorrer caso picos em frequências indesejadas estejam presentes.
+\noindent \textbf{Filtragem.} A~\Cref{fig:tracesFiltering} mostra um trace não filtrado e o mesmo trace após aplicação de filtro baixa, onde pode-se identificar com mais clareza características do sinal, como periodicidade e amplitude, bem como as rodadas ou iterações. É recomendável que filtros analógicos sejam aplicados, sempre que possível, de modo que o sinal que é digitalizado pelo osciloscópio contém apenas as frequências desejadas, permitindo o uso da menor resolução (range) vertical suportada pelo dispositivo, o que pode não ocorrer caso picos em frequências indesejadas estejam presentes.
 
-\begin{figure}
-	\label{fig:tracesFiltering}
+\begin{figure}	
 	\centering
 	\begin{subfigure}[b]{0.8\textwidth}
 		\includegraphics[width=1\linewidth]{figures/Trace_EM___MontLadder___CPU_168MHz___SR_1GHz___32MS___UNFiltered.png}
@@ -314,8 +313,8 @@ Em ataques horizontais, devido a problemas como o alto nível de ruído presente
 		\caption{}
 		\label{fig:filteredZoomIn}
 	\end{subfigure}
-	
-	\caption{Trace de radiação eletromagnética de uma execução de ECSM com algoritmo Montgomery Ladder: original não filtrado (a), após aplicação de filtro baixa (b) e zoom no início deste último (c).}
+	\label{fig:tracesFiltering}
+	\caption{Trace de radiação eletromagnética de uma execução de ECSM com algoritmo Montgomery Ladder: (a) original não filtrado; (b) após aplicação de filtro baixa e (c) zoom no início deste último. Traces processados com Inspector~\cite{RiscureInspector}.}
 \end{figure}
 
 \noindent \textbf{Segmentação.} Os traces de potência medidos tipicamente correspondem à execução completa da operação criptográfica, sendo assim são contíguos e contêm todas as rodadas (rounds) ou sub-operações executadas; no contexto da multiplicação escalar, as rodadas são as $n$ iterações do laço do algoritmo de multiplicação escalar implementado. Tais traces devem ser primeiramente segmentados em iterações, de modo que um conjunto de $n$ subtraces é obtido, cada um contendo as amostras correspondentes à respectiva iteração.
@@ -339,7 +338,7 @@ Em ataques horizontais, devido a problemas como o alto nível de ruído presente
 		\label{fig:aligned}
 	\end{subfigure}	
 	
-	\caption{Traces de iterações da ECSM: logo após segmentação, desalinhados (a); e após alinhamento (b).}
+	\caption{Traces de iterações da ECSM: (a) logo após segmentação, desalinhados; e (b) após alinhamento. Traces processados com Inspector~\cite{RiscureInspector}.}
 \end{figure}
 
 \subsubsection{Algoritmos para clustering}
@@ -426,7 +425,7 @@ A aplicação de algoritmos de clustering fornece um estimativa para as médias 
 \begin{figure}
 	\centering
 	\includegraphics[width=1\linewidth]{figures/Trace__Cluster_Leakage_Assessment_by_SOST_method.png}
-	\caption{Estimativa de vazamento baseada em clusters utilizando o distinguisher SOST.}
+	\caption{Estimativa de vazamento baseada em clusters utilizando o distinguisher SOST. Visualizado no Inspector~\cite{RiscureInspector}.}
 	\label{fig:traceCLA_SOST}
 \end{figure}
 
@@ -441,7 +440,7 @@ de uma única execução da ECSM. Esta etapa recebe como entradas o conjunto de 
 	
 	\item \textbf{Estimação do escalar final}: neste passo os escalares aproximados são combinados em um escalar final. Para tanto, um classificador estatístico (Majority Rule, Log-likelihood ou estimação de Bayes) é empregado.
 	
-	\item \textbf{Cálculo de confidence scores}: neste passo é calculado o grau de confiança (confidence score) no valor de cada bit recuperado.
+	\item \textbf{Cálculo de confidence scores}: neste passo é calculado o grau de confiança (confidence score) no valor de cada bit recuperado. O grau de confiança é um número real entre 0 (total incerteza) e 1 (total certeza). O cálculo do grau de confiança depende de particularidades do ataque sendo realizado; exemplos: ~\cite{Nascimento2016_SAC,PerinChmielewski2015}.
 	
 	\item \textbf{Cálculo da taxa de sucesso e nível de confiança}.
 \end{itemize}
@@ -449,8 +448,6 @@ de uma única execução da ECSM. Esta etapa recebe como entradas o conjunto de 
 \noindent \textbf{Majority Rule.} Este classificador simplesmente toma o rótulo da amostra de cada POI obtido pelo agrupamento (i.e., chute para o valor do bit) como um voto e então considera o valor que recebeu a maioria dos votos como o valor real do bit. \\
 
 \noindent \textbf{Log-likelihood e Estimação de Bayes.} Estes são classificadores paramétricos; no contexto de SCA o modelo gaussiano é tipicamente adotado. Referimos o leitor à~\cite{Perin2014,PerinChmielewski2015} para uma descrição do uso de tais classificadores no contexto de ataques horizontais baseados em clustering.
-
-\noindent \textbf{Cálculo de confidence scores} \erick{TODO}
 
 \noindent \textbf{Taxa de sucesso e nível de confiança}\\
 Se o valor do escalar é conhecido, isto é, se o ataque não está sendo aplicado na prática em um alvo real, mas sim sendo testado, então podem ser calculados também a taxa de sucesso e o nível de confiança do ataque. 
