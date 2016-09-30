@@ -163,7 +163,7 @@ Quando a varia\c{c}\~{a}o do consumo de pot\^{e}ncia n\~{a}o \'{e} sens\'{i}vel 
 O advers\'{a}rio ent\~{a}o coleta milhares de \textit{power traces}, determinando indutivamente todos os bits que comp\~{o}em a chave privada atrav\'{e}s do c\'{a}lculo da derivada dessa fun\c{c}\~{a}o. Para cada bit $k'_{i}$ corretamente previsto obtemos uma derivada n\~{a}o nula para os valores de $k'$ e $m$, caso contr\'{a}rio a derivada \'{e} nula. O processo \'{e} repetido at\'{e} que cada $k'_{i}$ seja determinando \cite{ECCBook_HankersonVanstone2004}. Esse modelo de ataque \'{e} conhecido como An\'{a}lise Diferencial de Pot\^{e}ncia (DPA ou \textit{Differential Power Analysis}).
 
 
-\subsection{An\'{a}lise diferencial de pot\^{e}ncia sobre ECDSA}
+\subsubsection{An\'{a}lise diferencial de pot\^{e}ncia sobre ECDSA}
 Ainda que o Algoritmo 10 tenha sido adotado, podemos aplicar um DPA sobre o processo de ECDSA. 
 
 Determinada uma vari\'{a}vel $V$ cujo valor influencie o consumo de pot\^{e}ncia e uma fun\c{c}\~{a}o de sele\c{c}\~{a}o $f$ tal que $V = f(k', m)$ o advers\'{a}rio coleta milhares de \textit{power traces}, estima o tamanho que a por\c{c}\~{a}o $k'$ ocupa na chave privada e separa os dados coletados em dois grupos de acordo com o valor previsto de $V$.
