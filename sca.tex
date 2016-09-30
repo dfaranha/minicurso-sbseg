@@ -88,18 +88,12 @@ Sempre que o advers'{a}rio encontrar $Z > 0$, ele ir\'{a} supor que seu palpite 
 
 Portanto, a probabilidade de suas decis\~{o}es estarem corretas para essas medidas \'{e} de quase 80\%, viabilizando o advser\'{a}rio obter o restante da chave por for\c{c}a bruta.
 
-\subsubsection{Limitações}
-
-\subsubsection{Impacto em IoT}
-
 \subsection{Canal lateral de potência}
 
 \subsubsection{Características gerais}
 Em um ataque sobre o canal lateral de pot\^{e}ncia, o advers\'{a}rio analisa sutis varia\c{c}\~{o}es no consumo de energia el\'{e}trica de um dispositivo cujo \textit{hardware} implementa um algoritmo criptogr\'{a}fico (sensores RFID, \textit{smartcards}, \textit{SIM cards}, etc).
 
 Opera\c{c}\~{o}es com dados sens\'{i}veis geram alter\c{c}\~{o}es na corrente ou tens\~{a}o da alimenta\c{c}\~{a}o do dispositivo, permitindo extrair parcialmente (ou mesmo integralmente) a chave criptogr\'{a}fica e outras informa\c{c}\~{o}es  sens\'{i}veis. O primeiro ataque dessa natureza foi apresentado por \cite{Kocher:1999:DPA:646764.703989}, tamb\'{e}m autor da c\'{e}lebre pesquisa precursora sobre \textit{time attacks} \cite{Kocher96}. 
-
-\paragraph{Comparação entre canais laterais de potência e de tempo}
 
 \subsubsection{Ataque de potência simples (SPA)}
 A tecnologia de semicondutores dominante em microprocessadores, mem\'{o}rias e dispositivos embarcados \'{e} a CMOS   \cite{sedra:1997}, sendo inversores l\'{o}gicos sua unidade b\'{a}sica de constru\c{c}\~{a}o. Como dispositivos utilizam fontes constantes de tens\~{a}o, a pot\^{e}ncia consumida varia de acordo com o fluxo de sinais nos componentes, e esses de acordo com as opera\c{c}\~{o}es realizadas. Se esse consumo de pot\^{e}ncia for monitorado com aux\'{i}lio de um oscilosc\'{o}pio poderemos estabelecer um rastro de consumo de pot\^{e}ncia (\textit{power trace}) a cada ciclo do dispositivo.
