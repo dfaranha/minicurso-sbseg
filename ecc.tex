@@ -1,6 +1,5 @@
-Curvas elípticas se definem por equações cúbicas com grau 3, um exemplo é a equação: $y^2 = x^3 - x$. Na figura \ref{fig:curvas} é possível observar a curva mencionada anteriormente e a $y^2 = x^3 -x + 1$ para exemplificar o formato de uma curva elíptica. Umas das funcionalidades das curvas é provar o último teorema de Fermat que diz que uma equação $x^n + y^n = z^n$, quando $n > 2$, não possui uma solução com inteiros diferentes de $0$ \cite{Hankerson:2003:GEC:940321}.
-
-\begin{figure}[h!]
+Curvas elípticas são definidas por equações cúbicas, como por exemplo $y^2 = x^3 - x$. Na Figura \ref{fig:curvas} é possível observar essa curva e $y^2 = x^3 -x + 1$, como ilustração do formato de uma curva elíptica instanciada sobre $\mathbb{R}$. Curvas elípticas não são apenas importantes para criptografia, mas também para provar o Último Teorema de Fermat que prova não haver soluções inteiras não-nulas para uma equação $x^n + y^n = z^n$, quando $n > 2$ ~\cite{Hankerson:2003:GEC:940321}.
+\begin{figure}[htpb]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -18,14 +17,11 @@ Curvas elípticas se definem por equações cúbicas com grau 3, um exemplo é a
 \label{fig:curvas}
 \end{figure}
 
-Uma outra maneira de utilizar as curvas é na criptografia de chave pública, onde a aritmética de pontos na curva é utilizada para encriptar e decriptar um dado. Sendo assim, iremos apresentar algumas curvas e suas vantagens em comparação com outros esquemas criptográficos.
+Criptografia de curvas elípticas (ECC) é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um corpo finito $\mathbb{F}_q$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: a curva e seu modelo, escolha de corpo finito primo $\mathbb{F}_p$ ou binário $\mathbb{F}_{2^m}$, o sistema de coordenadas, entre outros.
 
-Criptografia de curvas elípticas (ECC) é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um corpo finito $\mathbb{F}_q$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: o primo utilizado, a curva, corpo finito $\mathbb{F}_p$ ou $\mathbb{F}_{2^m}$, a quantidade de coordenadas utilizadas, entre outros.
+A computação base de ECC é a multiplicação por escalar (ECSM) descrita como: $Q = kP$. Portanto, as operações mais simples executadas em uma curva são a adição e a duplicação de pontos, sendo $R = P + Q$ e $R = 2P$ respectivamente. Dependendo da curva utilizada, essas operações são computadas de formas diferentes, podendo fazer uso de propriedades específicas da curva para obter melhor desempenho.
 
-A computação base de ECC é a multiplicação escalar (ECSM) descrita como: $Q = kP$. Portanto, as operações mais simples executadas em uma curva são a adição e a duplicação de pontos, sendo $R = P + Q$ e $R = 2P$ respectivamente. Dependendo da curva utilizada, essas operações são computadas de formas diferentes, podendo fazer uso de propriedades específicas da curva para obter melhor desempenho.
-
-Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre um corpo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto. Sendo que, $\bigtriangleup$ é definido como:
-
+Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre um corpo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto e o discriminante $\bigtriangleup$ é definido como:
 \begin{align*}
 \bigtriangleup &= -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6 \\
 d_2 &= a_1^2 + 4a_2 \\
@@ -36,12 +32,11 @@ d_8 &= a_1^2a_6 + 4a_2a_6 - a_1a_3a_4 + a_2a_3^2 - a_4^2
 
 A curva descrita anteriormente é chamada de equação de Weiertrass, onde a mesma possui uma forma simplificada: $y^2 = x^3 + ax + b$. Essa equação é utilizada como ponto inicial para descrição de várias curvas, sendo que pode-se variar os valores de $a$ e $b$ para obter diferentes curvas. Durante a escolha de qual utilizar é possível verificar a facilidade de implementação, possibilidade de paralelização, e também o desempenho da mesma. 
 
-O desempenho está ligado as operações executadas, como por exemplo o método Montgomery-Ladder utilizado durante a multiplicação escalar, e pelas instruções do processador que facilitam a aritmética. Na seção a seguir iremos exibir as curvas com mais ocorrência na literatura, e algumas propriedades de cada uma.
+O desempenho está ligado as operações executadas, como por exemplo o método \emph{Montgomery Ladder} utilizado durante a multiplicação por escalar, e pelas instruções do processador que facilitam a aritmética. Na seção a seguir iremos exibir as curvas com mais ocorrência na literatura, e algumas propriedades de cada uma.
 
 \subsection{Curvas NIST e curvas modernas}
-Primeiramente iremos apresentar as curvas NIST, essas curvas são recomendações de utilização feitas pelo NIST (National Institute of Standards and Technlogy), situado nos Estados Unidos da América. As mesmas foram geradas de forma pseudo-aleatória pela NSA, e possuem ao todo são 10 corpos finitos sendo 5 corpos primos ($\mathbb{F}_p$) e 5 corpos binários ($\mathbb{F}_{2^m}$) \cite{Brown2001}.
 
-Os corpos foram recomendados com o foco no desempenho das curvas, facilitando a aritmética utilizada. Todavia existe uma resistência da comunidade em adotar o que foi proposto, pela incerteza na existência de vulnerabilidades, inseridas para obter informações secretas pelo governo norte americano. Os corpos finitos recomendados podem ser observados a seguir, sendo P os corpos primos e B as corpos binários:
+As curvas NIST foram geradas de maneira pseudo-aleatória pela NSA e recomendadas para utilização pelo governo americano, possuindo ao todo 10 escolhas de corpos finitos sendo 5 corpos primos ($\mathbb{F}_p$) e 5 corpos binários ($\mathbb{F}_{2^m}$) \cite{Brown2001}. Os corpos finitos recomendados podem ser observados a seguir, sendo P o prefixo para corpos primos e B para corpos binários:
 
 \begin{multicols}{2}
 \begin{itemize}
@@ -58,30 +53,29 @@ Os corpos foram recomendados com o foco no desempenho das curvas, facilitando a 
 \end{itemize}
 \end{multicols}
 
-Nesses corpos finitos primos é recomendado utilizar as curvas pseudo-aleatórias, já no caso dos corpos binários recomenda-se, além da utilização das curvas pseudo-aleatórias, o uso da curva de Koblitz. A geração de curvas pseudo-aleatórias segue três passos: primeiramente é gerada uma semente, após a partir da semente é gerada uma curva. Por fim, é verificado se a curva gerada é resistente aos ataques conhecidos, caso não seja o processo é repetido.
+Os corpos foram determinados com ênfase em desempenho, facilitando a aritmética utilizada. Há também opções de curvas binárias genéricas ou de Koblitz para as curvas binárias. A geração de curvas pseudo-aleatórias segue três passos: primeiramente é gerada uma semente, após a partir da semente é gerada uma curva. Por fim, verifica-se se a curva gerada é resistente aos ataques conhecidos e o processo é reiniciado com outra semente em caso negativo. Para as curvas NIST, nem todas as etapas do processo de geração pseudo-aleatória são completamente transparentes, como por exemplo a escolha de sementes. Essa lacuna tem produzido resistência na comunidade técnica, por haver possibilidade de que as sementes foram escolhidas para produzir curvas com vulnerabilidades conhecidas.
 
-Existem duas curvas elípticas que estão se destacando considerando o desempenho obtido junto à técnicas de multiplicação escalar eficiente, redução modular, entre outras. Elas são a curva de Montgomery e a curva de Edwards, onde essas possuem segurança intrínsica a ataques de canal lateral como por exemplo ataque por tempo e ataque por cache. 
+Por esse motivo, outros modelos de curvas elípticas têm recebido maior atenção na literatura científica e na adoção pela indústria, por fornecer métodos de geração mais transparentes e implementações de alto desempenho e protegidas contra ataques de canal lateral de tempo. São as curvas de Montgomery e Edward. Nessas curvas, o número de operações realizadas é regular e se baseia apenas no comprimento das chaves e não no valor dos \emph{bits} da chave.
 
-Isso é verdade pois as operações na curva, o número de adições e duplicações, se baseiam no tamanho dos \textit{bits} e não no valor dos \textit{bits} da chave. Além disso, cada ECSM requisita uma adição e uma duplicação, tornando frequente o número de operações executadas a cada iteração \cite{Okeya2000}.
+A curva de Montgomery tem a seguinte equação: $E: y^2 = x^3 + Ax^2 + x$. O valor do parâmetro $A$ pode ser alterado para melhorar o desempenho das multiplicações escalares. O primo mais utilizado com essa curva é $p = 2^{255}-19$ e o valor de $A = 486662$, dessa maneira a curva é definida sobre o corpo $\mathbb{F}_{2^{255}-19}$ \cite{Dull:2015:HCM:2834659.2834708}. Essa combinação proporciona a multiplicação por escalar de forma eficiente com a função \emph{Montgomery Ladder}.
 
-A curva de Montgomery tem a seguinte equação: $E: y^2 = x^3 + Ax^2 + x$. O valor do parâmetro $A$ pode ser alterado para melhorar o desempenho das multiplicações escalares. O primo mais utilizado com essa curva é o $25519$ $(2^{255}-19)$ e o valor de $A = 486662$, dessa maneira a curva é definida sobre o corpo $\mathbb{F}_{2^{255}-19}$ \cite{Dull:2015:HCM:2834659.2834708}. Essa combinação proporciona a multiplicação escalar de forma eficiente com a função Montgomery-ladder.
-
-Uma outra curva a ser observada é a curva de Edwards. A mesma apresenta a característica de suas implementações serem regulares, o que proporciona execução segura do algoritmo. É encontrada na literatura a utilização dessa curva na forma \textit{twisted}, pelo desempenho encontrado pela combinação com o primo de Mersenne, $p = 2^{127} - 1$, e o 25519 em \cite{longa:2015, Bernstein2012} respectivamente. A equação dessa curva é a seguinte: $-x^2 + y^2 = 1 + dx^2y^2$, onde $d$ é um não quadrado em $\mathbb{F}_p^2$.
+Uma outra curva a ser observada é a curva de Edwards. A mesma apresenta a característica de suas implementações serem regulares, o que proporciona execução segura do algoritmo. É encontrada na literatura a utilização dessa curva na forma \textit{twisted}, pelo desempenho encontrado pela combinação com o primo de Mersenne, $p = 2^{127} - 1$, e $(2^{255 - 10})$ em \cite{longa:2015, Bernstein2012} respectivamente. A equação dessa curva é a seguinte: $-x^2 + y^2 = 1 + dx^2y^2$, onde $d$ é um não quadrado em $\mathbb{F}_p^2$.
 
 Nessa curva a soma de dois pontos segue a \textit{Edwards addition law}:
 $$ (x_1,y_1) + (x_2,y_2) = (\frac{x_1y_2 + x_2y_1}{1 + xd_1x_2y_1y_2},\frac{y_1y_2 + x_1x_2}{1 - dx_1x_2y_1y_2}) $$
-Já a duplicação de um ponto segue a mesma fórmula da adição, portanto a diferença é que ambos os pontos possuem os mesmos valores, sendo: $(x_1, y_1) + (x_1, y_1)$.
+Já a duplicação de um ponto segue a mesma fórmula da adição, portanto a diferença é que ambos os pontos possuem os mesmos valores.
 
-\subsection{Algoritmos para multiplicação escalar (ECSM) básicos}
-Considerando que a principal operação em curvas elípticas é a multiplicação escalar é necessário explorar as diferentes formas de implementar esse calculo. Nessa seção serão apresentados os mais simples, resistentes ou não a ataques de canal lateral, e pequenas variações criando novos algoritmos com propriedades diferentes.
+\subsection{Algoritmos básicos para multiplicação por escalar (ECSM)}
 
-O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{Double-and-add-not-always}) \cite{DBLP:journals/iacr/Rivain11}, o mesmo é utilizado para calcular $kP$. Ele possui quatro variáveis, sendo $N$ para armazenar o resultado da operação de duplicação do ponto durante a execução, $Q$ armazena o resultado das operações, $P$ é o ponto escolhido na curva para a multiplicação escalar, e por fim $k$ é a chave utilizada na multiplicação.
+Considerando que a principal operação em curvas elípticas é a multiplicação por escalar é necessário explorar as diferentes formas de implementar esse calculo. Nessa seção serão apresentados os mais simples, resistentes ou não a ataques de canal lateral, e pequenas variações criando novos algoritmos com propriedades diferentes.
 
-É importante citar que $m$ é o tamanho da chave em bits, sendo que cada \textit{bit} da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 \textit{bytes}. O algoritmo 1 é chamado também de \textit{left-to-right} considerando a orientação onde são percorridos os \textit{bits} da chave privada. É necessário citar que esse algoritmo não é resistente a ataques de canal lateral, sendo que existe uma variação de tempo dependendo do valor dos bits da chave.
+O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{Double-and-add-not-always}) \cite{DBLP:journals/iacr/Rivain11}. Ele possui quatro variáveis, sendo $N$ para armazenar o resultado da operação de duplicação do ponto durante a execução, $Q$ armazena o resultado das operações, $P$ é o ponto escolhido na curva para a multiplicação por escalar, e por fim $k$ é a chave utilizada na multiplicação.
+
+É importante citar que $m$ é o tamanho da chave em \emph{bits}, sendo que cada \textit{bit} da chave será utilizado nesse método, totalizando 256 execuções para uma chave de 32 \textit{bytes}. O Algoritmo 1 é chamado também de \textit{left-to-right} considerando a orientação onde são percorridos os \textit{bits} da chave privada. É necessário citar que esse algoritmo não é resistente a ataques de canal lateral, sendo que existe uma variação de tempo dependendo do valor dos \emph{bits} da chave.
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}
-\caption{Double-and-add left-to-right}
+\caption{Left-to-right double-and-add}
 \begin{algorithmic} 
     \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
@@ -97,11 +91,11 @@ O primeiro é o método \textit{Double-and-add} (também conhecido como \textit{
     \end{algorithmic}
 \end{algorithm}
 
-Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit} menos significativo para o  mais significativo, e é conhecida como \textit{right-to-left} \cite{DBLP:journals/iacr/Rivain11}. A mesma apresenta pequenas diferenças em relação ao algoritmo 1 em termos do código, modificando apenas a ordem dos \textit{bits} percorridos e a ordem as operações de adição e duplicação. Já em relação à segurança esse também não é resistente a ataques de canal lateral. É possível observar essas diferenças no algoritmo 2.
+Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit} menos significativo para o  mais significativo, e é conhecida como \textit{right-to-left} \cite{DBLP:journals/iacr/Rivain11}. A mesma apresenta pequenas diferenças em relação ao Algoritmo 1 em termos do código, modificando apenas a ordem dos \textit{bits} percorridos e a ordem as operações de adição e duplicação. Já em relação à segurança esse também não é resistente a ataques de canal lateral. É possível observar essas diferenças no Algoritmo 2.
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
-\caption{Double-and-add right-to-left}
+\caption{Right-to-left double-and-add}
 \begin{algorithmic} 
     \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
@@ -117,18 +111,19 @@ Uma outra maneira de percorrer os \textit{bits} de \textit{d} é do \textit{bit}
     \end{algorithmic}
 \end{algorithm}
 
-Na seção 1.3.4 iremos tratar outros método de multiplicação escalar que são resistentes a ataques de canal lateral, tornando constante o número de operações executadas em cada iteração e o tempo de execução independente do valor da chave.
+Na Seção 1.3.4, trataremos de outros método de multiplicação por escalar que são resistentes a ataques de canal lateral, tornando constante o número de operações executadas em cada iteração e o tempo de execução independente do valor da chave.
 
-\subsection{Uso de tabelas precomputadas para melhorar desempenho; algoritmos de janela fixa}
-Considerando a utilização de um ponto $P$ fixo, é possível executar o pré-processamento da exponenciação de $P$ e armazenar em uma tabela para ser utilizada em várias multiplicações escalares diferentes. Consequentemente existe um ganho de desempenho em relação a mesma implementação sem a utilização da tabela, pois torna rápida a multiplicação escalar onde a fatoração de $P$ é utilizada. Isso é possível considerando que o maior custo do algoritmo é na geração da tabela, tornando eficiente a partir da primeira multiplicação escalar \cite{Hankerson:2003:GEC:940321}.
+\subsection{Algoritmos para multiplicação de ponto fixo por escalar}
 
-Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados: $2P, 2^2P, 2^3P,..., 2^mP$, sendo $m$ a quantidade de bits do multiplicador escalar $k$ \cite{Hankerson:2003:GEC:940321}. Dessa maneira qualquer operação de duplicação do ponto já foi calculada. Agora iremos apresentar um algoritmo que faz esse pré-processamento que foi proposto por Brickell, Gordon, McCurley, e Wilson. O mesmo recebeu o nome de \textit{Fixed-base windowing method for point multiplication}, e pode ser observado no algoritmo 3.
+Considerando a utilização de um ponto $P$ fixo, é possível executar o pré-processamento da multiplicação de ponto e armazenar em uma tabela para ser utilizada em várias multiplicações escalares diferentes. Consequentemente existe um ganho de desempenho em relação à mesma implementação sem a utilização da tabela. Isso é possível considerando que o maior custo do algoritmo é na geração da tabela, tornando eficiente a partir da primeira multiplicação por escalar \cite{Hankerson:2003:GEC:940321}.
+
+Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados: $2P, 2^2P, 2^3P,\ldots, 2^mP$, sendo $m$ a quantidade de \emph{bits} do multiplicador escalar $k$ \cite{Hankerson:2003:GEC:940321}. Dessa maneira qualquer operação de duplicação do ponto já foi calculada. Agora iremos apresentar um algoritmo que faz esse pré-processamento que foi proposto por Brickell, Gordon, McCurley, e Wilson. O mesmo recebeu o nome de \textit{Fixed-base windowing method}, e pode ser observado no Algoritmo 3.
 
 \renewcommand{\algorithmicforall}{\textbf{for each}}
 
 \floatname{algorithm}{Algoritmo}
 \begin{algorithm}[H]
-\caption{Fixed-base windowing method for point multiplication}
+\caption{Fixed-base windowing method}
 \begin{algorithmic} 
     \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
@@ -145,11 +140,10 @@ Um exemplo disso é um ponto $P$ fixo, os seguintes valores são pré-computados
     \end{algorithmic}
 \end{algorithm}
 
+\subsection{Algoritmos regulares para multiplicação por escalar}
+Para que algoritmos de multiplicação por escalar sejam resistentes a ataques de canal lateral é necessário que o fluxo de execução seja regular, isso significa que as operações a serem executadas não serão alteradas de acordo com o valor da chave privada. É possível observar que com essas alterações o tempo de execução será constante, já se tornando resistência minimamente ao ataque de canal lateral de tempo.
 
-\subsection{Algoritmos regulares; atomicidade; montgomery ladder}
-Para que algoritmos de multiplicação escalar sejam resistentes à ataques de canal lateral é necessário que o fluxo de execução seja regular, isso significa que as operações a serem executadas não serão alteradas de acordo com o valor da chave privada. É possível observar que com essas alterações o tempo de execução será constante, já se tornando resistência minimamente ao ataque de canal lateral de tempo.
-
-Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-always}, proposto por Coron~\cite{Coron1999}, onde o mesmo executa a adição e duplicação do ponto em todas a iterações. O pseudo-código pode ser observado no algoritmo 4. Da mesma maneira dos outros algoritmos de multiplicação escalar apresentados os parâmetros de entrada são o ponto $P$ e o escalar $k$, e a saída é o resultado da computação $Q$.
+Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-always}, proposto por Coron~\cite{Coron1999}, onde o mesmo executa a adição e duplicação do ponto em todas a iterações. O pseudo-código pode ser observado no Algoritmo 4. Da mesma maneira dos outros algoritmos de multiplicação por escalar apresentados os parâmetros de entrada são o ponto $P$ e o escalar $k$, e a saída é o resultado da computação $Q$.
 
 \begin{algorithm}[H]
 \caption{Double-and-add-always}
@@ -167,7 +161,7 @@ Primeiramente iremos apresentar o algoritmo chamado \textit{Double-and-add-alway
     \end{algorithmic}
 \end{algorithm}
 
-Uma implementação mais promissora que a apresentada anteriormente é chamada de \textit{Atomic Double-and-Add} \cite{BatinaChmielewski2014}. Na mesma não é possível diferenciar qual operação no ponto está sendo executada. Além disso, no algoritmo o ponto principal da segurança está na execução da operação de $\oplus$ entre $b$ e os \textit{bits} da chave, sendo que a operação de $\oplus$ não vaza informações sobre a chave. O pseudocódigo do algoritmo pode ser observado no algoritmo 5, tendo entradas o ponto $P$ e o escalar $k$.
+Uma implementação mais promissora que a apresentada anteriormente é chamada de \textit{Atomic Double-and-Add} \cite{BatinaChmielewski2014}. Na mesma não é possível diferenciar qual operação no ponto está sendo executada. Além disso, no algoritmo o ponto principal da segurança está na execução da operação de $\oplus$ entre $b$ e os \textit{bits} da chave, sendo que a operação de $\oplus$ não vaza informações sobre a chave. O pseudocódigo do algoritmo pode ser observado no Algoritmo 5, tendo entradas o ponto $P$ e o escalar $k$.
 
 \begin{algorithm}[H]
 \caption{Atomic double-and-add}
@@ -188,10 +182,10 @@ Uma implementação mais promissora que a apresentada anteriormente é chamada d
 \end{algorithm}
 
 
-Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder} \cite{Dull:2015:HCM:2834659.2834708}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva, onde ela pode ser observada no algoritmo 6.
+Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder} \cite{Dull:2015:HCM:2834659.2834708}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva, onde ela pode ser observada no Algoritmo 6.
 
 \begin{algorithm}[H]
-\caption{Montgomery-ladder}
+\caption{\emph{Montgomery Ladder}}
 \begin{algorithmic} 
     \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
     \ENSURE $Q = kP \in E(\mathbb{F}_p)$
@@ -206,7 +200,7 @@ Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder
     \end{algorithmic}
 \end{algorithm}
 
-O método \textit{Montgomery-ladder} possui uma implementação mais eficientes para a curva de Montgomery com o primo 25519. Na mesma, esse método é dividido em degraus, sendo necessário os executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}. São utilizadas duas entradas sendo $k$ o escalar com tamanho ($d$) igual à 256 \textit{bits}, e $x_p$ a coordenada $x$ do ponto a ser multiplicado. A função \textit{cswap}, conhecida como \textit{conditional swap}, faz a troca dos valores dos dois primeiros parâmetros caso o valor de $c$ seja $1$. Essa primeira parte do algoritmo pode ser observada no algoritmo 7.
+O método \textit{Montgomery Ladder} possui uma implementação mais eficiente para a curva de Montgomery com o primo $2^{255}-19$. Na mesma, esse método é dividido em degraus, sendo necessário os executar 255 vezes para concluir a computação \cite{Dull:2015:HCM:2834659.2834708}. São utilizadas duas entradas sendo $k$ o escalar com tamanho ($d$) igual à 256 \textit{bits}, e $x_p$ a coordenada $x$ do ponto a ser multiplicado. A função \textit{cswap}, conhecida como \textit{conditional swap}, faz a troca dos valores dos dois primeiros parâmetros caso o valor de $c$ seja $1$. Essa primeira parte do algoritmo pode ser observada no Algoritmo 7.
 
 \begin{algorithm}[H]
 \caption{Montgomery ladder}
@@ -230,10 +224,11 @@ O método \textit{Montgomery-ladder} possui uma implementação mais eficientes 
     \end{algorithmic}
 \end{algorithm}
 
-No caso da operação de \textit{ladder} as operações executadas são necessárias para diminuir a quantidade de memória utilizada pelo algoritmo. Isso dificulta ataques considerando que o dado temporário não se mantém na memória. É possível observar a seguir no algoritmo 8 um pseudo-código do método de \textit{ladder}.
+A operação de \emph{ladder} calcula uma duplicação de ponto seguida por uma adição diferencial de pontos. A operação não utiliza valores pré-calculados armazenados em memória,
+dificultando ataques de tempo na latência da hierarquia de memória. É possível observar a seguir no Algoritmo 8 um pseudo-código do método.
 
 \begin{algorithm}[H]
-\caption{Ladder}
+\caption{Duplicação de ponto e adição diferencial}
 \begin{multicols}{2}
 \begin{algorithmic} 
     \REQUIRE $x_D, X_1, Z_1, X_2, Z_2$
@@ -266,13 +261,13 @@ No caso da operação de \textit{ladder} as operações executadas são necessá
 
 \subsection{Protocolos de IoT que envolvem ECC}
 
-No trabalho de \cite{SimplicioJr2016} podemos observar um protocolo de internet das coisas (IoT, do inglês Internet of Things) que utiliza criptografia de curvas elípticas. Esse protocolo é aplicado à redes de sensores sem fio que fazem o monitoramente do ambiente aplicado. Nessa rede um nó (mote) não possui grande capacidade de processamento, largura de banda, energia, memória, entre outros. Sendo assim, a comunicação entre os nós requer implementações eficientes de protocolos criptográficos, para acordo de chaves autenticada, encriptação e decriptação.
+No trabalho de \cite{SimplicioJr2016} podemos observar um protocolo de internet das coisas (IoT, do inglês \emph{Internet of Things}) que utiliza criptografia de curvas elípticas. Esse protocolo é aplicado à redes de sensores sem fio que fazem o monitoramente do ambiente aplicado. Nessa rede um nó (\emph{mote}) não possui grande capacidade de processamento, largura de banda, energia, memória, entre outros. Sendo assim, a comunicação entre os nós requer implementações eficientes de protocolos criptográficos, para acordo de chaves autenticada, encriptação e decriptação.
 
-Nesse projeto foi estudado um protocolo eficiente baseado em ECC para acordo de chaves autenticadas (iSMQV, do inglês Implicitly-Certified Authenticated Key Agreement). Esse protocolo utiliza um centro gerador de chaves (KGC, do inglês Key Generation Center) para gerar o par de chaves, sendo pública e privada. Essas chaves apresentam certificado e podem ser verificadas com informações públicas. O objetivo das mesmas é a utilização para estabelecer uma chave comum entre dois nós da rede.
+Nesse projeto foi estudado um protocolo eficiente baseado em ECC para acordo de chaves autenticadas (iSMQV, do inglês \emph{Implicitly-Certified Authenticated Key Agreement}). Esse protocolo utiliza um centro gerador de chaves (KGC, do inglês Key Generation Center) para gerar o par de chaves, sendo pública e privada. Essas chaves apresentam certificado e podem ser verificadas com informações públicas. O objetivo das mesmas é a utilização para estabelecer uma chave comum entre dois nós da rede.
 
 No protocolo iSMQV para que o nó da rede, que chamaremos de $A$, obtenha o seu par de chaves é necessário seguir os passos:
 \begin{itemize}
-    \item A escolhe um número aleatório $\alpha$ e computa $V = \alpha \cdot G$, sendo $G$ o gerador do grupo $\mathbb{G}$. O valor de $V$ e a sua identidade $ID_A$ são enviadas para o KGC;
+    \item A escolhe um número aleatório $\alpha$ e computa $V = \alpha \cdot G$, sendo $G$ o gerador do grupo $G$. O valor de $V$ e a sua identidade $ID_A$ são enviadas para o KGC;
     \item Então KGC verifica a identidade de $A$ e computa $V_A = V + \beta \cdot G$, para um $\beta$ aleatório;
     \item Além disso, KGC calcula o hash $h = H(ID_A, V_A)$ e cria a assinatura $s = h \cdot \beta + r$;
     \item $s$ e $V_A$ são enviados ao nó $A$;

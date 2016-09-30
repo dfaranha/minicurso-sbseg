@@ -1,17 +1,16 @@
-\subsection{Canal lateral (SCA) de tempo}
+\subsection{Ataques temporais}
 
-\subsubsection{O que é? Por que é importante?}
 A premissa fundamental de ataques temporais \'{e} que o tempo gasto na execu\c{c}\~{a}o de uma instru\c{c}\~{a}o \'{e} influenciado por seus respectivos operandos \cite{ECCBook_HankersonVanstone2004}. Estudos mostraram \cite{1251354} a viabilidade desse ataque contra servidores executando protocolos como o SSL com RSA devido à lat\^{e}ncia da comunica\c{c}\~{a}o decorrente da rede local.
 
-Como todos os ataques por canais laterais envolvem o monitoramento de uma grandeza f\'{i}sica, a limita\c{c}\~{a}o do \textit{time attack} \'{e} que as opera\c{c}\~{o}es com a chave criptogr\'{a}fica sejam \textit{lentas} o suficiente para serem medidas.
+Como todos os ataques por canais laterais envolvem o monitoramento de uma grandeza f\'{i}sica, a limita\c{c}\~{a}o do ataque temporal \'{e} que as opera\c{c}\~{o}es com a chave criptogr\'{a}fica sejam \textit{lentas} o suficiente para serem medidas.
 
-Acreditava-se que esse tipo de ataque seria poss\'{i}vel apenas em opera\c{c}\~{o}es de rede ou r\'{a}dio e jamais em processadores de disposit\'{i}vos m\'{o}veis ou se quer computadores justamente devido essa limita\c{c}\~{a}o.
+Acreditava-se que esse tipo de ataque seria poss\'{i}vel apenas em opera\c{c}\~{o}es de rede ou r\'{a}dio e jamais em processadores de dispositivos m\'{o}veis ou se quer computadores justamente devido essa limita\c{c}\~{a}o.
 
 Por\'{e}m uma forma derivada desse ataque denominada \textit{branch prediction analysis} (an\'{a}lise de preditor de salto) \cite{1266999} demonstrou ser poss\'{i}vel atacar uma implementa\c{c}\~{a}o do OpenSSL rodando em processadores convencionais (PowerPC, Intel, ARM, etc.).
 
 Executando processos maliciosos em sistemas operacionais (Windows, Linux, Android, iOS, BlackBerry, etc.), foi demonstrado ser poss\'{i}vel afetar a execu\c{c}\~{a}o do OpenSSL. Tornando as itera\c{c}\~{o}es da exponencia\c{c}\~{a}o modular mais lentas, passando de nanosegundos para microsegundos, podem ser detecdadas e informações sobre a chave privada inferida.
 
-\subsubsection*{Unidade de predi\c{c}\~{a}o de saltos}
+\subsubsection{Unidade de predi\c{c}\~{a}o de saltos}
 
 As instru\c{c}\~{o}es que comp\~{o}em o c\'{o}digo bin\'{a}rio de um programa execut\'{a}vel podem consumir diferentes quantidades de ciclos de \textit{clock} de acordo com suas respectivas complexidades. Como no decorrer do fluxo de programas podem existir diversas depend\^{e}ncias entre as instru\c{c}\~{o}es executadas, existe a possibilidade de que valores necess\'{a}rios para a execu\c{c}\~{a}o de uma determinada instru\c{c}\~{a}o ainda n\~{a}o tenham sido calculados.
 
@@ -22,7 +21,7 @@ O preditor tamb\'{e}m possui uma parte denominada BHR (\textit{Branch History Re
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=1\textwidth]{figures/automato.png}
+	\includegraphics[width=0.7\textwidth]{figures/automato.png}
 	\caption{Aut\^{o}mato finito descreve o comportamento do preditor de saltos \cite{493986}.}
 	\label{fig:Fig_automato}
 \end{figure}
@@ -34,7 +33,7 @@ O preditor tamb\'{e}m possui uma parte denominada BHR (\textit{Branch History Re
 	\label{fig:Fig_btu}
 \end{figure}
 
-\subsubsection*{Medi\c{c}\~{a}o direta de tempo}
+\subsubsection{Medi\c{c}\~{a}o direta de tempo}
 
 A m\'{a}quina de estados que descreve as poss\'{i}veis decis\~{o}es da BTU possui um n\'{u}mero finito de estados; logo, o algoritmo que a descreve \'{e} determin\'{i}stico. O advers\'{a}rio pode assumir que a implementa\c{c}\~{a}o do RSA utilizou S\&M (\textit{Square-and-Multiply exponentiation algorithm}) e MM (\textit{Montgomery Multiplication algorithm} \cite{ECCBook_HankersonVanstone2004, 1197338}) e o BTU possui um aut\^{o}mato finito de apenas dois estados: salto tomado ou n\~{a}o tomado.
 
@@ -47,13 +46,13 @@ Seja $d$ a chave privada, vamos supor que o advers\'{a}rio conhece seus $i$ prim
 	M_{4} = \left\lbrace m\ \vert\ d_{i} = 0 \rightarrow m\ causa\ hit\ durante\ MM\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \right\rbrace \\ \notag
 \end{align}
 
-O advers\'{a}rio calcula o tempo m\'{e}dio de execu\c{c}\~{a}o na multiplica\c{c}\~{a}o de Montgomery em cada conjunto $M_{i}$. Sendo $d_{i} = t, t \in \left\lbrace 0,1\right\rbrace $, a diferen\c{c}a dos tempos m\'{e}dios de execu\c{c}\~{a}o para o mesmo valor correto $t$ ser\~{a}o muito mais significativas do que a obtida dos outros dois conjuntos, pois, para o valor incorreto, os valores de tempo de cada multiplica\c{c}\~{a}o ter\~{a}o um caracter aleat\'{o}rio. Esse \'{e} o mesmo processo estat\'{i}stico da an\'{a}lise diferencial de pot\^{e}ncia. Portanto, se a diferen\c{c}a entre os tempos m\'{e}dios de $M_{1}$ e $M_{2}$ for muito mais significativa do que $M_{3}$ e $M_{4}$, ent\~{a}o o palpite correto \'{e} $d_{i} = 1$, e $d_{i} = 0$ caso contr\'{a}rio. 
+O advers\'{a}rio calcula o tempo m\'{e}dio de execu\c{c}\~{a}o na multiplica\c{c}\~{a}o de Montgomery em cada conjunto $M_{i}$. Sendo $d_{i} = t, t \in \left\lbrace 0,1\right\rbrace $, a diferen\c{c}a dos tempos m\'{e}dios de execu\c{c}\~{a}o para o mesmo valor correto $t$ ser\~{a}o muito mais significativas do que a obtida dos outros dois conjuntos, pois, para o valor incorreto, os valores de tempo de cada multiplica\c{c}\~{a}o ter\~{a}o um caracter aleat\'{o}rio. Portanto, se a diferen\c{c}a entre os tempos m\'{e}dios de $M_{1}$ e $M_{2}$ for muito mais significativa do que $M_{3}$ e $M_{4}$, ent\~{a}o o palpite correto \'{e} $d_{i} = 1$, e $d_{i} = 0$ caso contr\'{a}rio. 
 
 Nesse ataque o advers\'{a}rio precisa saber de antem\~{a}o o estado do BPU antes do algoritmo de decripta\c{c}\~{a}o ser iniciado. Uma possibilidade de simples implementa\c{c}\~{a}o, por\'{e}m menos eficiente, seria realizar a an\'{a}lise supondo cada um dos quatro estados iniciais. A segunda abordagem consiste em for\c{c}ar o estado inicial do BPU de modo que nenhum endere\c{c}o de salto esteja no BTB. Essa abordagem ser\'{a} fundamentalmente a mesma utilizada em todos os ataques de predi\c{c}\~{a}o de salto listados a seguir.
 
-\subsubsection*{For\c{c}ando BPU \`{a} mesma predi\c{c}\~{a}o assincronamente}
+\subsubsection{For\c{c}ando BPU \`{a} mesma predi\c{c}\~{a}o assincronamente}
 
-Unidades de processamento que permitem execu\c{c}\~{a}o concorrente de processos (SMT ou \textit{Simultaneous Multi-Threading} \cite{Silberschatz2004}) permitem que um advers\'{a}rio execute um processo espi\~{a}o simultaneamente ao programa de encripta\c{c}\~{a}o. Dessa forma, o advers\'{a}rio pode fazer com que o valor previsto dos saltos do encriptador nunca estejam no BTB; conseq\"{u}entemente, sempre ocorrer\'{a} um \textit{missprediction} quando o resultado correto, segundo a previs\~{a}o, seria que o salto fosse tomado. Comparado ao processo anterior, a an\'{a}lise diferencial seria similiar exceto pelo fato de que $d_{i} = 1$ em caso de \textit{hit} e $d_{i} = 0$ em caso de \textit{missprediction} durante o c\'{a}lculo de $m^{2} \bmod N$.
+Unidades de processamento que permitem execu\c{c}\~{a}o concorrente de processos (SMT ou \textit{Simultaneous Multi-Threading} \cite{Silberschatz2004}) permitem que um advers\'{a}rio execute um processo espi\~{a}o simultaneamente ao programa de encripta\c{c}\~{a}o. Dessa forma, o advers\'{a}rio pode fazer com que o valor previsto dos saltos do encriptador nunca estejam no BTB; conseq\"{u}entemente, sempre ocorrer\'{a} um \textit{misprediction} quando o resultado correto, segundo a previs\~{a}o, seria que o salto fosse tomado. Comparado ao processo anterior, a an\'{a}lise diferencial seria similiar exceto pelo fato de que $d_{i} = 1$ em caso de \textit{hit} e $d_{i} = 0$ em caso de \textit{misprediction} durante o c\'{a}lculo de $m^{2} \bmod N$.
 
 O processo espi\~{a}o remover do BTB o endere\c{c}o alvo de salto dos seguintes modos:
 \begin{enumerate}
@@ -88,9 +87,8 @@ Sempre que o advers'{a}rio encontrar $Z > 0$, ele ir\'{a} supor que seu palpite 
 
 Portanto, a probabilidade de suas decis\~{o}es estarem corretas para essas medidas \'{e} de quase 80\%, viabilizando o advser\'{a}rio obter o restante da chave por for\c{c}a bruta.
 
-\subsection{Canal lateral de potência}
+\subsection{Ataques de potência}
 
-\subsubsection{Características gerais}
 Em um ataque sobre o canal lateral de pot\^{e}ncia, o advers\'{a}rio analisa sutis varia\c{c}\~{o}es no consumo de energia el\'{e}trica de um dispositivo cujo \textit{hardware} implementa um algoritmo criptogr\'{a}fico (sensores RFID, \textit{smartcards}, \textit{SIM cards}, etc).
 
 Opera\c{c}\~{o}es com dados sens\'{i}veis geram alter\c{c}\~{o}es na corrente ou tens\~{a}o da alimenta\c{c}\~{a}o do dispositivo, permitindo extrair parcialmente (ou mesmo integralmente) a chave criptogr\'{a}fica e outras informa\c{c}\~{o}es  sens\'{i}veis. O primeiro ataque dessa natureza foi apresentado por \cite{Kocher:1999:DPA:646764.703989}, tamb\'{e}m autor da c\'{e}lebre pesquisa precursora sobre \textit{time attacks} \cite{Kocher96}. 

@@ -12,7 +12,7 @@ Há muitos paradigmas diferentes para se construir cifras simétricas. Em geral,
 
 Os paradigmas clássicos mais comuns para construção de cifras de bloco são \emph{Redes de Feistel} e \emph{Redes de Substituição-Permutação} (SPN -- \emph{Substitution-Permutation Network}). Redes de Feistel (ou cifras de Luby-Rackoff~\cite{LubyR88}) utilizam uma função de rodada não-inversível $f$ que atua sobre o bloco de texto claro $(L_0 \parallel R_0)$. A cada rodada, a função $f$ calcula a próxima metade do estado interno pela regra $R_{i+1} = L_i \oplus f(R_i, k_i)$, enquanto a metade restante é uma simples cópia $L_{i+1} = R_i$, até que seja atingido o bloco de criptograma $(L_r \parallel R_r)$. A decriptação segue processo análogo, utilizando as regras inversas $R_{i} = L_{i+1}$ e $L_{i+1} = R_{i+1} \oplus f(L_{i+1}, k_i)$. SPNs alternam \emph{caixas de substituição} $S_i$ que operam sobre pedaços de $\ell$ \emph{bits} do texto claro (que implementam cifras de substituição) com uma \emph{camada de difusão linear} $P$ que opera sobre todo o estado interno. Ao final de cada rodada, a chave de rodada $k_i$ é adicionada ao estado interno por uma operação \texttt{XOR}. A decriptação é realizada pela aplicação de operações inversas também na ordem inversa. As Figuras~\ref{fig:feistel} e~\ref{fig:spn} apresentam diagramas para Redes de Feistel e de Permutação-Substituição, respectivamente.
 
-\begin{figure}[h!]
+\begin{figure}[htbp]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -42,7 +42,7 @@ No modo de operação CBC (\emph{Cipher Block Chaining}), o próximo bloco de cr
 
 O modo de operação CTR (\emph{Counter} simula uma cifra de fluxo a partir de uma cifra de bloco. Os blocos do criptograma são calculados pela operação \texttt{XOR} entre blocos de texto claro e encriptação de valores consecutivos do vetor de inicialização $IV$. Portanto, a regra é dada por $C_i = M_i \oplus E_k(IV + i)$, para $1 \leq i \leq n$. Como o processamento de cada bloco é independente, este modo de operação oferece paralelismo tanto na cifração quanto decifração, sendo tipicamente mais eficiente que o modo CBC. A Figura~\ref{fig:modos} ilustra os dois modos de operação.
 
-\begin{figure}[h!]
+\begin{figure}[htbp]
 \centering
 \begin{subfigure}{\textwidth}
   \centering
@@ -94,7 +94,7 @@ Classicamente, o paradigma Merkle-Damg\aa rd constrói uma função de resumo cr
 \end{center}
 \end{figure}
 
-Um paradigma de construção que se tornou imensamente popular é a classe de \emph{esponjas criptográficas}. Uma esponja é uma função com estado interno $s$ de tamanho finito $b$, dividido em duas seções: a taxa de \emph{bits} de tamanho $r$ e a capacidade de tamanho $c$, tais que $b = c + r$. Completam a especificação uma função de permutação $f$ de tamanho fixo, que transforma o estado interno, e uma regra de preenchimento. Durante a inicialização, uma função esponja atribui o valor 0 ao estado interno e completa a mensagem de entrada para que seu tamanho seja múltiplo de $r$, de forma que a entrada possa ser dividida em blocos de tamanho $r$. A cada iteração da função, um novo bloco da entrada é adicionado a parte do estado interno pela operação \texttt{XOR} e o estado interno $s$ é substituído por $f(s)$. Em outras palavras, os blocos da entrada são absorvidos sucessivamente no estado interno. Na etapa final, toma-se $r$ bits do estado interno por iteração até que a saída atinja um tamanho pré-determinado, alternando com novas aplicações da função de permutação $f(s)$. A resistência a colisões ou ataques de pré-imagem depende do tamanho $c$, tipicamente escolhido como duas vezes o nível de segurança desejado. A Figura~\ref{fig:sponge} apresenta a construção~\cite{BertoniDPA08}.
+Um paradigma de construção que se tornou imensamente popular é a classe de \emph{esponjas criptográficas}. Uma esponja é uma função com estado interno $s$ de tamanho finito $b$, dividido em duas seções: a taxa de \emph{bits} de tamanho $r$ e a capacidade de tamanho $c$, tais que $b = c + r$. Completam a especificação uma função de permutação $f$ de tamanho fixo, que transforma o estado interno, e uma regra de preenchimento. Durante a inicialização, uma função esponja atribui o valor 0 ao estado interno e completa a mensagem de entrada para que seu tamanho seja múltiplo de $r$, de forma que a entrada possa ser dividida em blocos de tamanho $r$. A cada iteração da função, um novo bloco da entrada é adicionado a parte do estado interno pela operação \texttt{XOR} e o estado interno $s$ é substituído por $f(s)$. Em outras palavras, os blocos da entrada são absorvidos sucessivamente no estado interno. Na etapa final, toma-se $r$ \emph{bits} do estado interno por iteração até que a saída atinja um tamanho pré-determinado, alternando com novas aplicações da função de permutação $f(s)$. A resistência a colisões ou ataques de pré-imagem depende do tamanho $c$, tipicamente escolhido como duas vezes o nível de segurança desejado. A Figura~\ref{fig:sponge} apresenta a construção~\cite{BertoniDPA08}.
 
 \begin{figure}[htbp]
 \begin{center}
