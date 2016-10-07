@@ -1,4 +1,4 @@
-Curvas elípticas são definidas por equações cúbicas, como por exemplo $y^2 = x^3 - x$. Na Figura \ref{fig:curvas} é possível observar essa curva e $y^2 = x^3 -x + 1$, como ilustração do formato de uma curva elíptica instanciada sobre $\mathbb{R}$. Curvas elípticas não são apenas importantes para criptografia, mas também para provar o Último Teorema de Fermat que prova não haver soluções inteiras não-nulas para uma equação $x^n + y^n = z^n$, quando $n > 2$ ~\cite{Hankerson:2003:GEC:940321}.
+Curvas elípticas são definidas por equações cúbicas, como por exemplo $y^2 = x^3 - x$. Na Figura \ref{fig:curvas} é possível observar essa curva e $y^2 = x^3 -x + 1$, como ilustração do formato de uma curva elíptica instanciada sobre $\mathbb{R}$. Curvas elípticas não são apenas importantes para criptografia, mas também em outros ramos da Matemática como, por exemplo, na  prova do Último Teorema de Fermat.~\cite{Hankerson:2003:GEC:940321}.
 \begin{figure}[htpb]
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -17,26 +17,34 @@ Curvas elípticas são definidas por equações cúbicas, como por exemplo $y^2 
 \label{fig:curvas}
 \end{figure}
 
-Criptografia de curvas elípticas (ECC) é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um corpo finito $\mathbb{F}_q$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores, como por exemplo: a curva e seu modelo, escolha de corpo finito primo $\mathbb{F}_p$ ou binário $\mathbb{F}_{2^m}$, o sistema de coordenadas, entre outros.
+Criptografia de curvas elípticas (ECC) é uma classe de algoritmos criptográficos que se baseia na aritmética de pontos de uma curva elíptica em um corpo finito $\mathbb{F}_q$ \cite{Hankerson:2003:GEC:940321}. Os algoritmos criptográficos que utilizam esse tipo de problema matemático podem se diferenciar de acordo com vários fatores como, por exemplo, a curva e seu modelo, a escolha entre corpo finito primo $\mathbb{F}_p$ ou binário $\mathbb{F}_{2^m}$, o sistema de coordenadas, entre outros.
 
-A computação base de ECC é a multiplicação por escalar (ECSM) descrita como: $Q = kP$. Portanto, as operações mais simples executadas em uma curva são a adição e a duplicação de pontos, sendo $R = P + Q$ e $R = 2P$ respectivamente. Dependendo da curva utilizada, essas operações são computadas de formas diferentes, podendo fazer uso de propriedades específicas da curva para obter melhor desempenho.
+A operação central em ECC é a multiplicação por escalar (ECSM - Elliptic Curve Scalar Multiplication), descrita como $Q = kP$. As operações mais simples executadas em uma curva são a adição e a duplicação de pontos, isto é, $R = P + Q$ e $R = 2P$ respectivamente. Dependendo da curva utilizada, essas operações são computadas de formas diferentes, podendo fazer uso de propriedades específicas da curva para obter melhor desempenho.
 
-Seguindo a notação descrita por \cite{Hankerson:2003:GEC:940321} podemos definir uma curva elíptica $E$ como: $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$ sobre um corpo K. Onde $\bigtriangleup \neq 0$, essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto e o discriminante $\bigtriangleup$ é definido como:
+Seguindo a notação de  \cite{Hankerson:2003:GEC:940321},  podemos definir uma curva elíptica $E$ por $E: y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6$, onde os $a_i$ são elementos de um corpo finito K e o discriminante $\bigtriangleup$, definido a seguir, deve ser não nulo. 
+\begin{comment}
+Essa condição garante que não existirá ponto onde a curva possui duas ou mais linhas de tangente diferentes. A linha da tangente é utilizada na operação de duplicação de um ponto e o discriminante $\bigtriangleup$ é definido como:
+\end{comment}
+
 \begin{align*}
-\bigtriangleup &= -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6 \\
+\bigtriangleup &= -d_2^2d_8 - 8d_4^3 - 27d_6^2 + 9d_2d_4d_6, \mbox{ onde } \\
 d_2 &= a_1^2 + 4a_2 \\
 d_4 &= 2a_4 + a_1a_3 \\ 
 d_6 &= a_3^2 + 4a_6 \\
 d_8 &= a_1^2a_6 + 4a_2a_6 - a_1a_3a_4 + a_2a_3^2 - a_4^2
 \end{align*}
 
-A curva descrita anteriormente é chamada de equação de Weiertrass, onde a mesma possui uma forma simplificada: $y^2 = x^3 + ax + b$. Essa equação é utilizada como ponto inicial para descrição de várias curvas, sendo que pode-se variar os valores de $a$ e $b$ para obter diferentes curvas. Durante a escolha de qual utilizar é possível verificar a facilidade de implementação, possibilidade de paralelização, e também o desempenho da mesma. 
+A curva descrita anteriormente é chamada de equação de Weierstrass, e simplifica-se,  em muitos casos, para $y^2 = x^3 + ax + b$ e, portanto, $\bigtriangleup = -16(4a^3 +27b^2) \ne 0$. Diferentes escolhas para $a$ e $b$ produzem diferentes curvas. Tais escolhas podem afetar o desempenho e a segurança de implementações,  
+
+\begin{comment}
+Essa equação é utilizada como ponto inicial para descrição de várias curvas, sendo que pode-se variar os valores de $a$ e $b$ para obter diferentes curvas. Durante a escolha de qual utilizar é possível verificar a facilidade de implementação, possibilidade de paralelização, e também o desempenho da mesma. 
+\end{comment}
 
 O desempenho está ligado as operações executadas, como por exemplo o método \emph{Montgomery Ladder} utilizado durante a multiplicação por escalar, e pelas instruções do processador que facilitam a aritmética. Na seção a seguir iremos exibir as curvas com mais ocorrência na literatura, e algumas propriedades de cada uma.
 
 \subsection{Curvas NIST e curvas modernas}
 
-As curvas NIST foram geradas de maneira pseudo-aleatória pela NSA e recomendadas para utilização pelo governo americano, possuindo ao todo 10 escolhas de corpos finitos sendo 5 corpos primos ($\mathbb{F}_p$) e 5 corpos binários ($\mathbb{F}_{2^m}$) \cite{Brown2001}. Os corpos finitos recomendados podem ser observados a seguir, sendo P o prefixo para corpos primos e B para corpos binários:
+As curvas NIST (National Institute of Standards and Technology) foram geradas de maneira pseudo-aleatória pela NSA (National Security Agency) e recomendadas para utilização pelo governo americano, possuindo ao todo 10 escolhas de corpos finitos sendo 5 corpos primos ($\mathbb{F}_p$) e 5 corpos binários ($\mathbb{F}_{2^m}$) \cite{Brown2001}. Os corpos finitos recomendados podem ser observados a seguir, sendo P o prefixo para corpos primos e B para corpos binários:
 
 \begin{multicols}{2}
 \begin{itemize}
@@ -181,6 +189,33 @@ Uma implementação mais promissora que a apresentada anteriormente é chamada d
     \end{algorithmic}
 \end{algorithm}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{comment}
+
+
+\begin{algorithm}[H]
+\caption{Atomic double-and-add}
+\begin{algorithmic} 
+    \REQUIRE $P \in E(\mathbb{F}_p), k=(k_{d-1},\ldots,k_1,k_0)_2 \in \mathbb{N}$
+    \ENSURE $Q = kP \in E(\mathbb{F}_p)$
+    \STATE $R_0 \leftarrow 0$
+    \STATE $R_1 \leftarrow P$
+    \STATE $i \leftarrow d - 1$ %%% No batina ele usa x no lugar de d
+    \STATE $n \leftarrow 0$
+     \WHILE{$i \ge 0$} 
+        \STATE $R_0 \leftarrow R_0 + R_n$
+        \STATE $n \leftarrow n \oplus k_i$
+        \STATE $i \leftarrow i - \neg n$
+    \ENDWHILE
+    \RETURN $R_0$
+    \end{algorithmic}
+\end{algorithm}
+
+
+\end{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Um outro algoritmo que iremos apresentar é chamado de \textit{Montgomery Ladder} \cite{Dull:2015:HCM:2834659.2834708}, o mesmo apresenta eficiência na multiplicar escalar em comparação com os outros e possui vantagens dependendo da curva e do primo utilizado no esquema criptográfico. Primeiramente iremos exibir uma implementação genérica do algoritmo que pode ser aplicada a qualquer curva, onde ela pode ser observada no Algoritmo 6.
 
@@ -242,7 +277,7 @@ dificultando ataques de tempo na latência da hierarquia de memória. É possív
     \STATE $Z_2 \leftarrow Z_2 \cdot Z_2$
     \STATE $X_1 \leftarrow X_1 \cdot X_1$
     \STATE $T_2 \leftarrow Z_2 - X_1$
-    \STATE $Z_1 \leftarrow T_2 \cdot a_24$
+    \STATE $Z_1 \leftarrow T_2 \cdot a24$
     
     
     \STATE $Z_1 \leftarrow Z_1 + X_1$
