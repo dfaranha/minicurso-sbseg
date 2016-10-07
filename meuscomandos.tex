@@ -1,0 +1,109 @@
+\newcommand{\ignore}[1]{}
+
+\newcommand{\N}{\mbox{${\mathbb N}$}}
+\newcommand{\PP}{\mbox{${\mathbb P}$}}
+\newcommand{\Z}{\mbox{${\mathbb Z}$}}
+\newcommand{\Q}{\mbox{${\mathbb Q}$}}
+\newcommand{\R}{\mbox{${\mathbb R}$}}
+\newcommand{\A}{\mbox{${\mathbb A}$}}
+\newcommand{\G}{\mbox{${\mathbb G}$}}
+\newcommand{\T}{\mbox{${\mathbb T}$}}
+\newcommand{\FF}{\mbox{${\mathbb F}$}}
+\newcommand{\F}{\mbox{${\mathbb F}$}}
+\newcommand{\Inst}{\mbox{${\mathbb I}$}}
+\newcommand{\Sol}{\mbox{${\mathbb S}$}}
+\newcommand{\gf}[1]{\mbox{${\mathbb F}_{#1}$}}
+
+\newcommand{\enc}[2]{\mbox{$\mbox{\sc Enc}_{#1}(#2)$}}
+\newcommand{\dec}[2]{\mbox{$\mbox{\sc Dec}_{#1}(#2)$}}
+\newcommand{\mac}[2]{\mbox{$\mbox{\sc Mac}_{#1}(#2)$}}
+\newcommand{\macnoarg}{\mbox{\sc Mac}}
+\newcommand{\sgn}[2]{\mbox{$\mbox{\sc Sign}_{#1}(#2)$}}
+\newcommand{\ver}[2]{\mbox{$\mbox{\sc Ver}_{#1}(#2)$}}
+\newcommand{\pub}[1]{\mbox{$e_{#1}$}}
+\newcommand{\priv}[1]{\mbox{$d_{#1}$}}
+\newcommand{\spub}[1]{\mbox{$\scriptstyle e_{#1}$}}
+\newcommand{\spriv}[1]{\mbox{$\scriptstyle d_{#1}$}}
+\newcommand{\cert}{\mbox{\sc cert}}
+\newcommand{\senha}{\mbox{senha}}
+\newcommand{\hash}{\mbox{${H}$}}
+\newcommand{\sorteia}{\mbox{\texttt{sorteia}}}
+\newcommand{\tpc}{\mbox{$T\!PC$}}
+\newcommand{\intruso}{\mbox{T\'ercio}}
+\newcommand{\mdc}{\mbox{mdc}}
+\newcommand{\divw}{\mbox{div}}
+
+\newcommand{\prob}[1]{\bigskip \textbf{#1} \bigskip}
+\newcommand{\defi}[1]{ \emph{#1} \bigskip }
+\newcommand{\rot}[1]{\textbf{#1}}
+\newcommand{\hip}[1]{ \emph{#1}}
+
+\newcommand{\ou}{\textbf{ou }}
+\newcommand{\de}{\textbf{de }}
+\newcommand{\se}{\textbf{se }}
+\newcommand{\para}{\textbf{para }}
+\newcommand{\ate}{\textbf{at\'e }}
+\newcommand{\faca}{\textbf{fa\c ca }}
+\newcommand{\retorne}{\textbf{retorne }}
+\newcommand{\senao}{\textbf{sen\~ao }}
+\newcommand{\entao}{\textbf{ent\~ao }}
+\newcommand{\enquanto}{\textbf{enquanto }}
+\newcommand{\repita}{\textbf{repita }}
+\newcommand{\ateque}{\textbf{at\'e que }}
+\newcommand{\proc}{\textbf{procedure }}
+\newcommand{\fim}{\textbf{fim }}
+
+\newcommand{\rarw}{\mbox{$\to$}}
+\newcommand{\sends}{\mbox{\large $\rightsquigarrow$}}
+\newcommand{\HRule}{\rule{\linewidth}{0.3mm}}
+
+\newcommand{\br}[1]{\mbox{$\langle #1 \rangle$}}
+\newcommand{\thmlike}[2]{\textbf{#1} \textit{#2}}
+
+\newcommand{\textfn}{\texttt}%% a \'unica modifica\c c\~ao
+
+\newtheorem{thm}{Teorema}
+\newtheorem{lema}{Lema}
+\newtheorem{dfn}{Defini\c c\~ao}
+
+%%new environments and floats
+%% 'protfloat' float
+\floatstyle{ruled}
+\newfloat{protfloat}{!htb}{lnf}
+\floatname{protfloat}{Protocolo}
+
+%% 'protocolo' environment
+\newenvironment{protocolo}[1]
+{\begin{protfloat}
+ \caption{#1}
+ \begin{tabular}{l|l|l}
+}
+{\end{tabular}
+ \end{protfloat}
+} 
+
+%% 'algfloat' float
+\floatstyle{ruled}
+\newfloat{algfloat}{!htb}{lnf}
+\floatname{algfloat}{Algoritmo}
+
+%% 'algoritmo' environment
+\newenvironment{algoritmo}[3]
+{\begin{algfloat}
+ \caption{#1}
+ \begin{alltt}
+ \normalfont \mdseries
+ \textsc{Entrada:} #2 \\
+ \textsc{Sa\'\i da:} #3
+ \vspace{-2ex}
+}
+{\end{alltt}
+ \vspace{-2ex}
+ \end{algfloat}
+}
+ 
+
+
+
+
+
